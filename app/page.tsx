@@ -18,11 +18,17 @@ import {
   Trash2,
 } from "lucide-react";
 
+import LandingPage from "./landing/page";
+
 export const revalidate = 0;
 
-export default async function DashboardPage() {
-  const { vehicle, settings, stats, monthlyTrends, providerStats, sessions } =
+export default async function MainPage() {
+  const { user, vehicle, settings, stats, monthlyTrends, providerStats, sessions } =
     await getDashboardData();
+
+  if (!user) {
+    return <LandingPage />;
+  }
 
   const sym = settings.currencySymbol || "$";
   const lang = (settings.language === "tr" ? "tr" : "en") as "en" | "tr";

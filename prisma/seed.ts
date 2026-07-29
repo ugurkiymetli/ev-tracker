@@ -12,8 +12,18 @@ async function ensureTablesExist() {
     });
 
     await client.executeMultiple(`
+      CREATE TABLE IF NOT EXISTS "User" (
+        "id" TEXT PRIMARY KEY,
+        "username" TEXT NOT NULL UNIQUE,
+        "email" TEXT UNIQUE,
+        "passwordHash" TEXT NOT NULL,
+        "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" DATETIME NOT NULL
+      );
+
       CREATE TABLE IF NOT EXISTS "Vehicle" (
         "id" TEXT PRIMARY KEY,
+        "userId" TEXT,
         "name" TEXT NOT NULL,
         "make" TEXT NOT NULL,
         "model" TEXT NOT NULL,
@@ -22,7 +32,8 @@ async function ensureTablesExist() {
         "initialOdometerKm" REAL NOT NULL DEFAULT 0,
         "currentOdometerKm" REAL NOT NULL DEFAULT 0,
         "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "updatedAt" DATETIME NOT NULL
+        "updatedAt" DATETIME NOT NULL,
+        FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE
       );
 
       CREATE TABLE IF NOT EXISTS "ChargingProvider" (
@@ -96,12 +107,18 @@ async function ensureTablesExist() {
       );
     `);
 
-    // Ensure odometerKm column is added if Expense table pre-existed without it
+    // Ensure columns are added if tables pre-existed
     try {
       await client.execute('ALTER TABLE "Expense" ADD COLUMN "odometerKm" REAL;');
-    } catch (e) {
-      // Column already exists
-    }
+    } catch (e) {}
+
+    try {
+      await client.execute('ALTER TABLE "Vehicle" ADD COLUMN "userId" TEXT;');
+    } catch (e) {}
+
+    try {
+      await client.execute('ALTER TABLE "Settings" ADD COLUMN "userId" TEXT;');
+    } catch (e) {}
 
     console.log("Turso tables and columns verified successfully!");
   }

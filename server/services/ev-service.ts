@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
+import { getCurrentUser } from "@/lib/auth/auth";
 import {
   calculateDashboardStats,
   calculateMonthlyTrends,
@@ -8,17 +9,29 @@ import { calculateIceComparison } from "../calculators/ice-comparison";
 import { ParsedChargingSessionRow } from "../importers/excel-importer";
 
 /**
- * Gets or initializes default vehicle and settings if none exist.
+ * Gets or initializes default vehicle and settings for current user session.
  */
 export async function getOrCreateDefaultVehicleAndSettings() {
-  let settings = await prisma.settings.findUnique({
-    where: { id: "default" },
-  });
+  const currentUser = await getCurrentUser();
+  const userId = currentUser?.id;
+
+  let settings = null;
+
+  if (userId) {
+    settings = await prisma.settings.findFirst({
+      where: { userId },
+    });
+  } else {
+    settings = await prisma.settings.findUnique({
+      where: { id: "default" },
+    });
+  }
 
   if (!settings) {
     settings = await prisma.settings.create({
       data: {
-        id: "default",
+        id: userId ? undefined : "default",
+        userId: userId || null,
         currencySymbol: "$",
         defaultFuelPricePerL: 1.85,
         defaultFuelConsumptionPer100km: 7.5,
@@ -33,6 +46,12 @@ export async function getOrCreateDefaultVehicleAndSettings() {
     });
   }
 
+  if (!vehicle && userId) {
+    vehicle = await prisma.vehicle.findFirst({
+      where: { userId },
+    });
+  }
+
   if (!vehicle) {
     vehicle = await prisma.vehicle.findFirst();
   }
@@ -40,6 +59,7 @@ export async function getOrCreateDefaultVehicleAndSettings() {
   if (!vehicle) {
     vehicle = await prisma.vehicle.create({
       data: {
+        userId: userId || null,
         name: "Tesla Model Y",
         make: "Tesla",
         model: "Model Y Long Range",
@@ -51,19 +71,19 @@ export async function getOrCreateDefaultVehicleAndSettings() {
     });
 
     await prisma.settings.update({
-      where: { id: "default" },
+      where: { id: settings.id },
       data: { activeVehicleId: vehicle.id },
     });
   }
 
-  return { vehicle, settings };
+  return { vehicle, settings, user: currentUser };
 }
 
 /**
  * Retrieves full dashboard analytics dataset.
  */
 export async function getDashboardData() {
-  const { vehicle, settings } = await getOrCreateDefaultVehicleAndSettings();
+  const { vehicle, settings, user } = await getOrCreateDefaultVehicleAndSettings();
 
   const sessions = await prisma.chargingSession.findMany({
     where: { vehicleId: vehicle.id },
@@ -93,6 +113,7 @@ export async function getDashboardData() {
   return {
     vehicle,
     settings,
+    user,
     sessions,
     expenses,
     stats,

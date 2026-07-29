@@ -5,6 +5,7 @@ import { LanguageProvider } from "@/components/layout/language-provider";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { getOrCreateDefaultVehicleAndSettings } from "@/server/services/ev-service";
+import { getCurrentUser } from "@/lib/auth/auth";
 
 export const revalidate = 0;
 
@@ -18,6 +19,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getCurrentUser();
   const { settings } = await getOrCreateDefaultVehicleAndSettings();
   const initialLanguage = settings.language || "en";
 
@@ -34,7 +36,7 @@ export default async function RootLayout({
       <body className="min-h-screen flex flex-col justify-between bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 transition-colors duration-300 font-sans antialiased">
         <ThemeProvider>
           <LanguageProvider initialLanguage={initialLanguage}>
-            <Header />
+            <Header user={user} />
             <main className="flex-grow max-w-6xl w-full mx-auto px-4 py-6 md:py-8">
               {children}
             </main>

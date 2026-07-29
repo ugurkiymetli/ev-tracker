@@ -1,9 +1,98 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db/prisma";
 import { getOrCreateDefaultVehicleAndSettings, importValidChargingSessions } from "@/server/services/ev-service";
 import { parseExcelFileBuffer } from "@/server/importers/excel-importer";
+import { hashPassword, verifyPassword, createAuthSession, destroyAuthSession } from "@/lib/auth/auth";
+
+export async function signUpAction(formData: FormData): Promise<{ error?: string }> {
+  const username = (formData.get("username") as string)?.trim();
+  const password = formData.get("password") as string;
+  const email = (formData.get("email") as string)?.trim() || null;
+
+  if (!username || username.length < 3) {
+    return { error: "Username must be at least 3 characters long." };
+  }
+  if (!password || password.length < 4) {
+    return { error: "Password must be at least 4 characters long." };
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { username },
+  });
+
+  if (existingUser) {
+    return { error: "Username is already taken." };
+  }
+
+  const passwordHash = hashPassword(password);
+  const user = await prisma.user.create({
+    data: {
+      username,
+      email,
+      passwordHash,
+    },
+  });
+
+  // Create default vehicle and settings for new user
+  const vehicle = await prisma.vehicle.create({
+    data: {
+      userId: user.id,
+      name: "My Electric Vehicle",
+      make: "Tesla",
+      model: "Model Y",
+      year: 2024,
+      batteryCapacityKwh: 75.0,
+      initialOdometerKm: 10000,
+      currentOdometerKm: 15000,
+    },
+  });
+
+  await prisma.settings.create({
+    data: {
+      id: user.id,
+      userId: user.id,
+      currencySymbol: "$",
+      defaultFuelPricePerL: 1.85,
+      defaultFuelConsumptionPer100km: 7.5,
+      language: "en",
+      activeVehicleId: vehicle.id,
+    },
+  });
+
+  await createAuthSession(user);
+  revalidatePath("/", "layout");
+  redirect("/");
+}
+
+export async function signInAction(formData: FormData): Promise<{ error?: string }> {
+  const username = (formData.get("username") as string)?.trim();
+  const password = formData.get("password") as string;
+
+  if (!username || !password) {
+    return { error: "Please enter both username and password." };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { username },
+  });
+
+  if (!user || !verifyPassword(password, user.passwordHash)) {
+    return { error: "Invalid username or password." };
+  }
+
+  await createAuthSession(user);
+  revalidatePath("/", "layout");
+  redirect("/");
+}
+
+export async function signOutAction(): Promise<void> {
+  await destroyAuthSession();
+  revalidatePath("/", "layout");
+  redirect("/");
+}
 
 export async function createChargingSessionAction(formData: FormData): Promise<void> {
   const { vehicle } = await getOrCreateDefaultVehicleAndSettings();

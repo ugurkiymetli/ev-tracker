@@ -2,7 +2,7 @@ export type Language = "en" | "tr";
 
 export const translations = {
   en: {
-    // Header & Footer & Navigation
+    // Header & Footer & Navigation & Auth
     appName: "EV Tracker",
     appTagline: "Ownership Analytics & Savings",
     navDashboard: "Dashboard",
@@ -14,6 +14,29 @@ export const translations = {
     footerLocalFirst: "Local-First & Private",
     footerSqliteEngine: "SQLite Engine",
     footerCopyright: "EV Tracker © Advanced Personal Ownership Analytics",
+    signIn: "Sign In",
+    signUp: "Sign Up",
+    signOut: "Sign Out",
+    username: "Username",
+    password: "Password",
+    confirmPassword: "Confirm Password",
+    emailOpt: "Email (Optional)",
+    signInTitle: "Sign in to EV Tracker",
+    signUpTitle: "Create your Account",
+    alreadyHaveAccount: "Already have an account?",
+    dontHaveAccount: "Don't have an account?",
+
+    // Landing Page
+    heroTitle: "Master Your EV Ownership Costs & Savings",
+    heroSubtitle: "Track charging history, driving efficiency, non-charging operating expenses, and exact lifetime savings compared to gasoline cars.",
+    getStartedFree: "Get Started Free",
+    viewDemo: "View Interactive Dashboard",
+    feature1Title: "Charging & Cost Analytics",
+    feature1Desc: "Categorize AC Level 2 and DC Fast chargers, monitor price trends, and break down costs by station network.",
+    feature2Title: "ICE Gasoline Savings",
+    feature2Desc: "Compare real EV charging costs against custom gasoline benchmarks to calculate net lifetime money saved and CO2 avoided.",
+    feature3Title: "Total Cost of Ownership (TCO)",
+    feature3Desc: "Log insurance, maintenance, taxes, tolls, and accessories for a 360-degree financial overview of your EV.",
 
     // Dashboard & Common Actions
     activeVehicle: "Active Vehicle",
@@ -161,7 +184,7 @@ export const translations = {
     confirmDeleteAll: "Are you sure you want to delete all charging sessions and expenses?",
   },
   tr: {
-    // Header & Footer & Navigation
+    // Header & Footer & Navigation & Auth
     appName: "EV Tracker",
     appTagline: "Sahiplik Analizi ve Tasarruf",
     navDashboard: "Panel",
@@ -173,6 +196,29 @@ export const translations = {
     footerLocalFirst: "Yerel ve Gizli Veri",
     footerSqliteEngine: "SQLite Motoru",
     footerCopyright: "EV Tracker © Gelişmiş Kişisel Sahiplik Analizleri",
+    signIn: "Giriş Yap",
+    signUp: "Kayıt Ol",
+    signOut: "Çıkış Yap",
+    username: "Kullanıcı Adı",
+    password: "Şifre",
+    confirmPassword: "Şifre Tekrarı",
+    emailOpt: "E-posta (Opsiyonel)",
+    signInTitle: "EV Tracker'a Giriş Yapın",
+    signUpTitle: "Hesabınızı Oluşturun",
+    alreadyHaveAccount: "Zaten hesabınız var mı?",
+    dontHaveAccount: "Hesabınız yok mu?",
+
+    // Landing Page
+    heroTitle: "Elektrikli Araç Sahiplik Maliyet ve Tasarruflarınızı Yönetin",
+    heroSubtitle: "Şarj geçmişinizi, sürüş verimliliğinizi, işletme giderlerinizi ve benzinli araçlara kıyasla net tasarrufunuzu takip edin.",
+    getStartedFree: "Ücretsiz Başlayın",
+    viewDemo: "Paneli İnceleyin",
+    feature1Title: "Şarj ve Maliyet Analizi",
+    feature1Desc: "AC ve DC hızlı şarj oturumlarınızı gruplayın, istasyon bazlı fiyat ve maliyet trendlerini takip edin.",
+    feature2Title: "Benzin Karşılaştırması",
+    feature2Desc: "Gerçek şarj giderlerinizi benzin fiyat ve tüketim referanslarıyla karşılaştırarak net tasarrufunuzu görün.",
+    feature3Title: "Toplam Sahiplik Maliyeti (TCO)",
+    feature3Desc: "Kasko, bakım, vergi, otopark ve aksesuar giderlerinizi kaydederek eksiksiz TCO analizi elde edin.",
 
     // Dashboard & Common Actions
     activeVehicle: "Aktif Araç",
