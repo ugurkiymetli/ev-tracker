@@ -114,16 +114,14 @@ export function Header({ user }: HeaderProps) {
               )
             )}
 
-            {!user && (
-              <button
-                onClick={toggleLanguage}
-                aria-label="Toggle Language"
-                className="px-2.5 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-900/80 border border-neutral-200 dark:border-neutral-800/80 text-neutral-700 dark:text-neutral-300 font-bold text-xs hover:text-neutral-900 dark:hover:text-white transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
-              >
-                <Globe className="w-3.5 h-3.5 text-emerald-500" />
-                <span className="uppercase">{language}</span>
-              </button>
-            )}
+            <button
+              onClick={toggleLanguage}
+              aria-label="Toggle Language"
+              className="px-2.5 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-900/80 border border-neutral-200 dark:border-neutral-800/80 text-neutral-700 dark:text-neutral-300 font-bold text-xs hover:text-neutral-900 dark:hover:text-white transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+            >
+              <Globe className="w-3.5 h-3.5 text-emerald-500" />
+              <span className="uppercase">{language}</span>
+            </button>
 
             <button
               onClick={toggleTheme}

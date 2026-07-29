@@ -31,7 +31,7 @@ export function SettingsForms({
   sessionsCount,
   providers = [],
 }: SettingsFormsProps) {
-  const { t } = useLanguage();
+  const { t, setLanguage } = useLanguage();
   const { toast } = useToast();
   const [savingApp, setSavingApp] = useState(false);
   const [savingVehicle, setSavingVehicle] = useState(false);
@@ -51,6 +51,10 @@ export function SettingsForms({
     setSavingApp(true);
     try {
       const formData = new FormData(e.currentTarget);
+      const newLang = formData.get("language") as "en" | "tr";
+      if (newLang && (newLang === "en" || newLang === "tr")) {
+        setLanguage(newLang);
+      }
       await updateSettingsAction(formData);
       toast({
         title: t("appSettingsSavedTitle"),
