@@ -1,6 +1,7 @@
 import { getDashboardData } from "@/server/services/ev-service";
 import { createExpenseAction, deleteExpenseAction } from "@/app/actions";
 import { Receipt, Plus, Trash2, Wrench, Shield, Car, Tag } from "lucide-react";
+import { Expense } from "@/types";
 
 export const revalidate = 0;
 
@@ -143,7 +144,7 @@ export default async function ExpensesPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60 font-medium">
-                    {expenses.map((expense) => {
+                    {expenses.map((expense: Expense) => {
                       const d = new Date(expense.date);
                       const dateStr = d.toLocaleDateString("en-US", {
                         month: "short",

@@ -3,6 +3,8 @@ import { ChargingSessionDialog } from "@/components/charging/charging-session-di
 import { deleteChargingSessionAction } from "@/app/actions";
 import { BatteryCharging, Trash2, Zap, Search, SlidersHorizontal } from "lucide-react";
 
+import { ChargingSession } from "@/types";
+
 export const revalidate = 0;
 
 export default async function ChargingPage() {
@@ -53,7 +55,7 @@ export default async function ChargingPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60 font-medium">
-                {sessions.map((session) => {
+                {sessions.map((session: ChargingSession) => {
                   const d = new Date(session.date);
                   const dateStr = d.toLocaleDateString("en-US", {
                     month: "short",
