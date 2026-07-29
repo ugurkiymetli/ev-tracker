@@ -4,7 +4,8 @@ import { KpiCard } from "@/components/dashboard/kpi-card";
 import { MonthlyTrendChart } from "@/components/dashboard/monthly-trend-chart";
 import { ProviderBreakdownChart } from "@/components/dashboard/provider-breakdown-chart";
 import { ChargingSessionDialog } from "@/components/charging/charging-session-dialog";
-import { seedDemoDataAction } from "@/app/actions";
+import { seedDemoDataAction, deleteAllDataAction } from "@/app/actions";
+import { translations } from "@/lib/i18n/translations";
 import {
   Zap,
   Gauge,
@@ -13,9 +14,8 @@ import {
   DollarSign,
   Compass,
   ArrowRight,
-  ShieldCheck,
   Cpu,
-  Layers,
+  Trash2,
 } from "lucide-react";
 
 export const revalidate = 0;
@@ -25,6 +25,8 @@ export default async function DashboardPage() {
     await getDashboardData();
 
   const sym = settings.currencySymbol || "$";
+  const lang = (settings.language === "tr" ? "tr" : "en") as "en" | "tr";
+  const t = (key: keyof typeof translations.en) => translations[lang][key] || translations.en[key];
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -33,7 +35,7 @@ export default async function DashboardPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 font-outfit uppercase">
-              Active Vehicle
+              {t("activeVehicle")}
             </span>
             <h2 className="text-xl font-extrabold text-neutral-900 dark:text-white font-outfit tracking-tight m-0">
               {vehicle.name}
@@ -45,16 +47,28 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <form action={seedDemoDataAction}>
             <button
               type="submit"
-              className="py-2.5 px-3.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 rounded-xl font-semibold text-xs transition-all border border-neutral-200 dark:border-neutral-700 flex items-center gap-1.5"
+              className="py-2.5 px-3 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 rounded-xl font-semibold text-xs transition-all border border-neutral-200 dark:border-neutral-700 flex items-center gap-1.5"
             >
               <Cpu className="w-3.5 h-3.5" />
-              <span>{sessions.length === 0 ? "Seed Demo Data" : "Reset Demo Data"}</span>
+              <span>{sessions.length === 0 ? t("seedDemoData") : t("resetDemoData")}</span>
             </button>
           </form>
+
+          {sessions.length > 0 && (
+            <form action={deleteAllDataAction}>
+              <button
+                type="submit"
+                title={t("deleteAllData")}
+                className="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 rounded-xl font-bold text-xs transition-all flex items-center gap-1"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </form>
+          )}
 
           <ChargingSessionDialog />
         </div>
@@ -63,36 +77,36 @@ export default async function DashboardPage() {
       {/* KPI Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
-          title="Avg Consumption"
+          title={t("avgConsumption")}
           value={`${stats.avgConsumptionKwh100km} kWh`}
-          subtitle="per 100 kilometers"
+          subtitle={t("per100km")}
           icon={Gauge}
           badgeText="Efficiency"
           badgeVariant="emerald"
         />
 
         <KpiCard
-          title="Cost per Km"
+          title={t("costPerKm")}
           value={`${sym}${stats.costPerKm.toFixed(3)}`}
-          subtitle={`${sym}${stats.costPer100km} / 100 km`}
+          subtitle={`${sym}${stats.costPer100km} ${t("per100kmValue")}`}
           icon={DollarSign}
           badgeText="Economy"
           badgeVariant="neutral"
         />
 
         <KpiCard
-          title="ICE Savings"
+          title={t("iceSavings")}
           value={`${sym}${stats.totalSavedVsIce.toLocaleString()}`}
-          subtitle="vs equivalent gas vehicle"
+          subtitle={t("vsGasVehicle")}
           icon={TrendingUp}
           badgeText="Net Saved"
           badgeVariant="emerald"
         />
 
         <KpiCard
-          title="Battery Cycles"
+          title={t("batteryCycles")}
           value={`${stats.estimatedBatteryCycles}`}
-          subtitle={`~${stats.estimatedRangeKm} km full range`}
+          subtitle={`~${stats.estimatedRangeKm} km ${t("fullRange")}`}
           icon={BatteryCharging}
           badgeText="Utilization"
           badgeVariant="amber"
@@ -107,10 +121,10 @@ export default async function DashboardPage() {
             <div className="flex items-center gap-2.5">
               <Zap className="w-5 h-5 text-neutral-900 dark:text-neutral-100" />
               <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 font-outfit m-0">
-                Monthly Energy & Cost Trends
+                {t("monthlyTrends")}
               </h3>
             </div>
-            <span className="text-xs text-neutral-500 font-medium">Cost vs kWh</span>
+            <span className="text-xs text-neutral-500 font-medium">{t("costVsKwh")}</span>
           </div>
 
           <MonthlyTrendChart data={monthlyTrends} currencySymbol={sym} />
@@ -122,10 +136,10 @@ export default async function DashboardPage() {
             <div className="flex items-center gap-2.5">
               <Compass className="w-5 h-5 text-neutral-900 dark:text-neutral-100" />
               <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 font-outfit m-0">
-                Charging Networks
+                {t("chargingNetworks")}
               </h3>
             </div>
-            <span className="text-xs text-neutral-500 font-medium">Top Providers</span>
+            <span className="text-xs text-neutral-500 font-medium">{t("topProviders")}</span>
           </div>
 
           <ProviderBreakdownChart data={providerStats} currencySymbol={sym} />
@@ -137,7 +151,7 @@ export default async function DashboardPage() {
         {/* AC vs DC Distribution */}
         <div className="bg-white dark:bg-neutral-900/40 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-md space-y-3">
           <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-outfit">
-            AC vs DC Charging Ratio
+            {t("acDcRatio")}
           </h4>
           <div className="flex items-center justify-between">
             <div className="text-sm font-semibold">
@@ -176,28 +190,28 @@ export default async function DashboardPage() {
             />
           </div>
           <div className="flex justify-between text-[10px] text-neutral-500 font-semibold uppercase">
-            <span>Level 2 / Home</span>
-            <span>Fast Chargers</span>
+            <span>{t("level2Home")}</span>
+            <span>{t("fastChargers")}</span>
           </div>
         </div>
 
         {/* Total Cost of Ownership */}
         <div className="bg-white dark:bg-neutral-900/40 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-md space-y-3">
           <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-outfit">
-            Total Cost of Ownership
+            {t("totalCostOwnership")}
           </h4>
           <div className="text-2xl font-extrabold text-neutral-900 dark:text-white font-outfit">
             {sym}{stats.totalOwnershipCost.toLocaleString()}
           </div>
           <div className="text-xs text-neutral-500 space-y-1">
             <div className="flex justify-between">
-              <span>Charging:</span>
+              <span>{t("chargingCost")}:</span>
               <span className="font-semibold text-neutral-800 dark:text-neutral-200">
                 {sym}{stats.totalChargingCost.toLocaleString()}
               </span>
             </div>
             <div className="flex justify-between">
-              <span>Expenses & Maintenance:</span>
+              <span>{t("expensesCost")}:</span>
               <span className="font-semibold text-neutral-800 dark:text-neutral-200">
                 {sym}{stats.totalExpensesCost.toLocaleString()}
               </span>
@@ -209,10 +223,10 @@ export default async function DashboardPage() {
         <div className="bg-white dark:bg-neutral-900/40 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-md flex flex-col justify-between space-y-3">
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-outfit">
-              Charging Log Status
+              {t("logStatus")}
             </h4>
             <div className="text-2xl font-extrabold text-neutral-900 dark:text-white font-outfit mt-1">
-              {stats.totalSessions} Sessions
+              {stats.totalSessions} {t("sessions")}
             </div>
             <p className="text-xs text-neutral-500 mt-1">
               Total {stats.totalEnergyChargedKwh.toLocaleString()} kWh charged across{" "}
@@ -224,7 +238,7 @@ export default async function DashboardPage() {
             href="/charging"
             className="text-xs font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1 hover:underline pt-2 border-t border-neutral-100 dark:border-neutral-800"
           >
-            <span>View Full Charging History</span>
+            <span>{t("viewFullHistory")}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>

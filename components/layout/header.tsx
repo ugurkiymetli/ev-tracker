@@ -4,18 +4,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Zap, LayoutDashboard, BatteryCharging, Receipt, TrendingUp, UploadCloud, Settings, Sun, Moon } from "lucide-react";
 import { useTheme } from "./theme-provider";
+import { useLanguage } from "./language-provider";
 
 export function Header() {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
 
   const navItems = [
-    { href: "/", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/charging", label: "Charging", icon: BatteryCharging },
-    { href: "/expenses", label: "Expenses", icon: Receipt },
-    { href: "/ice-comparison", label: "ICE Savings", icon: TrendingUp },
-    { href: "/import", label: "Import", icon: UploadCloud },
-    { href: "/settings", label: "Settings", icon: Settings },
+    { href: "/", label: t("navDashboard"), icon: LayoutDashboard },
+    { href: "/charging", label: t("navCharging"), icon: BatteryCharging },
+    { href: "/expenses", label: t("navExpenses"), icon: Receipt },
+    { href: "/ice-comparison", label: t("navIceComparison"), icon: TrendingUp },
+    { href: "/import", label: t("navImport"), icon: UploadCloud },
+    { href: "/settings", label: t("navSettings"), icon: Settings },
   ];
 
   return (
@@ -28,10 +30,10 @@ export function Header() {
           </div>
           <div>
             <h1 className="text-xl font-extrabold text-neutral-900 dark:text-white tracking-tight font-outfit m-0 leading-none uppercase">
-              EV Tracker
+              {t("appName")}
             </h1>
             <p className="text-[10px] text-neutral-500 dark:text-neutral-400 font-semibold tracking-wider uppercase mt-1">
-              Ownership Analytics & Savings
+              {t("appTagline")}
             </p>
           </div>
         </Link>

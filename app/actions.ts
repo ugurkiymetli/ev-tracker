@@ -134,6 +134,7 @@ export async function updateSettingsAction(formData: FormData): Promise<void> {
   const currencySymbol = (formData.get("currencySymbol") as string) || "$";
   const defaultFuelPricePerL = parseFloat(formData.get("defaultFuelPricePerL") as string) || 1.85;
   const defaultFuelConsumptionPer100km = parseFloat(formData.get("defaultFuelConsumptionPer100km") as string) || 7.5;
+  const language = (formData.get("language") as string) || "en";
   const vehicleName = (formData.get("vehicleName") as string)?.trim();
   const batteryCapacityKwh = parseFloat(formData.get("batteryCapacityKwh") as string);
   const initialOdometerKm = parseFloat(formData.get("initialOdometerKm") as string);
@@ -147,6 +148,7 @@ export async function updateSettingsAction(formData: FormData): Promise<void> {
       currencySymbol,
       defaultFuelPricePerL,
       defaultFuelConsumptionPer100km,
+      language,
     },
   });
 
@@ -162,9 +164,29 @@ export async function updateSettingsAction(formData: FormData): Promise<void> {
     });
   }
 
-  revalidatePath("/");
-  revalidatePath("/settings");
-  revalidatePath("/ice-comparison");
+  try {
+    revalidatePath("/");
+    revalidatePath("/settings");
+    revalidatePath("/charging");
+    revalidatePath("/expenses");
+    revalidatePath("/ice-comparison");
+  } catch (e) {}
+}
+
+export async function deleteAllDataAction(): Promise<void> {
+  const { vehicle } = await getOrCreateDefaultVehicleAndSettings();
+
+  await prisma.chargingSession.deleteMany({ where: { vehicleId: vehicle.id } });
+  await prisma.expense.deleteMany({ where: { vehicleId: vehicle.id } });
+  await prisma.trip.deleteMany({ where: { vehicleId: vehicle.id } });
+
+  try {
+    revalidatePath("/");
+    revalidatePath("/charging");
+    revalidatePath("/expenses");
+    revalidatePath("/ice-comparison");
+    revalidatePath("/settings");
+  } catch (e) {}
 }
 
 export async function seedDemoDataAction(): Promise<void> {

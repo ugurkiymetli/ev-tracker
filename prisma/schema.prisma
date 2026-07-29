@@ -91,6 +91,7 @@ model Settings {
   currencySymbol                   String   @default("$")
   defaultFuelPricePerL             Float    @default(1.85) // ICE comparison baseline
   defaultFuelConsumptionPer100km  Float    @default(7.5)  // ICE l/100km baseline
+  language                         String   @default("en") // "en" | "tr"
   activeVehicleId                  String?
   createdAt                        DateTime @default(now())
   updatedAt                        DateTime @updatedAt

@@ -61,6 +61,7 @@ export interface Settings {
   currencySymbol: string;
   defaultFuelPricePerL: number;
   defaultFuelConsumptionPer100km: number;
+  language: string;
   activeVehicleId?: string | null;
 }
 
