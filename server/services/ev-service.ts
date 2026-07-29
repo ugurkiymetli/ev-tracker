@@ -76,9 +76,12 @@ export async function getDashboardData() {
     orderBy: { date: "desc" },
   });
 
+  const lang = settings.language || "en";
+  const locale = lang === "tr" ? "tr-TR" : "en-US";
+
   const stats = calculateDashboardStats(vehicle, sessions, expenses, settings);
-  const monthlyTrends = calculateMonthlyTrends(sessions);
-  const providerStats = calculateProviderStats(sessions);
+  const monthlyTrends = calculateMonthlyTrends(sessions, locale);
+  const providerStats = calculateProviderStats(sessions, lang);
 
   const iceComparison = calculateIceComparison({
     distanceDrivenKm: stats.totalDistanceDrivenKm,

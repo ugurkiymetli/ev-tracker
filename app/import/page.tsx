@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { UploadCloud, FileSpreadsheet, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import { UploadCloud, FileSpreadsheet, CheckCircle2 } from "lucide-react";
 import { importExcelAction } from "@/app/actions";
+import { useLanguage } from "@/components/layout/language-provider";
 
 export default function ImportPage() {
   const [loading, setLoading] = useState(false);
@@ -11,6 +12,7 @@ export default function ImportPage() {
     importedCount: number;
     failedCount: number;
   } | null>(null);
+  const { t, language } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,10 +34,10 @@ export default function ImportPage() {
     <div className="space-y-6 max-w-4xl mx-auto animate-fade-in">
       <div>
         <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-white font-outfit tracking-tight">
-          Import Charging History
+          {t("importTitle")}
         </h2>
         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-          Upload your existing Excel (`.xlsx`, `.xls`) or `.csv` charging spreadsheets into EV Tracker.
+          {t("importDesc")}
         </p>
       </div>
 
@@ -64,9 +66,9 @@ export default function ImportPage() {
                 </div>
                 <div>
                   <p id="file-label" className="text-sm font-bold text-neutral-900 dark:text-white">
-                    Click to select Excel / CSV file
+                    {t("clickToUpload")}
                   </p>
-                  <p className="text-xs text-neutral-400 mt-1">Supports .xlsx, .xls, and .csv formats</p>
+                  <p className="text-xs text-neutral-400 mt-1">{t("supportsFormats")}</p>
                 </div>
               </label>
             </div>
@@ -74,10 +76,10 @@ export default function ImportPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3 px-4 bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 rounded-xl font-bold text-sm shadow-md hover:shadow-lg active:scale-[0.99] transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
             >
               <UploadCloud className="w-4 h-4" />
-              <span>{loading ? "Parsing & Importing..." : "Start Import Pipeline"}</span>
+              <span>{loading ? t("parsing") : t("startImport")}</span>
             </button>
           </form>
 
@@ -86,16 +88,13 @@ export default function ImportPage() {
             <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs space-y-2 animate-fade-in">
               <div className="flex items-center gap-2 font-bold text-sm font-outfit">
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Import Completed Successfully</span>
+                <span>{t("importCompleted")}</span>
               </div>
               <p>
-                Processed {result.totalRows} total rows: <strong>{result.importedCount} valid sessions imported</strong> to your vehicle profile.
+                {language === "tr"
+                  ? `Toplam ${result.totalRows} satır işlendi: ${result.importedCount} geçerli şarj oturumu aracınıza aktarıldı.`
+                  : `Processed ${result.totalRows} total rows: ${result.importedCount} valid sessions imported to your vehicle profile.`}
               </p>
-              {result.failedCount > 0 && (
-                <p className="text-amber-600 dark:text-amber-400">
-                  ⚠️ {result.failedCount} rows were skipped due to missing date or negative energy values.
-                </p>
-              )}
             </div>
           )}
         </section>
@@ -103,39 +102,35 @@ export default function ImportPage() {
         {/* Guidelines Card */}
         <section className="bg-white dark:bg-neutral-900/40 p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-md space-y-4">
           <h3 className="text-sm font-bold text-neutral-900 dark:text-white font-outfit uppercase tracking-wider">
-            Expected Headers
+            {t("expectedHeaders")}
           </h3>
 
           <p className="text-xs text-neutral-500">
-            The import engine automatically maps common column names. Ensure your sheet includes:
+            {t("expectedHeadersDesc")}
           </p>
 
           <ul className="text-xs space-y-2 text-neutral-700 dark:text-neutral-300 font-medium">
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 dark:bg-neutral-100" />
-              <span><strong>Date:</strong> Date, Charging Date, Tarih</span>
+              <span><strong>{t("tableDate")}:</strong> Date, Charging Date, Tarih</span>
             </li>
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 dark:bg-neutral-100" />
-              <span><strong>Energy:</strong> kWh, Energy (kWh), Enerji</span>
+              <span><strong>{t("tableEnergy")}:</strong> kWh, Energy (kWh), Enerji</span>
             </li>
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 dark:bg-neutral-100" />
-              <span><strong>Cost:</strong> Cost ($), Price, Maliyet, Tutar</span>
+              <span><strong>{t("tableCost")}:</strong> Cost ($), Price, Maliyet, Tutar</span>
             </li>
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 dark:bg-neutral-100" />
-              <span><strong>Type:</strong> AC, DC, Fast, Tip</span>
+              <span><strong>{t("tableType")}:</strong> AC, DC, Fast, Tip</span>
             </li>
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 dark:bg-neutral-100" />
-              <span><strong>Provider:</strong> Provider, Network, İstasyon</span>
+              <span><strong>{t("tableProvider")}:</strong> Provider, Network, İstasyon</span>
             </li>
           </ul>
-
-          <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800 text-[11px] text-neutral-400">
-            Invalid rows are automatically reported and will not break valid imports.
-          </div>
         </section>
       </div>
     </div>

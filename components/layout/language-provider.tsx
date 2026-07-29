@@ -22,18 +22,30 @@ export function LanguageProvider({
   initialLanguage?: string;
   children: React.ReactNode;
 }) {
-  const [language, setLanguageState] = useState<Language>(
-    (initialLanguage as Language) || "en"
-  );
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("ev_tracker_lang") as Language;
+      if (stored === "en" || stored === "tr") return stored;
+    }
+    return (initialLanguage as Language) || "en";
+  });
 
   useEffect(() => {
     if (initialLanguage && (initialLanguage === "en" || initialLanguage === "tr")) {
       setLanguageState(initialLanguage as Language);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("ev_tracker_lang", initialLanguage);
+        document.cookie = `ev_tracker_lang=${initialLanguage}; path=/; max-age=31536000; SameSite=Lax`;
+      }
     }
   }, [initialLanguage]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("ev_tracker_lang", lang);
+      document.cookie = `ev_tracker_lang=${lang}; path=/; max-age=31536000; SameSite=Lax`;
+    }
   };
 
   const t = (key: keyof typeof translations.en): string => {

@@ -11,6 +11,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { MonthlyTrendPoint } from "@/types";
+import { useLanguage } from "@/components/layout/language-provider";
 
 interface MonthlyTrendChartProps {
   data: MonthlyTrendPoint[];
@@ -18,10 +19,12 @@ interface MonthlyTrendChartProps {
 }
 
 export function MonthlyTrendChart({ data, currencySymbol = "$" }: MonthlyTrendChartProps) {
+  const { t } = useLanguage();
+
   if (!data || data.length === 0) {
     return (
       <div className="h-64 flex items-center justify-center text-neutral-400 dark:text-neutral-500 text-sm font-medium">
-        No charging trend data available yet. Log charging sessions or seed demo data.
+        {t("noChartData")}
       </div>
     );
   }
@@ -63,19 +66,19 @@ export function MonthlyTrendChart({ data, currencySymbol = "$" }: MonthlyTrendCh
                       {item.monthLabel}
                     </p>
                     <div className="flex justify-between gap-4 text-neutral-600 dark:text-neutral-300">
-                      <span>Total Cost:</span>
+                      <span>{t("totalCostLabel")}</span>
                       <span className="font-bold text-neutral-900 dark:text-white">
                         {currencySymbol}{item.cost.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between gap-4 text-neutral-600 dark:text-neutral-300">
-                      <span>Energy Charged:</span>
+                      <span>{t("energyChargedLabel")}</span>
                       <span className="font-bold text-neutral-900 dark:text-white">
                         {item.energyKwh} kWh
                       </span>
                     </div>
                     <div className="flex justify-between gap-4 text-neutral-600 dark:text-neutral-300">
-                      <span>Avg Price:</span>
+                      <span>{t("avgPriceLabel")}</span>
                       <span className="font-bold text-neutral-900 dark:text-white">
                         {currencySymbol}{item.avgPricePerKwh}/kWh
                       </span>

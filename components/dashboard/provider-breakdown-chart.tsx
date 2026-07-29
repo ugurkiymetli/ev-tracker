@@ -2,6 +2,7 @@
 
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { ProviderStatPoint } from "@/types";
+import { useLanguage } from "@/components/layout/language-provider";
 
 interface ProviderBreakdownChartProps {
   data: ProviderStatPoint[];
@@ -12,10 +13,12 @@ export function ProviderBreakdownChart({
   data,
   currencySymbol = "$",
 }: ProviderBreakdownChartProps) {
+  const { t } = useLanguage();
+
   if (!data || data.length === 0) {
     return (
       <div className="h-64 flex items-center justify-center text-neutral-400 dark:text-neutral-500 text-sm font-medium">
-        No provider breakdown data available.
+        {t("noProviderData")}
       </div>
     );
   }
@@ -54,19 +57,19 @@ export function ProviderBreakdownChart({
                       {item.providerName}
                     </p>
                     <div className="flex justify-between gap-4 text-neutral-600 dark:text-neutral-300">
-                      <span>Total Cost:</span>
+                      <span>{t("totalCostLabel")}</span>
                       <span className="font-bold text-neutral-900 dark:text-white">
                         {currencySymbol}{item.totalCost.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between gap-4 text-neutral-600 dark:text-neutral-300">
-                      <span>Sessions Count:</span>
+                      <span>{t("sessionsCountLabel")}</span>
                       <span className="font-bold text-neutral-900 dark:text-white">
-                        {item.sessionsCount} sessions
+                        {item.sessionsCount} {t("sessionsCount").toLowerCase()}
                       </span>
                     </div>
                     <div className="flex justify-between gap-4 text-neutral-600 dark:text-neutral-300">
-                      <span>Avg Price/kWh:</span>
+                      <span>{t("avgPriceLabel")}</span>
                       <span className="font-bold text-neutral-900 dark:text-white">
                         {currencySymbol}{item.avgPricePerKwh}
                       </span>

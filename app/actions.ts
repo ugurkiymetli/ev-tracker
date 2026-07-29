@@ -60,6 +60,62 @@ export async function createChargingSessionAction(formData: FormData): Promise<v
   revalidatePath("/charging");
 }
 
+export async function updateChargingSessionAction(formData: FormData): Promise<void> {
+  const sessionId = formData.get("sessionId") as string;
+  const dateStr = formData.get("date") as string;
+  const energyChargedKwh = parseFloat(formData.get("energyChargedKwh") as string);
+  const cost = parseFloat(formData.get("cost") as string);
+  const chargingType = (formData.get("chargingType") as string) || "AC";
+  const providerName = (formData.get("providerName") as string)?.trim();
+  const odometerKmStr = formData.get("odometerKm") as string;
+  const location = (formData.get("location") as string)?.trim();
+  const notes = (formData.get("notes") as string)?.trim();
+
+  if (!sessionId || !dateStr || isNaN(energyChargedKwh) || isNaN(cost) || energyChargedKwh <= 0) {
+    throw new Error("Invalid session update data");
+  }
+
+  let providerId: string | null = null;
+  if (providerName) {
+    const provider = await prisma.chargingProvider.upsert({
+      where: { name: providerName },
+      update: {},
+      create: { name: providerName, type: chargingType === "DC" ? "FAST_CHARGER" : "PUBLIC" },
+    });
+    providerId = provider.id;
+  }
+
+  const pricePerKwh = cost / energyChargedKwh;
+  const odometerKm = odometerKmStr ? parseFloat(odometerKmStr) : null;
+
+  await prisma.chargingSession.update({
+    where: { id: sessionId },
+    data: {
+      providerId,
+      date: new Date(dateStr),
+      energyChargedKwh,
+      cost,
+      pricePerKwh: Number(pricePerKwh.toFixed(4)),
+      chargingType,
+      odometerKm,
+      location,
+      notes,
+    },
+  });
+
+  const { vehicle } = await getOrCreateDefaultVehicleAndSettings();
+  if (odometerKm && odometerKm > vehicle.currentOdometerKm) {
+    await prisma.vehicle.update({
+      where: { id: vehicle.id },
+      data: { currentOdometerKm: odometerKm },
+    });
+  }
+
+  revalidatePath("/");
+  revalidatePath("/charging");
+  revalidatePath("/ice-comparison");
+}
+
 export async function deleteChargingSessionAction(id: string): Promise<void> {
   await prisma.chargingSession.delete({ where: { id } });
   revalidatePath("/");
@@ -131,16 +187,28 @@ export async function importExcelAction(formData: FormData) {
 }
 
 export async function updateSettingsAction(formData: FormData): Promise<void> {
-  const currencySymbol = (formData.get("currencySymbol") as string) || "$";
-  const defaultFuelPricePerL = parseFloat(formData.get("defaultFuelPricePerL") as string) || 1.85;
-  const defaultFuelConsumptionPer100km = parseFloat(formData.get("defaultFuelConsumptionPer100km") as string) || 7.5;
-  const language = (formData.get("language") as string) || "en";
+  const { vehicle, settings } = await getOrCreateDefaultVehicleAndSettings();
+
+  const currencySymbol = formData.has("currencySymbol")
+    ? ((formData.get("currencySymbol") as string)?.trim() || settings.currencySymbol)
+    : settings.currencySymbol;
+
+  const defaultFuelPricePerL = formData.has("defaultFuelPricePerL")
+    ? (parseFloat(formData.get("defaultFuelPricePerL") as string) || settings.defaultFuelPricePerL)
+    : settings.defaultFuelPricePerL;
+
+  const defaultFuelConsumptionPer100km = formData.has("defaultFuelConsumptionPer100km")
+    ? (parseFloat(formData.get("defaultFuelConsumptionPer100km") as string) || settings.defaultFuelConsumptionPer100km)
+    : settings.defaultFuelConsumptionPer100km;
+
+  const language = formData.has("language")
+    ? ((formData.get("language") as string) || settings.language)
+    : settings.language;
+
   const vehicleName = (formData.get("vehicleName") as string)?.trim();
   const batteryCapacityKwh = parseFloat(formData.get("batteryCapacityKwh") as string);
   const initialOdometerKm = parseFloat(formData.get("initialOdometerKm") as string);
   const currentOdometerKm = parseFloat(formData.get("currentOdometerKm") as string);
-
-  const { vehicle } = await getOrCreateDefaultVehicleAndSettings();
 
   await prisma.settings.update({
     where: { id: "default" },
@@ -165,6 +233,7 @@ export async function updateSettingsAction(formData: FormData): Promise<void> {
   }
 
   try {
+    revalidatePath("/", "layout");
     revalidatePath("/");
     revalidatePath("/settings");
     revalidatePath("/charging");

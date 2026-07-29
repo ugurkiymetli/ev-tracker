@@ -1,19 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, X, BatteryCharging } from "lucide-react";
-import { createChargingSessionAction } from "@/app/actions";
+import { Plus, Pencil, X, BatteryCharging } from "lucide-react";
+import { createChargingSessionAction, updateChargingSessionAction } from "@/app/actions";
+import { useLanguage } from "@/components/layout/language-provider";
+import { ChargingSession } from "@/types";
 
-export function ChargingSessionDialog() {
+interface ChargingSessionDialogProps {
+  session?: ChargingSession;
+}
+
+export function ChargingSessionDialog({ session }: ChargingSessionDialogProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { t } = useLanguage();
+
+  const isEdit = Boolean(session);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     try {
       const formData = new FormData(e.currentTarget);
-      await createChargingSessionAction(formData);
+      if (isEdit) {
+        await updateChargingSessionAction(formData);
+      } else {
+        await createChargingSessionAction(formData);
+      }
       setOpen(false);
     } catch (err) {
       alert("Failed to save charging session. Please check your inputs.");
@@ -23,45 +36,62 @@ export function ChargingSessionDialog() {
   };
 
   const todayStr = new Date().toISOString().split("T")[0];
+  const initialDateStr = session?.date
+    ? new Date(session.date).toISOString().split("T")[0]
+    : todayStr;
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="py-2.5 px-4 bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-2 active:scale-[0.99]"
-      >
-        <Plus className="w-4 h-4" />
-        <span>Log Session</span>
-      </button>
+      {isEdit ? (
+        <button
+          onClick={() => setOpen(true)}
+          title={t("editSession")}
+          className="p-1.5 text-neutral-400 hover:text-neutral-900 dark:hover:text-white rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all cursor-pointer"
+        >
+          <Pencil className="w-4 h-4" />
+        </button>
+      ) : (
+        <button
+          onClick={() => setOpen(true)}
+          className="py-2.5 px-4 bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 rounded-xl font-bold text-xs shadow-md hover:shadow-lg active:scale-[0.99] transition-all flex items-center gap-2 cursor-pointer"
+        >
+          <Plus className="w-4 h-4" />
+          <span>{t("logSession")}</span>
+        </button>
+      )}
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in text-left font-sans">
           <div className="bg-white dark:bg-neutral-900 w-full max-w-lg rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-2xl p-6 space-y-6">
             <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-800">
               <div className="flex items-center gap-2.5">
                 <BatteryCharging className="w-5 h-5 text-neutral-900 dark:text-neutral-100" />
                 <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 font-outfit m-0">
-                  Log Charging Session
+                  {isEdit ? t("editModalTitle") : t("logModalTitle")}
                 </h3>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="p-1 rounded-lg text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                className="p-1 rounded-lg text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {isEdit && session && (
+                <input type="hidden" name="sessionId" value={session.id} />
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-                    Date
+                    {t("fieldDate")}
                   </label>
                   <input
                     type="date"
                     name="date"
-                    defaultValue={todayStr}
+                    defaultValue={initialDateStr}
                     required
                     className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
                   />
@@ -69,15 +99,15 @@ export function ChargingSessionDialog() {
 
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-                    Type
+                    {t("fieldType")}
                   </label>
                   <select
                     name="chargingType"
-                    defaultValue="AC"
+                    defaultValue={session?.chargingType || "AC"}
                     className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
                   >
-                    <option value="AC">AC (Level 2 / Home)</option>
-                    <option value="DC">DC (Fast Charger / Supercharger)</option>
+                    <option value="AC">{t("optAc")}</option>
+                    <option value="DC">{t("optDc")}</option>
                   </select>
                 </div>
               </div>
@@ -85,12 +115,13 @@ export function ChargingSessionDialog() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-                    Energy (kWh)
+                    {t("fieldEnergy")}
                   </label>
                   <input
                     type="number"
                     step="0.1"
                     name="energyChargedKwh"
+                    defaultValue={session?.energyChargedKwh ?? ""}
                     placeholder="45.5"
                     required
                     className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
@@ -99,12 +130,13 @@ export function ChargingSessionDialog() {
 
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-                    Total Cost ($)
+                    {t("fieldCost")}
                   </label>
                   <input
                     type="number"
                     step="0.01"
                     name="cost"
+                    defaultValue={session?.cost ?? ""}
                     placeholder="12.50"
                     required
                     className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
@@ -115,24 +147,26 @@ export function ChargingSessionDialog() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-                    Provider / Network
+                    {t("fieldProvider")}
                   </label>
                   <input
                     type="text"
                     name="providerName"
-                    placeholder="Supercharger / Home"
+                    defaultValue={session?.provider?.name || session?.location || ""}
+                    placeholder={t("placeholderProvider")}
                     className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
                   />
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-                    Odometer (km)
+                    {t("fieldOdometer")}
                   </label>
                   <input
                     type="number"
                     name="odometerKm"
-                    placeholder="18500"
+                    defaultValue={session?.odometerKm ?? ""}
+                    placeholder={t("placeholderOdometer")}
                     className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
                   />
                 </div>
@@ -140,12 +174,13 @@ export function ChargingSessionDialog() {
 
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-                  Location & Notes
+                  {t("fieldNotes")}
                 </label>
                 <input
                   type="text"
                   name="notes"
-                  placeholder="Optional notes or station location..."
+                  defaultValue={session?.notes || ""}
+                  placeholder={t("placeholderNotes")}
                   className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
                 />
               </div>
@@ -154,16 +189,16 @@ export function ChargingSessionDialog() {
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-xl font-semibold text-xs transition-all"
+                  className="py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-xl font-semibold text-xs transition-all cursor-pointer"
                 >
-                  Cancel
+                  {t("cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="py-2.5 px-5 bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 rounded-xl font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                  className="py-2.5 px-5 bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 rounded-xl font-bold text-xs shadow-md hover:shadow-lg active:scale-[0.99] transition-all disabled:opacity-50 cursor-pointer"
                 >
-                  {loading ? "Saving..." : "Save Session"}
+                  {loading ? t("saving") : isEdit ? t("updateSession") : t("saveSession")}
                 </button>
               </div>
             </form>

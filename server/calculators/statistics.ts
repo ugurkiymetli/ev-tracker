@@ -53,10 +53,11 @@ export function calculateEstimatedRange(
 }
 
 /**
- * Aggregates monthly trends from charging sessions.
+ * Aggregates monthly trends from charging sessions with locale support.
  */
 export function calculateMonthlyTrends(
-  sessions: ChargingSession[]
+  sessions: ChargingSession[],
+  locale: string = "en-US"
 ): MonthlyTrendPoint[] {
   const map = new Map<string, { energyKwh: number; cost: number; count: number; date: Date }>();
 
@@ -81,7 +82,7 @@ export function calculateMonthlyTrends(
 
   return sortedKeys.map((key) => {
     const item = map.get(key)!;
-    const monthLabel = item.date.toLocaleDateString("en-US", {
+    const monthLabel = item.date.toLocaleDateString(locale, {
       month: "short",
       year: "numeric",
     });
@@ -99,15 +100,20 @@ export function calculateMonthlyTrends(
 }
 
 /**
- * Aggregates stats by charging provider.
+ * Aggregates stats by charging provider with localized unknown fallback.
  */
 export function calculateProviderStats(
-  sessions: ChargingSession[]
+  sessions: ChargingSession[],
+  lang: string = "en"
 ): ProviderStatPoint[] {
   const map = new Map<string, { count: number; energy: number; cost: number }>();
+  const unknownFallback = lang === "tr" ? "Bilinmeyen İstasyon" : "Unknown Provider";
 
   sessions.forEach((s) => {
-    const providerName = s.provider?.name || s.location || "Unknown Provider";
+    let providerName = s.provider?.name || s.location || unknownFallback;
+    if (providerName === "Unknown Provider" && lang === "tr") {
+      providerName = "Bilinmeyen İstasyon";
+    }
     const existing = map.get(providerName) || { count: 0, energy: 0, cost: 0 };
     existing.count += 1;
     existing.energy += s.energyChargedKwh;

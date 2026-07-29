@@ -6,6 +6,8 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { getOrCreateDefaultVehicleAndSettings } from "@/server/services/ev-service";
 
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "EV Tracker | EV Ownership Analytics & Dashboards",
   description: "Local-first electric vehicle ownership platform for charging, efficiency, operating costs, and ICE savings analytics.",

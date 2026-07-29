@@ -1,15 +1,17 @@
 import { getDashboardData } from "@/server/services/ev-service";
 import { ChargingSessionDialog } from "@/components/charging/charging-session-dialog";
 import { deleteChargingSessionAction } from "@/app/actions";
-import { BatteryCharging, Trash2, Zap, Search, SlidersHorizontal } from "lucide-react";
-
+import { BatteryCharging, Trash2, Zap } from "lucide-react";
 import { ChargingSession } from "@/types";
+import { translations } from "@/lib/i18n/translations";
 
 export const revalidate = 0;
 
 export default async function ChargingPage() {
   const { sessions, settings } = await getDashboardData();
   const sym = settings.currencySymbol || "$";
+  const lang = (settings.language === "tr" ? "tr" : "en") as "en" | "tr";
+  const t = (key: keyof typeof translations.en) => translations[lang][key] || translations.en[key];
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -17,10 +19,10 @@ export default async function ChargingPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-white font-outfit tracking-tight">
-            Charging History & Sessions
+            {t("chargingHistoryTitle")}
           </h2>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-            Detailed log of all AC level 2 and DC fast charging sessions.
+            {t("chargingHistoryDesc")}
           </p>
         </div>
 
@@ -33,10 +35,10 @@ export default async function ChargingPage() {
           <div className="text-center py-12 space-y-3">
             <BatteryCharging className="w-12 h-12 text-neutral-400 dark:text-neutral-600 mx-auto" />
             <h3 className="text-base font-bold text-neutral-800 dark:text-neutral-200 font-outfit">
-              No Charging Sessions Logged Yet
+              {t("noSessionsYet")}
             </h3>
             <p className="text-xs text-neutral-500 max-w-sm mx-auto">
-              Click &quot;Log Session&quot; above to manually add your first charge, or import your Excel charging logs from the Import tab.
+              {t("noSessionsDesc")}
             </p>
           </div>
         ) : (
@@ -44,20 +46,20 @@ export default async function ChargingPage() {
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="border-b border-neutral-200 dark:border-neutral-800 text-neutral-400 dark:text-neutral-500 font-bold uppercase tracking-wider">
-                  <th className="pb-3 px-3">Date</th>
-                  <th className="pb-3 px-3">Provider / Location</th>
-                  <th className="pb-3 px-3">Type</th>
-                  <th className="pb-3 px-3">Energy (kWh)</th>
-                  <th className="pb-3 px-3">Cost</th>
-                  <th className="pb-3 px-3">Price / kWh</th>
-                  <th className="pb-3 px-3">Odometer</th>
-                  <th className="pb-3 px-3 text-right">Action</th>
+                  <th className="pb-3 px-3">{t("tableDate")}</th>
+                  <th className="pb-3 px-3">{t("tableProvider")}</th>
+                  <th className="pb-3 px-3">{t("tableType")}</th>
+                  <th className="pb-3 px-3">{t("tableEnergy")}</th>
+                  <th className="pb-3 px-3">{t("tableCost")}</th>
+                  <th className="pb-3 px-3">{t("tablePricePerKwh")}</th>
+                  <th className="pb-3 px-3">{t("tableOdometer")}</th>
+                  <th className="pb-3 px-3 text-right">{t("tableAction")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60 font-medium">
                 {sessions.map((session: ChargingSession) => {
                   const d = new Date(session.date);
-                  const dateStr = d.toLocaleDateString("en-US", {
+                  const dateStr = d.toLocaleDateString(lang === "tr" ? "tr-TR" : "en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
@@ -105,15 +107,18 @@ export default async function ChargingPage() {
                         {session.odometerKm ? `${session.odometerKm.toLocaleString()} km` : "—"}
                       </td>
                       <td className="py-3.5 px-3 text-right">
-                        <form action={deleteChargingSessionAction.bind(null, session.id)}>
-                          <button
-                            type="submit"
-                            title="Delete Session"
-                            className="p-1.5 text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-500/10 transition-all"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </form>
+                        <div className="flex items-center justify-end gap-1">
+                          <ChargingSessionDialog session={session} />
+                          <form action={deleteChargingSessionAction.bind(null, session.id)}>
+                            <button
+                              type="submit"
+                              title="Delete Session"
+                              className="p-1.5 text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-500/10 transition-all cursor-pointer"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </form>
+                        </div>
                       </td>
                     </tr>
                   );

@@ -1,24 +1,38 @@
 import { getDashboardData } from "@/server/services/ev-service";
 import { createExpenseAction, deleteExpenseAction } from "@/app/actions";
-import { Receipt, Plus, Trash2, Wrench, Shield, Car, Tag } from "lucide-react";
+import { Receipt, Plus, Trash2 } from "lucide-react";
 import { Expense } from "@/types";
+import { translations } from "@/lib/i18n/translations";
 
 export const revalidate = 0;
 
 export default async function ExpensesPage() {
   const { expenses, settings, stats } = await getDashboardData();
   const sym = settings.currencySymbol || "$";
+  const lang = (settings.language === "tr" ? "tr" : "en") as "en" | "tr";
+  const t = (key: keyof typeof translations.en) => translations[lang][key] || translations.en[key];
 
   const todayStr = new Date().toISOString().split("T")[0];
+
+  const getCategoryLabel = (cat: string) => {
+    switch (cat) {
+      case "MAINTENANCE": return t("catMaintenance");
+      case "INSURANCE": return t("catInsurance");
+      case "TAX": return t("catTax");
+      case "PARKING": return t("catParking");
+      case "ACCESSORY": return t("catAccessory");
+      default: return t("catOther");
+    }
+  };
 
   return (
     <div className="space-y-6 animate-fade-in max-w-5xl mx-auto">
       <div>
         <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-white font-outfit tracking-tight">
-          Expenses & Maintenance Tracker
+          {t("expensesTitle")}
         </h2>
         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-          Track non-charging operating expenses to calculate full Total Cost of Ownership (TCO).
+          {t("expensesDesc")}
         </p>
       </div>
 
@@ -28,19 +42,19 @@ export default async function ExpensesPage() {
           <div className="flex items-center gap-2 pb-3 border-b border-neutral-200 dark:border-neutral-800">
             <Receipt className="w-5 h-5 text-neutral-900 dark:text-neutral-100" />
             <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 font-outfit m-0">
-              Add Operating Expense
+              {t("addExpense")}
             </h3>
           </div>
 
           <form action={createExpenseAction} className="space-y-4">
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-                Title
+                {t("expenseTitle")}
               </label>
               <input
                 type="text"
                 name="title"
-                placeholder="Annual Insurance / Tire Service"
+                placeholder={t("placeholderExpenseTitle")}
                 required
                 className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
               />
@@ -49,25 +63,25 @@ export default async function ExpensesPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-                  Category
+                  {t("category")}
                 </label>
                 <select
                   name="category"
                   defaultValue="MAINTENANCE"
                   className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
                 >
-                  <option value="MAINTENANCE">Maintenance</option>
-                  <option value="INSURANCE">Insurance</option>
-                  <option value="TAX">Tax & License</option>
-                  <option value="PARKING">Parking / Tolls</option>
-                  <option value="ACCESSORY">Accessories</option>
-                  <option value="OTHER">Other</option>
+                  <option value="MAINTENANCE">{t("catMaintenance")}</option>
+                  <option value="INSURANCE">{t("catInsurance")}</option>
+                  <option value="TAX">{t("catTax")}</option>
+                  <option value="PARKING">{t("catParking")}</option>
+                  <option value="ACCESSORY">{t("catAccessory")}</option>
+                  <option value="OTHER">{t("catOther")}</option>
                 </select>
               </div>
 
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-                  Amount ({sym})
+                  {t("amount")} ({sym})
                 </label>
                 <input
                   type="number"
@@ -82,7 +96,7 @@ export default async function ExpensesPage() {
 
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-                Date
+                {t("date")}
               </label>
               <input
                 type="date"
@@ -95,22 +109,22 @@ export default async function ExpensesPage() {
 
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-                Description / Notes
+                {t("description")}
               </label>
               <input
                 type="text"
                 name="description"
-                placeholder="Optional notes..."
+                placeholder={t("placeholderNotesOpt")}
                 className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-2.5 px-4 bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 rounded-xl font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 px-4 bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 rounded-xl font-bold text-xs shadow-md hover:shadow-lg active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>Log Expense</span>
+              <span>{t("logExpense")}</span>
             </button>
           </form>
         </section>
@@ -120,33 +134,33 @@ export default async function ExpensesPage() {
           <div className="bg-white dark:bg-neutral-900/40 p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-md space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800">
               <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 font-outfit m-0">
-                Operating Expense Logs
+                {t("expenseLogs")}
               </h3>
               <span className="text-xs font-bold text-neutral-500 font-outfit">
-                Total Expenses: {sym}{stats.totalExpensesCost.toLocaleString()}
+                {t("totalExpenses")}: {sym}{stats.totalExpensesCost.toLocaleString()}
               </span>
             </div>
 
             {expenses.length === 0 ? (
               <div className="text-center py-8 text-neutral-400 text-xs">
-                No non-charging operating expenses logged yet.
+                {t("noExpensesYet")}
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
                     <tr className="border-b border-neutral-200 dark:border-neutral-800 text-neutral-400 font-bold uppercase">
-                      <th className="pb-3 px-3">Date</th>
-                      <th className="pb-3 px-3">Title & Notes</th>
-                      <th className="pb-3 px-3">Category</th>
-                      <th className="pb-3 px-3">Amount</th>
-                      <th className="pb-3 px-3 text-right">Action</th>
+                      <th className="pb-3 px-3">{t("tableDate")}</th>
+                      <th className="pb-3 px-3">{t("expenseTitle")}</th>
+                      <th className="pb-3 px-3">{t("category")}</th>
+                      <th className="pb-3 px-3">{t("amount")}</th>
+                      <th className="pb-3 px-3 text-right">{t("tableAction")}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60 font-medium">
                     {expenses.map((expense: Expense) => {
                       const d = new Date(expense.date);
-                      const dateStr = d.toLocaleDateString("en-US", {
+                      const dateStr = d.toLocaleDateString(lang === "tr" ? "tr-TR" : "en-US", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
@@ -172,7 +186,7 @@ export default async function ExpensesPage() {
                           </td>
                           <td className="py-3 px-3">
                             <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
-                              {expense.category}
+                              {getCategoryLabel(expense.category)}
                             </span>
                           </td>
                           <td className="py-3 px-3 font-bold text-neutral-900 dark:text-neutral-100">
@@ -183,7 +197,7 @@ export default async function ExpensesPage() {
                               <button
                                 type="submit"
                                 title="Delete Expense"
-                                className="p-1.5 text-neutral-400 hover:text-rose-600 rounded-lg transition-colors"
+                                className="p-1.5 text-neutral-400 hover:text-rose-600 rounded-lg transition-colors cursor-pointer"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>

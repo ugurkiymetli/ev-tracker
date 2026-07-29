@@ -51,4 +51,13 @@ describe("Statistics Calculator", () => {
     expect(trends[0].cost).toBe(25);
     expect(trends[1].month).toBe("2026-02");
   });
+
+  it("formats monthly trend month labels according to locale", () => {
+    const mockSessions: Partial<ChargingSession>[] = [
+      { date: "2026-01-10", energyChargedKwh: 40, cost: 10, chargingType: "AC" },
+    ];
+
+    const trTrends = calculateMonthlyTrends(mockSessions as ChargingSession[], "tr-TR");
+    expect(trTrends[0].monthLabel).toContain("Oca");
+  });
 });
