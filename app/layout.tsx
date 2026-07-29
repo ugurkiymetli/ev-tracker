@@ -3,6 +3,7 @@ import "./globals.css";
 import { cookies } from "next/headers";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { LanguageProvider } from "@/components/layout/language-provider";
+import { ToastProvider } from "@/components/ui/toast";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { getOrCreateDefaultVehicleAndSettings } from "@/server/services/ev-service";
@@ -42,11 +43,13 @@ export default async function RootLayout({
       >
         <ThemeProvider>
           <LanguageProvider initialLanguage={initialLanguage}>
-            <Header user={user} />
-            <main className="flex-grow max-w-6xl w-full mx-auto px-4 py-6 md:py-8">
-              {children}
-            </main>
-            <Footer />
+            <ToastProvider>
+              <Header user={user} />
+              <main className="flex-grow max-w-6xl w-full mx-auto px-4 py-6 md:py-8">
+                {children}
+              </main>
+              <Footer />
+            </ToastProvider>
           </LanguageProvider>
         </ThemeProvider>
       </body>

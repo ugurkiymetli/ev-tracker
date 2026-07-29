@@ -9,12 +9,12 @@ import { KpiCard } from "@/components/dashboard/kpi-card";
 import { MonthlyTrendPoint, ProviderStatPoint } from "@/types";
 
 const demoMonthlyTrendsEn: MonthlyTrendPoint[] = [
-  { month: "2026-01", monthLabel: "Jan 2026", energyKwh: 340, cost: 48, sessionsCount: 7, avgPricePerKwh: 0.141 },
-  { month: "2026-02", monthLabel: "Feb 2026", energyKwh: 290, cost: 41, sessionsCount: 6, avgPricePerKwh: 0.141 },
-  { month: "2026-03", monthLabel: "Mar 2026", energyKwh: 410, cost: 62, sessionsCount: 9, avgPricePerKwh: 0.151 },
-  { month: "2026-04", monthLabel: "Apr 2026", energyKwh: 380, cost: 55, sessionsCount: 8, avgPricePerKwh: 0.144 },
-  { month: "2026-05", monthLabel: "May 2026", energyKwh: 450, cost: 68, sessionsCount: 10, avgPricePerKwh: 0.151 },
-  { month: "2026-06", monthLabel: "Jun 2026", energyKwh: 490, cost: 74, sessionsCount: 11, avgPricePerKwh: 0.151 },
+  { month: "2026-01", monthLabel: "Jan 2026", energyKwh: 340, cost: 48, sessionsCount: 7, avgPricePerKwh: 0.14 },
+  { month: "2026-02", monthLabel: "Feb 2026", energyKwh: 290, cost: 41, sessionsCount: 6, avgPricePerKwh: 0.14 },
+  { month: "2026-03", monthLabel: "Mar 2026", energyKwh: 410, cost: 62, sessionsCount: 9, avgPricePerKwh: 0.15 },
+  { month: "2026-04", monthLabel: "Apr 2026", energyKwh: 380, cost: 55, sessionsCount: 8, avgPricePerKwh: 0.14 },
+  { month: "2026-05", monthLabel: "May 2026", energyKwh: 450, cost: 68, sessionsCount: 10, avgPricePerKwh: 0.15 },
+  { month: "2026-06", monthLabel: "Jun 2026", energyKwh: 490, cost: 74, sessionsCount: 11, avgPricePerKwh: 0.15 },
 ];
 
 const demoMonthlyTrendsTr: MonthlyTrendPoint[] = [
@@ -27,9 +27,9 @@ const demoMonthlyTrendsTr: MonthlyTrendPoint[] = [
 ];
 
 const demoProviderStatsEn: ProviderStatPoint[] = [
-  { providerName: "Tesla Supercharger", totalEnergyKwh: 1250, totalCost: 210, sessionsCount: 24, avgPricePerKwh: 0.168 },
-  { providerName: "Home AC Wallbox", totalEnergyKwh: 980, totalCost: 98, sessionsCount: 32, avgPricePerKwh: 0.100 },
-  { providerName: "ZES Fast Charger", totalEnergyKwh: 410, totalCost: 82, sessionsCount: 8, avgPricePerKwh: 0.200 },
+  { providerName: "Tesla Supercharger", totalEnergyKwh: 1250, totalCost: 210, sessionsCount: 24, avgPricePerKwh: 0.17 },
+  { providerName: "Home AC Wallbox", totalEnergyKwh: 980, totalCost: 98, sessionsCount: 32, avgPricePerKwh: 0.10 },
+  { providerName: "ZES Fast Charger", totalEnergyKwh: 410, totalCost: 82, sessionsCount: 8, avgPricePerKwh: 0.20 },
 ];
 
 const demoProviderStatsTr: ProviderStatPoint[] = [

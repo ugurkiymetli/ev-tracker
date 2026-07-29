@@ -1,5 +1,6 @@
 import { prisma } from "../lib/db/prisma";
 import { seedDemoDataAction } from "../app/actions";
+import { seedTrChargingProviders } from "../server/services/ev-service";
 import { createClient } from "@libsql/client";
 
 async function ensureTablesExist() {
@@ -126,6 +127,8 @@ async function ensureTablesExist() {
 
 async function main() {
   await ensureTablesExist();
+  console.log("Seeding TR charging providers into database...");
+  await seedTrChargingProviders();
   console.log("Seeding demo data into database...");
   await seedDemoDataAction();
   console.log("Demo data successfully seeded!");

@@ -4,16 +4,30 @@ import { useState } from "react";
 import { Plus, Pencil, X, BatteryCharging } from "lucide-react";
 import { createChargingSessionAction, updateChargingSessionAction } from "@/app/actions";
 import { useLanguage } from "@/components/layout/language-provider";
+import { useToast } from "@/components/ui/toast";
+import { ProviderAutocomplete } from "@/components/ui/provider-autocomplete";
 import { ChargingSession } from "@/types";
+
+interface ChargingProviderSimple {
+  id: string;
+  name: string;
+}
 
 interface ChargingSessionDialogProps {
   session?: ChargingSession;
+  providers?: ChargingProviderSimple[];
+  userTopProviderIds?: string[];
 }
 
-export function ChargingSessionDialog({ session }: ChargingSessionDialogProps) {
+export function ChargingSessionDialog({
+  session,
+  providers = [],
+  userTopProviderIds = [],
+}: ChargingSessionDialogProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { t } = useLanguage();
+  const { toast } = useToast();
 
   const isEdit = Boolean(session);
 
@@ -28,8 +42,17 @@ export function ChargingSessionDialog({ session }: ChargingSessionDialogProps) {
         await createChargingSessionAction(formData);
       }
       setOpen(false);
-    } catch (err) {
-      alert("Failed to save charging session. Please check your inputs.");
+      toast({
+        title: isEdit ? "Oturum Güncellendi" : "Oturum Kaydedildi",
+        description: isEdit ? "Şarj kaydı başarıyla güncellendi." : "Yeni şarj oturumu geçmişe eklendi.",
+        variant: "success",
+      });
+    } catch (err: any) {
+      toast({
+        title: "Hata",
+        description: err.message || "Şarj oturumu kaydedilemedi.",
+        variant: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -149,12 +172,12 @@ export function ChargingSessionDialog({ session }: ChargingSessionDialogProps) {
                   <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
                     {t("fieldProvider")}
                   </label>
-                  <input
-                    type="text"
+                  <ProviderAutocomplete
+                    providers={providers}
+                    userTopProviderIds={userTopProviderIds}
+                    initialValue={session?.provider?.name || session?.location || ""}
                     name="providerName"
-                    defaultValue={session?.provider?.name || session?.location || ""}
                     placeholder={t("placeholderProvider")}
-                    className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
                   />
                 </div>
 

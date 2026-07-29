@@ -1,0 +1,956 @@
+[
+    {
+        "BrandName": "ZES Şarj",
+        "StationCount": "1896",
+        "DC Price": 12.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Trugo Şarj",
+        "StationCount": "1271",
+        "DC Price": 14.98,
+        "AC Price": 9.95
+    },
+    {
+        "BrandName": "Eşarj",
+        "StationCount": "751",
+        "DC Price": 14.90,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "Wat Mobilite Şarj",
+        "StationCount": "540",
+        "DC Price": 14.49,
+        "AC Price": 10.99
+    },
+    {
+        "BrandName": "Voltrun Şarj",
+        "StationCount": "366",
+        "DC Price": 12.90,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "Otopriz Şarj",
+        "StationCount": "358",
+        "DC Price": 13.90,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "Astor Şarj",
+        "StationCount": "329",
+        "DC Price": 13.99,
+        "AC Price": 9.89
+    },
+    {
+        "BrandName": "En Yakıt Şarj",
+        "StationCount": "305",
+        "DC Price": 14.90,
+        "AC Price": 14.90
+    },
+    {
+        "BrandName": "Otojet Şarj",
+        "StationCount": "229",
+        "DC Price": 15.49,
+        "AC Price": 10.49
+    },
+    {
+        "BrandName": "Oncharge Şarj",
+        "StationCount": "208",
+        "DC Price": 13.50,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Sharz.net",
+        "StationCount": "200",
+        "DC Price": 10.99,
+        "AC Price": 9.49
+    },
+    {
+        "BrandName": "5 Şarj",
+        "StationCount": "195",
+        "DC Price": 15.90,
+        "AC Price": 8.99
+    },
+    {
+        "BrandName": "D-Charge Şarj",
+        "StationCount": "180",
+        "DC Price": 14.90,
+        "AC Price": 10.90
+    },
+    {
+        "BrandName": "Zeplin Şarj",
+        "StationCount": "157",
+        "DC Price": 10.30,
+        "AC Price": 8.50
+    },
+    {
+        "BrandName": "Ovolt Şarj",
+        "StationCount": "155",
+        "DC Price": 13.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Tunçmatik Charge",
+        "StationCount": "131",
+        "DC Price": 15.49,
+        "AC Price": 10.99
+    },
+    {
+        "BrandName": "K-Şarj",
+        "StationCount": "130",
+        "DC Price": 11.65,
+        "AC Price": 9.15
+    },
+    {
+        "BrandName": "Shell Recharge",
+        "StationCount": "128",
+        "DC Price": 13.50,
+        "AC Price": 11.99
+    },
+    {
+        "BrandName": "Beefull Şarj",
+        "StationCount": "120",
+        "DC Price": 13.99,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "OtoWATT Şarj",
+        "StationCount": "116",
+        "DC Price": 13.99,
+        "AC Price": 10.99
+    },
+    {
+        "BrandName": "AOS Technology",
+        "StationCount": "113",
+        "DC Price": 14.90,
+        "AC Price": 10.90
+    },
+    {
+        "BrandName": "Aksa Şarj",
+        "StationCount": "110",
+        "DC Price": 12.49,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "MKS Şarj",
+        "StationCount": "102",
+        "DC Price": 13.99,
+        "AC Price": 9.49
+    },
+    {
+        "BrandName": "CV Charging",
+        "StationCount": "99",
+        "DC Price": 13.49,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Toger Şarj",
+        "StationCount": "95",
+        "DC Price": 12.39,
+        "AC Price": 9.39
+    },
+    {
+        "BrandName": "Power Şarj",
+        "StationCount": "94",
+        "DC Price": 12.49,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "MigGo Şarj",
+        "StationCount": "91",
+        "DC Price": 12.50,
+        "AC Price": 9.50
+    },
+    {
+        "BrandName": "Neva Şarj",
+        "StationCount": "87",
+        "DC Price": 13.90,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "Voltgo Şarj",
+        "StationCount": "82",
+        "DC Price": 12.40,
+        "AC Price": 9.50
+    },
+    {
+        "BrandName": "RHG Enertürk",
+        "StationCount": "77",
+        "DC Price": 14.49,
+        "AC Price": 10.99
+    },
+    {
+        "BrandName": "Varr Şarj",
+        "StationCount": "76",
+        "DC Price": 13.90,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "Green Science Şarj",
+        "StationCount": "74",
+        "DC Price": 11.90,
+        "AC Price": 8.90
+    },
+    {
+        "BrandName": "Adze Şarj",
+        "StationCount": "70",
+        "DC Price": 13.40,
+        "AC Price": 9.40
+    },
+    {
+        "BrandName": "Smart Şarj",
+        "StationCount": "70",
+        "DC Price": 12.50,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Şarjon",
+        "StationCount": "69",
+        "DC Price": 13.19,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "i-Şarj",
+        "StationCount": "68",
+        "DC Price": 13.49,
+        "AC Price": 9.98
+    },
+    {
+        "BrandName": "Pirim Şarj",
+        "StationCount": "66",
+        "DC Price": 12.49,
+        "AC Price": 9.49
+    },
+    {
+        "BrandName": "Solinved Şarj",
+        "StationCount": "65",
+        "DC Price": 13.50,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Acropol Şarj",
+        "StationCount": "63",
+        "DC Price": 13.88,
+        "AC Price": 11.21
+    },
+    {
+        "BrandName": "Lumicle Şarj",
+        "StationCount": "62",
+        "DC Price": 13.49,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Şarj Stop",
+        "StationCount": "60",
+        "DC Price": 14.99,
+        "AC Price": 10.49
+    },
+    {
+        "BrandName": "Öniz Şarj",
+        "StationCount": "59",
+        "DC Price": 12.48,
+        "AC Price": 9.28
+    },
+    {
+        "BrandName": "Biogreen Şarj",
+        "StationCount": "55",
+        "DC Price": 12.90,
+        "AC Price": 9.50
+    },
+    {
+        "BrandName": "e-Power EV Şarj",
+        "StationCount": "54",
+        "DC Price": 10.99,
+        "AC Price": 8.49
+    },
+    {
+        "BrandName": "Solar Şarj",
+        "StationCount": "54",
+        "DC Price": 13.49,
+        "AC Price": 9.49
+    },
+    {
+        "BrandName": "Onlife Charge",
+        "StationCount": "53",
+        "DC Price": 12.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "RST ChargePoint",
+        "StationCount": "53",
+        "DC Price": 12.90,
+        "AC Price": 5.90
+    },
+    {
+        "BrandName": "Hızzlan Şarj",
+        "StationCount": "52",
+        "DC Price": 12.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "efish Şarj",
+        "StationCount": "50",
+        "DC Price": 13.99,
+        "AC Price": 10.49
+    },
+    {
+        "BrandName": "MY Charge",
+        "StationCount": "49",
+        "DC Price": 13.00,
+        "AC Price": 9.81
+    },
+    {
+        "BrandName": "Geta Charge",
+        "StationCount": "47",
+        "DC Price": 13.90,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "Wattarya Şarj",
+        "StationCount": "47",
+        "DC Price": 12.49,
+        "AC Price": 9.49
+    },
+    {
+        "BrandName": "Fix Charge",
+        "StationCount": "46",
+        "DC Price": 13.78,
+        "AC Price": 9.95
+    },
+    {
+        "BrandName": "EV Road Şarj",
+        "StationCount": "44",
+        "DC Price": 12.90,
+        "AC Price": 8.90
+    },
+    {
+        "BrandName": "Epsis Şarj",
+        "StationCount": "43",
+        "DC Price": 12.50,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "RS Şarj",
+        "StationCount": "43",
+        "DC Price": 14.90,
+        "AC Price": 11.90
+    },
+    {
+        "BrandName": "Voltup Şarj",
+        "StationCount": "42",
+        "DC Price": 9.80,
+        "AC Price": 7.80
+    },
+    {
+        "BrandName": "Fast-Go Şarj",
+        "StationCount": "41",
+        "DC Price": 12.49,
+        "AC Price": 8.49
+    },
+    {
+        "BrandName": "Petroo Şarj",
+        "StationCount": "41",
+        "DC Price": 10.90,
+        "AC Price": 8.90
+    },
+    {
+        "BrandName": "Volti Şarj",
+        "StationCount": "41",
+        "DC Price": 12.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "360° Enerji",
+        "StationCount": "40",
+        "DC Price": 11.49,
+        "AC Price": 8.49
+    },
+    {
+        "BrandName": "GIOEV Şarj",
+        "StationCount": "38",
+        "DC Price": 13.49,
+        "AC Price": 10.99
+    },
+    {
+        "BrandName": "ŞarjTak Şarj",
+        "StationCount": "38",
+        "DC Price": 13.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Arcona Şarj",
+        "StationCount": "36",
+        "DC Price": 12.95,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "CheckPoint Şarj",
+        "StationCount": "36",
+        "DC Price": 9.49,
+        "AC Price": 7.89
+    },
+    {
+        "BrandName": "Electrise Şarj",
+        "StationCount": "36",
+        "DC Price": 11.00,
+        "AC Price": 8.50
+    },
+    {
+        "BrandName": "Monokon Şarj",
+        "StationCount": "36",
+        "DC Price": 12.50,
+        "AC Price": 9.50
+    },
+    {
+        "BrandName": "Solargize Şarj",
+        "StationCount": "36",
+        "DC Price": 11.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Sepaş Şarj",
+        "StationCount": "36",
+        "DC Price": 10.99,
+        "AC Price": 8.99
+    },
+    {
+        "BrandName": "Tora Şarj",
+        "StationCount": "35",
+        "DC Price": 13.49,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "EVbee Şarj",
+        "StationCount": "35",
+        "DC Price": 14.98,
+        "AC Price": 9.95
+    },
+    {
+        "BrandName": "Plug&Drive Şarj",
+        "StationCount": "34",
+        "DC Price": 12.99,
+        "AC Price": 8.99
+    },
+    {
+        "BrandName": "Tesla Supercharge",
+        "StationCount": "34",
+        "DC Price": 13.00,
+        "AC Price": 10.40
+    },
+    {
+        "BrandName": "Ekos Şarj",
+        "StationCount": "33",
+        "DC Price": 12.50,
+        "AC Price": 8.99
+    },
+    {
+        "BrandName": "Geldol Şarj",
+        "StationCount": "33",
+        "DC Price": 11.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Autovolt Şarj",
+        "StationCount": "33",
+        "DC Price": 10.99,
+        "AC Price": 9.00
+    },
+    {
+        "BrandName": "Türk Şarj",
+        "StationCount": "32",
+        "DC Price": 10.40,
+        "AC Price": 8.40
+    },
+    {
+        "BrandName": "B-Charge",
+        "StationCount": "31",
+        "DC Price": 11.90,
+        "AC Price": 9.50
+    },
+    {
+        "BrandName": "GSM Charge",
+        "StationCount": "31",
+        "DC Price": 11.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "CTG Şarj",
+        "StationCount": "31",
+        "DC Price": 12.49,
+        "AC Price": 9.49
+    },
+    {
+        "BrandName": "Estasyon Şarj",
+        "StationCount": "30",
+        "DC Price": 11.44,
+        "AC Price": 8.63
+    },
+    {
+        "BrandName": "Multi Force Şarj",
+        "StationCount": "30",
+        "DC Price": 13.49,
+        "AC Price": 10.50
+    },
+    {
+        "BrandName": "TEDY Şarj",
+        "StationCount": "30",
+        "DC Price": 12.90,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "Royal Şarj",
+        "StationCount": "30",
+        "DC Price": 12.50,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "E4 Şarj",
+        "StationCount": "30",
+        "DC Price": 11.99,
+        "AC Price": 9.49
+    },
+    {
+        "BrandName": "Doğuş Şarj",
+        "StationCount": "29",
+        "DC Price": 13.99,
+        "AC Price": 11.19
+    },
+    {
+        "BrandName": "Ecojet Şarj",
+        "StationCount": "29",
+        "DC Price": 12.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "TÜVTURK Şarj",
+        "StationCount": "29",
+        "DC Price": 11.80,
+        "AC Price": 8.45
+    },
+    {
+        "BrandName": "VZX Şarj",
+        "StationCount": "29",
+        "DC Price": 13.99,
+        "AC Price": 10.99
+    },
+    {
+        "BrandName": "AKM Charge",
+        "StationCount": "28",
+        "DC Price": 12.99,
+        "AC Price": 9.49
+    },
+    {
+        "BrandName": "Ecobox Şarj",
+        "StationCount": "28",
+        "DC Price": 11.90,
+        "AC Price": 9.29
+    },
+    {
+        "BrandName": "Polestar Şarj",
+        "StationCount": "28",
+        "DC Price": 12.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Power EV Şarj",
+        "StationCount": "27",
+        "DC Price": 13.99,
+        "AC Price": 10.99
+    },
+    {
+        "BrandName": "ERC Şarj",
+        "StationCount": "26",
+        "DC Price": 10.90,
+        "AC Price": 8.90
+    },
+    {
+        "BrandName": "MEG Şarj",
+        "StationCount": "26",
+        "DC Price": 10.49,
+        "AC Price": 8.99
+    },
+    {
+        "BrandName": "Energy Enerjik",
+        "StationCount": "25",
+        "DC Price": 10.50,
+        "AC Price": 8.50
+    },
+    {
+        "BrandName": "Sky World Şarj",
+        "StationCount": "25",
+        "DC Price": 11.99,
+        "AC Price": 9.49
+    },
+    {
+        "BrandName": "Greenwatt Şarj",
+        "StationCount": "25",
+        "DC Price": 10.50,
+        "AC Price": 8.00
+    },
+    {
+        "BrandName": "Minus Energy",
+        "StationCount": "24",
+        "DC Price": 12.50,
+        "AC Price": 9.20
+    },
+    {
+        "BrandName": "Pleco Şarj",
+        "StationCount": "24",
+        "DC Price": 14.49,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Turuncu Şarj",
+        "StationCount": "23",
+        "DC Price": 12.00,
+        "AC Price": 9.00
+    },
+    {
+        "BrandName": "Şarj Plus",
+        "StationCount": "22",
+        "DC Price": 12.90,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "EVC Charge",
+        "StationCount": "22",
+        "DC Price": 13.79,
+        "AC Price": 9.79
+    },
+    {
+        "BrandName": "Tripy Şarj",
+        "StationCount": "22",
+        "DC Price": 11.00,
+        "AC Price": 7.80
+    },
+    {
+        "BrandName": "Mithrapod Şarj",
+        "StationCount": "21",
+        "DC Price": 15.59,
+        "AC Price": 10.99
+    },
+    {
+        "BrandName": "My Power Şarj",
+        "StationCount": "21",
+        "DC Price": 13.60,
+        "AC Price": 11.50
+    },
+    {
+        "BrandName": "Best Şarj",
+        "StationCount": "20",
+        "DC Price": 13.69,
+        "AC Price": 8.60
+    },
+    {
+        "BrandName": "Kes Şarj",
+        "StationCount": "20",
+        "DC Price": 13.00,
+        "AC Price": 11.00
+    },
+    {
+        "BrandName": "Carbonage Şarj",
+        "StationCount": "19",
+        "DC Price": 12.49,
+        "AC Price": 9.49
+    },
+    {
+        "BrandName": "Pluginn Şarj",
+        "StationCount": "19",
+        "DC Price": 12.50,
+        "AC Price": 9.20
+    },
+    {
+        "BrandName": "Vale Şarj",
+        "StationCount": "19",
+        "DC Price": 16.49,
+        "AC Price": 11.49
+    },
+    {
+        "BrandName": "Magicline Şarj",
+        "StationCount": "18",
+        "DC Price": 13.50,
+        "AC Price": 9.00
+    },
+    {
+        "BrandName": "TR Charge",
+        "StationCount": "18",
+        "DC Price": 12.50,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "U Şarj",
+        "StationCount": "18",
+        "DC Price": 11.49,
+        "AC Price": 8.29
+    },
+    {
+        "BrandName": "Doldur Şarj",
+        "StationCount": "17",
+        "DC Price": 9.99,
+        "AC Price": 8.25
+    },
+    {
+        "BrandName": "Çelikler Şarj",
+        "StationCount": "17",
+        "DC Price": 11.60,
+        "AC Price": 8.99
+    },
+    {
+        "BrandName": "Bladeco Şarj",
+        "StationCount": "17",
+        "DC Price": 11.98,
+        "AC Price": 8.98
+    },
+    {
+        "BrandName": "Elaris Şarj",
+        "StationCount": "17",
+        "DC Price": 10.00,
+        "AC Price": 8.49
+    },
+    {
+        "BrandName": "Şarjlan",
+        "StationCount": "17",
+        "DC Price": 13.49,
+        "AC Price": 9.49
+    },
+    {
+        "BrandName": "Eko Şarj",
+        "StationCount": "16",
+        "DC Price": 14.49,
+        "AC Price": 10.49
+    },
+    {
+        "BrandName": "Meis Şarj",
+        "StationCount": "16",
+        "DC Price": 12.90,
+        "AC Price": 9.50
+    },
+    {
+        "BrandName": "X Şarj",
+        "StationCount": "16",
+        "DC Price": 9.50,
+        "AC Price": 8.90
+    },
+    {
+        "BrandName": "Avrupa Şarj",
+        "StationCount": "16",
+        "DC Price": 10.99,
+        "AC Price": 8.99
+    },
+    {
+        "BrandName": "Şarj Start",
+        "StationCount": "16",
+        "DC Price": 12.75,
+        "AC Price": 9.50
+    },
+    {
+        "BrandName": "Şarjed",
+        "StationCount": "15",
+        "DC Price": 9.60,
+        "AC Price": 7.40
+    },
+    {
+        "BrandName": "G-Charge",
+        "StationCount": "15",
+        "DC Price": 12.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "IN Charge",
+        "StationCount": "15",
+        "DC Price": 14.00,
+        "AC Price": 10.90
+    },
+    {
+        "BrandName": "Gezcar Şarj",
+        "StationCount": "14",
+        "DC Price": 11.50,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Wattreise Şarj",
+        "StationCount": "14",
+        "DC Price": 11.90,
+        "AC Price": 9.45
+    },
+    {
+        "BrandName": "d-rect Şarj",
+        "StationCount": "13",
+        "DC Price": 10.49,
+        "AC Price": 8.49
+    },
+    {
+        "BrandName": "GE-Charge",
+        "StationCount": "13",
+        "DC Price": 10.90,
+        "AC Price": 8.90
+    },
+    {
+        "BrandName": "Şarj Park",
+        "StationCount": "13",
+        "DC Price": 12.45,
+        "AC Price": 8.45
+    },
+    {
+        "BrandName": "AsPlus Şarj",
+        "StationCount": "13",
+        "DC Price": 12.49,
+        "AC Price": 9.49
+    },
+    {
+        "BrandName": "Rönesans Şarj",
+        "StationCount": "12",
+        "DC Price": 15.99,
+        "AC Price": 10.99
+    },
+    {
+        "BrandName": "EKA Enerji",
+        "StationCount": "12",
+        "DC Price": 13.50,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "Interenergy Şarj",
+        "StationCount": "12",
+        "DC Price": 7.70,
+        "AC Price": 6.10
+    },
+    {
+        "BrandName": "Köfteci Yusuf Şarj",
+        "StationCount": "12",
+        "DC Price": 14.98,
+        "AC Price": 9.95
+    },
+    {
+        "BrandName": "Myzco Şarj",
+        "StationCount": "12",
+        "DC Price": 11.90,
+        "AC Price": 9.90
+    },
+    {
+        "BrandName": "Obi Şarj",
+        "StationCount": "12",
+        "DC Price": 15.95,
+        "AC Price": 10.99
+    },
+    {
+        "BrandName": "Econ Şarj",
+        "StationCount": "11",
+        "DC Price": 12.49,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "Qopuz Şarj",
+        "StationCount": "11",
+        "DC Price": 11.90,
+        "AC Price": 9.76
+    },
+    {
+        "BrandName": "Acrobat Şarj",
+        "StationCount": "10",
+        "DC Price": 11.00,
+        "AC Price": 9.00
+    },
+    {
+        "BrandName": "Pilstop Şarj",
+        "StationCount": "10",
+        "DC Price": 15.36,
+        "AC Price": 9.95
+    },
+    {
+        "BrandName": "Sunlight Şarj",
+        "StationCount": "10",
+        "DC Price": 13.80,
+        "AC Price": 10.50
+    },
+    {
+        "BrandName": "Arsima Şarj",
+        "StationCount": "10",
+        "DC Price": 14.99,
+        "AC Price": 13.99
+    },
+    {
+        "BrandName": "Mercury Şarj",
+        "StationCount": "9",
+        "DC Price": 12.99,
+        "AC Price": 9.99
+    },
+    {
+        "BrandName": "B-Force Şarj",
+        "StationCount": "8",
+        "DC Price": 13.90,
+        "AC Price": 10.90
+    },
+    {
+        "BrandName": "E-Mod Şarj",
+        "StationCount": "8",
+        "DC Price": 13.61,
+        "AC Price": 11.11
+    },
+    {
+        "BrandName": "EVSolt Şarj",
+        "StationCount": "8",
+        "DC Price": 11.99,
+        "AC Price": 8.99
+    },
+    {
+        "BrandName": "3a Şarj",
+        "StationCount": "8",
+        "DC Price": 10.95,
+        "AC Price": 7.95
+    },
+    {
+        "BrandName": "Aktif Şarj",
+        "StationCount": "7",
+        "DC Price": 11.20,
+        "AC Price": 9.15
+    },
+    {
+        "BrandName": "KRN Şarj",
+        "StationCount": "6",
+        "DC Price": 12.98,
+        "AC Price": 9.98
+    },
+    {
+        "BrandName": "Fortis Şarj",
+        "StationCount": "5",
+        "DC Price": 11.99,
+        "AC Price": 8.99
+    },
+    {
+        "BrandName": "Odeon Şarj",
+        "StationCount": "5",
+        "DC Price": 13.00,
+        "AC Price": 9.00
+    },
+    {
+        "BrandName": "Porty Şarj",
+        "StationCount": "5",
+        "DC Price": 9.90,
+        "AC Price": 8.40
+    },
+    {
+        "BrandName": "Promaster Şarj",
+        "StationCount": "5",
+        "DC Price": 9.00,
+        "AC Price": 7.00
+    },
+    {
+        "BrandName": "Spectrum Şarj",
+        "StationCount": "5",
+        "DC Price": 12.96,
+        "AC Price": 9.89
+    },
+    {
+        "BrandName": "Foks Şarj",
+        "StationCount": "5",
+        "DC Price": 10.99,
+        "AC Price": 8.99
+    },
+    {
+        "BrandName": "FZY Şarj",
+        "StationCount": "4",
+        "DC Price": 12.30,
+        "AC Price": 9.90
+    }
+]

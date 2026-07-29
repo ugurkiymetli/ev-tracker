@@ -20,14 +20,14 @@ export function calculateAverageConsumption(
 }
 
 /**
- * Calculates cost per kilometer.
+ * Calculates cost per kilometer (2 decimal places).
  */
 export function calculateCostPerKm(
   totalCost: number,
   distanceDrivenKm: number
 ): number {
   if (distanceDrivenKm <= 0 || totalCost <= 0) return 0;
-  return Number((totalCost / distanceDrivenKm).toFixed(4));
+  return Number((totalCost / distanceDrivenKm).toFixed(2));
 }
 
 /**
@@ -54,6 +54,7 @@ export function calculateEstimatedRange(
 
 /**
  * Aggregates monthly trends from charging sessions with locale support.
+ * All prices & costs rounded to 2 decimal places.
  */
 export function calculateMonthlyTrends(
   sessions: ChargingSession[],
@@ -94,13 +95,14 @@ export function calculateMonthlyTrends(
       cost: Number(item.cost.toFixed(2)),
       sessionsCount: item.count,
       avgPricePerKwh:
-        item.energyKwh > 0 ? Number((item.cost / item.energyKwh).toFixed(3)) : 0,
+        item.energyKwh > 0 ? Number((item.cost / item.energyKwh).toFixed(2)) : 0,
     };
   });
 }
 
 /**
  * Aggregates stats by charging provider with localized unknown fallback.
+ * All prices rounded to 2 decimal places.
  */
 export function calculateProviderStats(
   sessions: ChargingSession[],
@@ -128,13 +130,14 @@ export function calculateProviderStats(
       totalEnergyKwh: Number(data.energy.toFixed(1)),
       totalCost: Number(data.cost.toFixed(2)),
       avgPricePerKwh:
-        data.energy > 0 ? Number((data.cost / data.energy).toFixed(3)) : 0,
+        data.energy > 0 ? Number((data.cost / data.energy).toFixed(2)) : 0,
     }))
     .sort((a, b) => b.totalCost - a.totalCost);
 }
 
 /**
  * Aggregates primary dashboard KPIs and ownership statistics.
+ * All prices & costs formatted to 2 decimal places.
  */
 export function calculateDashboardStats(
   vehicle: Vehicle | null,
@@ -147,7 +150,7 @@ export function calculateDashboardStats(
   const totalChargingCost = sessions.reduce((acc, s) => acc + s.cost, 0);
 
   const avgPricePerKwh =
-    totalEnergyChargedKwh > 0 ? Number((totalChargingCost / totalEnergyChargedKwh).toFixed(3)) : 0;
+    totalEnergyChargedKwh > 0 ? Number((totalChargingCost / totalEnergyChargedKwh).toFixed(2)) : 0;
 
   // Calculate distance driven
   let distanceDrivenKm = 0;

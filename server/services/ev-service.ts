@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { prisma } from "@/lib/db/prisma";
 import { getCurrentUser } from "@/lib/auth/auth";
 import {
@@ -9,9 +11,112 @@ import { calculateIceComparison } from "../calculators/ice-comparison";
 import { ParsedChargingSessionRow } from "../importers/excel-importer";
 
 /**
+ * Seeds Turkish charging providers from tr-charging-providers.json into DB if needed.
+ */
+export async function seedTrChargingProviders() {
+  try {
+    const jsonPath = path.join(process.cwd(), "tr-charging-providers.json");
+    if (fs.existsSync(jsonPath)) {
+      const rawData = fs.readFileSync(jsonPath, "utf-8");
+      const providersArr: Array<{
+        BrandName: string;
+        StationCount?: string;
+        "DC Price"?: number;
+        "AC Price"?: number;
+      }> = JSON.parse(rawData);
+
+      for (const item of providersArr) {
+        if (!item.BrandName) continue;
+        const name = item.BrandName.trim();
+        const dcPrice = item["DC Price"];
+        const acPrice = item["AC Price"];
+        const defaultPrice = dcPrice || acPrice || null;
+        const type = dcPrice ? "FAST_CHARGER" : "PUBLIC";
+
+        const stationCount = parseInt(item.StationCount || "0", 10);
+
+        await prisma.chargingProvider.upsert({
+          where: { name },
+          update: {
+            pricePerKwhDefault: defaultPrice,
+            type,
+            stationCount,
+          },
+          create: {
+            name,
+            type,
+            pricePerKwhDefault: defaultPrice,
+            stationCount,
+          },
+        });
+      }
+    }
+  } catch (err) {
+    console.error("Error seeding TR charging providers:", err);
+  }
+}
+
+/**
+ * Smart matches or creates a ChargingProvider by raw string name.
+ */
+export async function findOrCreateProvider(rawName: string, chargingType: string = "AC") {
+  const trimmed = rawName.trim();
+  if (!trimmed || trimmed.toLowerCase() === "undefined" || trimmed.toLowerCase() === "null") {
+    return null;
+  }
+
+  // 1. Direct match
+  const exact = await prisma.chargingProvider.findUnique({
+    where: { name: trimmed },
+  });
+  if (exact) return exact;
+
+  // 2. Fetch all providers for fuzzy/normalized match
+  const allProviders = await prisma.chargingProvider.findMany();
+
+  const normalize = (str: string) =>
+    str
+      .toLowerCase()
+      .replace(/ğ/g, "g")
+      .replace(/ü/g, "u")
+      .replace(/ş/g, "s")
+      .replace(/ı/g, "i")
+      .replace(/ö/g, "o")
+      .replace(/ç/g, "c")
+      .replace(/\b(sarj|sarji|charge|charging|net|supercharge|supercharger|ev|station|istasyon|istasyonu|ağ|agi|firma|saglayici|sağlayıcı)\b/g, "")
+      .replace(/[^a-z0-9]/g, "");
+
+  const normInput = normalize(trimmed);
+
+  if (normInput.length > 1) {
+    for (const provider of allProviders) {
+      const normDB = normalize(provider.name);
+      if (
+        normDB === normInput ||
+        (normInput.length > 2 && normDB.length > 2 && (normDB.includes(normInput) || normInput.includes(normDB)))
+      ) {
+        return provider;
+      }
+    }
+  }
+
+  // 3. Fallback: Upsert new provider with input name
+  return prisma.chargingProvider.upsert({
+    where: { name: trimmed },
+    update: {},
+    create: {
+      name: trimmed,
+      type: chargingType === "DC" ? "FAST_CHARGER" : "PUBLIC",
+    },
+  });
+}
+
+/**
  * Gets or initializes default vehicle and settings for current user session.
  */
 export async function getOrCreateDefaultVehicleAndSettings() {
+  await seedTrChargingProviders();
+
   const currentUser = await getCurrentUser();
   const userId = currentUser?.id;
 
@@ -53,20 +158,16 @@ export async function getOrCreateDefaultVehicleAndSettings() {
   }
 
   if (!vehicle) {
-    vehicle = await prisma.vehicle.findFirst();
-  }
-
-  if (!vehicle) {
     vehicle = await prisma.vehicle.create({
       data: {
         userId: userId || null,
-        name: "Tesla Model Y",
+        name: "My Electric Vehicle",
         make: "Tesla",
         model: "Model Y Long Range",
         year: 2024,
         batteryCapacityKwh: 75.0,
-        initialOdometerKm: 12000,
-        currentOdometerKm: 18500,
+        initialOdometerKm: 0,
+        currentOdometerKm: 15000,
       },
     });
 
@@ -80,7 +181,7 @@ export async function getOrCreateDefaultVehicleAndSettings() {
 }
 
 /**
- * Retrieves full dashboard analytics dataset.
+ * Fetches all metrics and records for the main application pages.
  */
 export async function getDashboardData() {
   const { vehicle, settings, user } = await getOrCreateDefaultVehicleAndSettings();
@@ -95,6 +196,24 @@ export async function getDashboardData() {
     where: { vehicleId: vehicle.id },
     orderBy: { date: "desc" },
   });
+
+  const allProviders = await prisma.chargingProvider.findMany({
+    where: { isDeleted: false },
+    orderBy: [{ stationCount: "desc" }, { name: "asc" }],
+  });
+
+  // Calculate user's top 3 most used provider IDs
+  const providerUsageMap = new Map<string, number>();
+  sessions.forEach((s) => {
+    if (s.providerId) {
+      providerUsageMap.set(s.providerId, (providerUsageMap.get(s.providerId) || 0) + 1);
+    }
+  });
+
+  const userTopProviderIds = Array.from(providerUsageMap.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([id]) => id);
 
   const lang = settings.language || "en";
   const locale = lang === "tr" ? "tr-TR" : "en-US";
@@ -120,6 +239,8 @@ export async function getDashboardData() {
     monthlyTrends,
     providerStats,
     iceComparison,
+    allProviders,
+    userTopProviderIds,
   };
 }
 
@@ -136,15 +257,10 @@ export async function importValidChargingSessions(
     let providerId: string | null = null;
 
     if (row.providerName) {
-      const provider = await prisma.chargingProvider.upsert({
-        where: { name: row.providerName },
-        update: {},
-        create: {
-          name: row.providerName,
-          type: row.chargingType === "DC" ? "FAST_CHARGER" : "PUBLIC",
-        },
-      });
-      providerId = provider.id;
+      const provider = await findOrCreateProvider(row.providerName, row.chargingType);
+      if (provider) {
+        providerId = provider.id;
+      }
     }
 
     const pricePerKwh = row.pricePerKwh || (row.cost / row.energyChargedKwh);
@@ -153,29 +269,18 @@ export async function importValidChargingSessions(
       data: {
         vehicleId,
         providerId,
-        date: row.date,
+        date: new Date(row.date),
         energyChargedKwh: row.energyChargedKwh,
         cost: row.cost,
-        pricePerKwh: Number(pricePerKwh.toFixed(4)),
+        pricePerKwh: Number(pricePerKwh.toFixed(2)),
         chargingType: row.chargingType,
-        odometerKm: row.odometerKm,
-        location: row.location,
-        notes: row.notes,
+        odometerKm: row.odometerKm || null,
+        location: row.location || null,
+        notes: row.notes || null,
       },
     });
 
-    // Update vehicle current odometer if higher
-    if (row.odometerKm) {
-      const vehicle = await prisma.vehicle.findUnique({ where: { id: vehicleId } });
-      if (vehicle && row.odometerKm > vehicle.currentOdometerKm) {
-        await prisma.vehicle.update({
-          where: { id: vehicleId },
-          data: { currentOdometerKm: row.odometerKm },
-        });
-      }
-    }
-
-    importedCount += 1;
+    importedCount++;
   }
 
   return importedCount;

@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db/prisma";
-import { getOrCreateDefaultVehicleAndSettings, importValidChargingSessions } from "@/server/services/ev-service";
-import { parseExcelFileBuffer } from "@/server/importers/excel-importer";
+import { getOrCreateDefaultVehicleAndSettings, importValidChargingSessions, findOrCreateProvider } from "@/server/services/ev-service";
+import { parseExcelFileBuffer, type ParsedChargingSessionRow } from "@/server/importers/excel-importer";
 import { hashPassword, verifyPassword, createAuthSession, destroyAuthSession } from "@/lib/auth/auth";
 
 export async function signUpAction(formData: FormData): Promise<{ error?: string }> {
@@ -112,12 +112,8 @@ export async function createChargingSessionAction(formData: FormData): Promise<v
 
   let providerId: string | null = null;
   if (providerName) {
-    const provider = await prisma.chargingProvider.upsert({
-      where: { name: providerName },
-      update: {},
-      create: { name: providerName, type: chargingType === "DC" ? "FAST_CHARGER" : "PUBLIC" },
-    });
-    providerId = provider.id;
+    const provider = await findOrCreateProvider(providerName, chargingType);
+    if (provider) providerId = provider.id;
   }
 
   const pricePerKwh = cost / energyChargedKwh;
@@ -130,7 +126,7 @@ export async function createChargingSessionAction(formData: FormData): Promise<v
       date: new Date(dateStr),
       energyChargedKwh,
       cost,
-      pricePerKwh: Number(pricePerKwh.toFixed(4)),
+      pricePerKwh: Number(pricePerKwh.toFixed(2)),
       chargingType,
       odometerKm,
       location,
@@ -166,12 +162,8 @@ export async function updateChargingSessionAction(formData: FormData): Promise<v
 
   let providerId: string | null = null;
   if (providerName) {
-    const provider = await prisma.chargingProvider.upsert({
-      where: { name: providerName },
-      update: {},
-      create: { name: providerName, type: chargingType === "DC" ? "FAST_CHARGER" : "PUBLIC" },
-    });
-    providerId = provider.id;
+    const provider = await findOrCreateProvider(providerName, chargingType);
+    if (provider) providerId = provider.id;
   }
 
   const pricePerKwh = cost / energyChargedKwh;
@@ -184,7 +176,7 @@ export async function updateChargingSessionAction(formData: FormData): Promise<v
       date: new Date(dateStr),
       energyChargedKwh,
       cost,
-      pricePerKwh: Number(pricePerKwh.toFixed(4)),
+      pricePerKwh: Number(pricePerKwh.toFixed(2)),
       chargingType,
       odometerKm,
       location,
@@ -243,6 +235,68 @@ export async function deleteExpenseAction(id: string): Promise<void> {
   await prisma.expense.delete({ where: { id } });
   revalidatePath("/");
   revalidatePath("/expenses");
+}
+
+export async function previewImportExcelAction(formData: FormData) {
+  const file = formData.get("file") as File;
+  if (!file || file.size === 0) {
+    throw new Error("No valid file uploaded");
+  }
+
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  const result = parseExcelFileBuffer(buffer);
+
+  const allProviders = await prisma.chargingProvider.findMany({
+    orderBy: { name: "asc" },
+  });
+
+  for (const row of result.previewRows) {
+    if (row.parsed) {
+      const rawName =
+        row.parsed.providerName ||
+        row.raw["İstasyon"] ||
+        row.raw["İstasyon / Konum"] ||
+        row.raw["Istasyon"] ||
+        row.raw["Provider"] ||
+        row.raw["Firma"] ||
+        row.raw["Sağlayıcı"] ||
+        row.raw["Saglayici"];
+
+      if (rawName) {
+        const matched = await findOrCreateProvider(rawName, row.parsed.chargingType);
+        if (matched) {
+          row.parsed.providerName = matched.name;
+        }
+      }
+    }
+  }
+
+  return {
+    ...result,
+    allProviders: allProviders.map((p) => ({
+      id: p.id,
+      name: p.name,
+      stationCount: p.stationCount,
+    })),
+  };
+}
+
+export async function confirmImportExcelAction(rows: ParsedChargingSessionRow[]) {
+  if (!rows || rows.length === 0) {
+    throw new Error("No valid sessions to import");
+  }
+
+  const { vehicle } = await getOrCreateDefaultVehicleAndSettings();
+  const importedCount = await importValidChargingSessions(rows, vehicle.id);
+
+  revalidatePath("/");
+  revalidatePath("/charging");
+  revalidatePath("/import");
+  revalidatePath("/ice-comparison");
+
+  return { success: true, importedCount };
 }
 
 export async function importExcelAction(formData: FormData) {
@@ -459,4 +513,18 @@ export async function seedDemoDataAction(): Promise<void> {
   } catch (e) {
     // Ignore revalidatePath when called outside Next request lifecycle
   }
+}
+
+export async function softDeleteProviderAction(providerId: string) {
+  if (!providerId) throw new Error("Provider ID is required");
+  await prisma.chargingProvider.update({
+    where: { id: providerId },
+    data: { isDeleted: true },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/charging");
+  revalidatePath("/settings");
+  revalidatePath("/import");
+  return { success: true };
 }

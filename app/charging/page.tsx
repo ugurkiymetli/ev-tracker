@@ -1,14 +1,14 @@
 import { getDashboardData } from "@/server/services/ev-service";
 import { ChargingSessionDialog } from "@/components/charging/charging-session-dialog";
-import { deleteChargingSessionAction } from "@/app/actions";
-import { BatteryCharging, Trash2, Zap } from "lucide-react";
+import { ChargingRowActions } from "@/components/charging/charging-row-actions";
+import { BatteryCharging, Zap } from "lucide-react";
 import { ChargingSession } from "@/types";
 import { translations } from "@/lib/i18n/translations";
 
 export const revalidate = 0;
 
 export default async function ChargingPage() {
-  const { sessions, settings } = await getDashboardData();
+  const { sessions, settings, allProviders = [], userTopProviderIds = [] } = await getDashboardData();
   const sym = settings.currencySymbol || "$";
   const lang = (settings.language === "tr" ? "tr" : "en") as "en" | "tr";
   const t = (key: keyof typeof translations.en) => translations[lang][key] || translations.en[key];
@@ -26,7 +26,7 @@ export default async function ChargingPage() {
           </p>
         </div>
 
-        <ChargingSessionDialog />
+        <ChargingSessionDialog providers={allProviders} userTopProviderIds={userTopProviderIds} />
       </div>
 
       {/* Sessions Table Card */}
@@ -75,7 +75,9 @@ export default async function ChargingPage() {
                         {dateStr}
                       </td>
                       <td className="py-3.5 px-3 text-neutral-800 dark:text-neutral-200">
-                        <div>{session.provider?.name || session.location || "Standard Charge"}</div>
+                        <div className="font-bold text-neutral-900 dark:text-white">
+                          {session.provider?.name || session.location || "Standard Charge"}
+                        </div>
                         {session.notes && (
                           <div className="text-[10px] text-neutral-400 font-normal">
                             {session.notes}
@@ -101,24 +103,17 @@ export default async function ChargingPage() {
                         {sym}{session.cost.toFixed(2)}
                       </td>
                       <td className="py-3.5 px-3 text-neutral-500 dark:text-neutral-400">
-                        {sym}{session.pricePerKwh.toFixed(3)}
+                        {sym}{session.pricePerKwh.toFixed(2)}
                       </td>
                       <td className="py-3.5 px-3 text-neutral-500 dark:text-neutral-400">
                         {session.odometerKm ? `${session.odometerKm.toLocaleString()} km` : "—"}
                       </td>
                       <td className="py-3.5 px-3 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <ChargingSessionDialog session={session} />
-                          <form action={deleteChargingSessionAction.bind(null, session.id)}>
-                            <button
-                              type="submit"
-                              title="Delete Session"
-                              className="p-1.5 text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-rose-500/10 transition-all cursor-pointer"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </form>
-                        </div>
+                        <ChargingRowActions
+                          session={session}
+                          providers={allProviders}
+                          userTopProviderIds={userTopProviderIds}
+                        />
                       </td>
                     </tr>
                   );

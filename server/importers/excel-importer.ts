@@ -2,7 +2,10 @@ import * as XLSX from "xlsx";
 import { z } from "zod";
 
 export const ChargingSessionRowSchema = z.object({
-  date: z.string().or(z.date()).transform((val) => new Date(val)),
+  date: z.string().or(z.date()).transform((val) => {
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+  }),
   energyChargedKwh: z.number().positive("Energy charged must be greater than 0"),
   cost: z.number().min(0, "Cost cannot be negative"),
   pricePerKwh: z.number().min(0, "Price per kWh cannot be negative").optional(),
@@ -29,10 +32,34 @@ export interface ImportParseResult {
   invalidRowsCount: number;
   previewRows: ImportPreviewRow[];
   headers: string[];
+  allProviders?: Array<{ id: string; name: string }>;
+}
+
+export function normalizeKey(str: string): string {
+  if (!str) return "";
+  return str
+    .replace(/İ/g, "i")
+    .replace(/I/g, "i")
+    .replace(/ı/g, "i")
+    .replace(/Ğ/g, "g")
+    .replace(/ğ/g, "g")
+    .replace(/Ü/g, "u")
+    .replace(/ü/g, "u")
+    .replace(/Ş/g, "s")
+    .replace(/ş/g, "s")
+    .replace(/Ö/g, "o")
+    .replace(/ö/g, "o")
+    .replace(/Ç/g, "c")
+    .replace(/ç/g, "c")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
 }
 
 /**
  * Parses raw Excel/CSV file buffer and validates each row with Zod.
+ * Handles Turkish diacritics and ensures 100% plain object serialization.
  */
 export function parseExcelFileBuffer(fileBuffer: Buffer): ImportParseResult {
   const workbook = XLSX.read(fileBuffer, { type: "buffer", cellDates: true });
@@ -61,26 +88,65 @@ export function parseExcelFileBuffer(fileBuffer: Buffer): ImportParseResult {
   let invalidCount = 0;
 
   jsonRows.forEach((row, idx) => {
-    // Column normalization matching flexible user headings
+    // Sanitize raw row to plain string/number values
+    const cleanRaw: Record<string, any> = {};
+    Object.entries(row).forEach(([rk, rv]) => {
+      if (rv instanceof Date) {
+        cleanRaw[rk] = rv.toISOString();
+      } else {
+        cleanRaw[rk] = rv;
+      }
+    });
+
+    // Column normalization matching flexible user headings with Turkish diacritic handling
     const normalized: Record<string, any> = {};
 
     Object.entries(row).forEach(([key, val]) => {
-      const k = key.trim().toLowerCase();
-      if (k.includes("date") || k.includes("tarih")) normalized.date = val;
-      else if (k.includes("kwh") || k.includes("energy") || k.includes("enerji")) normalized.energyChargedKwh = parseFloat(String(val));
-      else if (k.includes("cost") || k.includes("price") || k.includes("tutar") || k.includes("maliyet")) {
-        if (!normalized.cost) normalized.cost = parseFloat(String(val).replace(/[^0-9.]/g, ""));
-      } else if (k.includes("type") || k.includes("tip")) {
-        const typeStr = String(val).toUpperCase();
-        normalized.chargingType = typeStr.includes("DC") || typeStr.includes("FAST") ? "DC" : "AC";
-      } else if (k.includes("provider") || k.includes("network") || k.includes("station") || k.includes("istasyon")) {
-        normalized.providerName = String(val);
-      } else if (k.includes("odometer") || k.includes("km")) {
-        normalized.odometerKm = parseFloat(String(val));
+      const k = normalizeKey(key);
+      const strVal = String(val || "").trim();
+
+      if (
+        k.includes("istasyon") ||
+        k.includes("provider") ||
+        k.includes("network") ||
+        k.includes("station") ||
+        k.includes("firma") ||
+        k.includes("saglayici") ||
+        k.includes("operator") ||
+        k.includes("ag") ||
+        k.includes("marka")
+      ) {
+        if (strVal && strVal.toLowerCase() !== "undefined" && strVal.toLowerCase() !== "null") {
+          normalized.providerName = strVal;
+        }
+      } else if (k.includes("tarih") || k.includes("date") || k.includes("zaman")) {
+        normalized.date = val;
+      } else if (k.includes("kwh") || k.includes("energy") || k.includes("enerji") || k.includes("miktar")) {
+        normalized.energyChargedKwh = parseFloat(strVal);
+      } else if (k.includes("tip") || k.includes("type") || k.includes("ac/dc")) {
+        const typeStr = strVal.toUpperCase();
+        normalized.chargingType = typeStr.includes("DC") || typeStr.includes("FAST") || typeStr.includes("HIZLI") ? "DC" : "AC";
+      } else if (
+        k.includes("birim fiyat") ||
+        k.includes("birimfiyat") ||
+        k.includes("price/kwh") ||
+        k.includes("kwh fiyat")
+      ) {
+        normalized.pricePerKwh = parseFloat(strVal.replace(/[^0-9.]/g, ""));
+      } else if (
+        k.includes("cost") ||
+        k.includes("price") ||
+        k.includes("tutar") ||
+        k.includes("maliyet") ||
+        k.includes("ucret")
+      ) {
+        if (!normalized.cost) normalized.cost = parseFloat(strVal.replace(/[^0-9.]/g, ""));
+      } else if (k.includes("odometer") || k.includes("km") || k.includes("kilometre") || k.includes("sayac")) {
+        normalized.odometerKm = parseFloat(strVal);
       } else if (k.includes("location") || k.includes("address") || k.includes("konum")) {
-        normalized.location = String(val);
-      } else if (k.includes("note") || k.includes("aciklama") || k.includes("açıklama")) {
-        normalized.notes = String(val);
+        if (strVal) normalized.location = strVal;
+      } else if (k.includes("note") || k.includes("aciklama")) {
+        if (strVal) normalized.notes = strVal;
       }
     });
 
@@ -102,7 +168,7 @@ export function parseExcelFileBuffer(fileBuffer: Buffer): ImportParseResult {
       validCount += 1;
       previewRows.push({
         rowIndex: idx + 1,
-        raw: row,
+        raw: cleanRaw,
         parsed: validation.data,
         isValid: true,
         errors: [],
@@ -112,18 +178,21 @@ export function parseExcelFileBuffer(fileBuffer: Buffer): ImportParseResult {
       const errors = validation.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`);
       previewRows.push({
         rowIndex: idx + 1,
-        raw: row,
+        raw: cleanRaw,
         isValid: false,
         errors,
       });
     }
   });
 
-  return {
+  const result: ImportParseResult = {
     totalRows: jsonRows.length,
     validRowsCount: validCount,
     invalidRowsCount: invalidCount,
     previewRows,
     headers,
   };
+
+  // Guarantee plain object serialization for React Server Components
+  return JSON.parse(JSON.stringify(result));
 }
