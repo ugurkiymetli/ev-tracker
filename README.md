@@ -1,26 +1,36 @@
-# ev-tracker
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-A local-first Electric Vehicle (EV) ownership analytics platform designed to provide comprehensive insights into EV charging sessions, driving efficiency, operating costs, battery utilization, and total cost of ownership.
+## Getting Started
 
-## Overview
+First, run the development server:
 
-**ev-tracker** helps EV owners answer key questions about their vehicle economics and performance over time:
-- What is my real cost per kilometer?
-- How efficient is my vehicle over time and across different seasons/charging providers?
-- How much money have I saved compared to an ICE (Internal Combustion Engine) vehicle?
-- What is my overall total cost of ownership (maintenance, insurance, charging, and expenses)?
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## Features
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- ⚡ **Charging Analytics:** Log & import charging history (AC/DC), track price/kWh trends, and compare charging providers.
-- 📊 **Performance & Efficiency Dashboard:** Real-time derived analytics including consumption (`kWh/100km`), cost per kilometer, and estimated battery cycle usage.
-- 💡 **ICE Savings Breakdown:** Compare electric vehicle operating costs with traditional fuel vehicles to track lifetime, annual, and monthly savings.
-- 📂 **Local-First & Private:** Local data storage using SQLite via Prisma ORM with flexible Excel/CSV imports.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## Tech Stack
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-- **Framework:** Next.js (App Router) + TypeScript
-- **UI & Styling:** Tailwind CSS, shadcn/ui, Lucide Icons
-- **Charts & Data Tables:** Recharts, TanStack Table
-- **Database & ORM:** SQLite, Prisma ORM
-- **Validation:** Zod
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
