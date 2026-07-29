@@ -15,8 +15,21 @@ const LanguageContext = createContext<LanguageContextType>({
   t: (key) => translations.en[key] || key,
 });
 
+export function detectBrowserLanguage(): Language {
+  if (typeof window !== "undefined") {
+    const stored = localStorage.getItem("ev_tracker_lang") as Language;
+    if (stored === "en" || stored === "tr") return stored;
+
+    const browserLang = navigator.language || (navigator.languages && navigator.languages[0]);
+    if (browserLang && browserLang.toLowerCase().startsWith("tr")) {
+      return "tr";
+    }
+  }
+  return "en";
+}
+
 export function LanguageProvider({
-  initialLanguage = "en",
+  initialLanguage,
   children,
 }: {
   initialLanguage?: string;
@@ -27,15 +40,26 @@ export function LanguageProvider({
       const stored = localStorage.getItem("ev_tracker_lang") as Language;
       if (stored === "en" || stored === "tr") return stored;
     }
-    return (initialLanguage as Language) || "en";
+    if (initialLanguage === "en" || initialLanguage === "tr") {
+      return initialLanguage as Language;
+    }
+    return "en";
   });
 
   useEffect(() => {
-    if (initialLanguage && (initialLanguage === "en" || initialLanguage === "tr")) {
-      setLanguageState(initialLanguage as Language);
-      if (typeof window !== "undefined") {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("ev_tracker_lang") as Language;
+      if (stored === "en" || stored === "tr") {
+        setLanguageState(stored);
+      } else if (initialLanguage === "en" || initialLanguage === "tr") {
+        setLanguageState(initialLanguage as Language);
         localStorage.setItem("ev_tracker_lang", initialLanguage);
         document.cookie = `ev_tracker_lang=${initialLanguage}; path=/; max-age=31536000; SameSite=Lax`;
+      } else {
+        const detected = detectBrowserLanguage();
+        setLanguageState(detected);
+        localStorage.setItem("ev_tracker_lang", detected);
+        document.cookie = `ev_tracker_lang=${detected}; path=/; max-age=31536000; SameSite=Lax`;
       }
     }
   }, [initialLanguage]);

@@ -1,5 +1,10 @@
 export type Language = "en" | "tr";
 
+export const DEFAULT_CURRENCY_MAP: Record<Language, string> = {
+  en: "$",
+  tr: "₺",
+};
+
 export const translations = {
   en: {
     // Header & Footer & Navigation & Auth
@@ -27,16 +32,24 @@ export const translations = {
     dontHaveAccount: "Don't have an account?",
 
     // Landing Page
+    landingHeroBadge: "EV Ownership Analytics",
     heroTitle: "Master Your EV Ownership Costs & Savings",
     heroSubtitle: "Track charging history, driving efficiency, non-charging operating expenses, and exact lifetime savings compared to gasoline cars.",
     getStartedFree: "Get Started Free",
     viewDemo: "View Interactive Dashboard",
+    liveAnalyticsTeaser: "Live Analytics Teaser",
+    sampleData: "Sample Data",
     feature1Title: "Charging & Cost Analytics",
     feature1Desc: "Categorize AC Level 2 and DC Fast chargers, monitor price trends, and break down costs by station network.",
     feature2Title: "ICE Gasoline Savings",
     feature2Desc: "Compare real EV charging costs against custom gasoline benchmarks to calculate net lifetime money saved and CO2 avoided.",
     feature3Title: "Total Cost of Ownership (TCO)",
     feature3Desc: "Log insurance, maintenance, taxes, tolls, and accessories for a 360-degree financial overview of your EV.",
+    ctaBannerTitle: "Everything you need for complete personal EV ownership.",
+    ctaPoint1: "Multi-currency support with custom gasoline benchmark comparisons",
+    ctaPoint2: "Bulk Excel & CSV import engine for historical charging spreadsheets",
+    ctaPoint3: "Private & local-first architecture with Turso cloud database sync",
+    startTrackingNow: "Start Tracking Now",
 
     // Dashboard & Common Actions
     activeVehicle: "Active Vehicle",
@@ -165,6 +178,8 @@ export const translations = {
     importCompleted: "Import Completed Successfully",
     expectedHeaders: "Expected Headers",
     expectedHeadersDesc: "The import engine automatically maps common column names. Ensure your sheet includes:",
+    downloadTemplate: "Download Excel Template",
+    templateDesc: "Download our pre-formatted Excel template to quickly structure your charging sessions for automated import.",
 
     // Settings Page
     settingsTitle: "Vehicle & System Settings",
@@ -209,16 +224,24 @@ export const translations = {
     dontHaveAccount: "Hesabınız yok mu?",
 
     // Landing Page
+    landingHeroBadge: "EV Sahiplik Analizleri",
     heroTitle: "Elektrikli Araç Sahiplik Maliyet ve Tasarruflarınızı Yönetin",
     heroSubtitle: "Şarj geçmişinizi, sürüş verimliliğinizi, işletme giderlerinizi ve benzinli araçlara kıyasla net tasarrufunuzu takip edin.",
     getStartedFree: "Ücretsiz Başlayın",
     viewDemo: "Paneli İnceleyin",
+    liveAnalyticsTeaser: "Canlı Analiz Önizleme",
+    sampleData: "Örnek Veri",
     feature1Title: "Şarj ve Maliyet Analizi",
     feature1Desc: "AC ve DC hızlı şarj oturumlarınızı gruplayın, istasyon bazlı fiyat ve maliyet trendlerini takip edin.",
     feature2Title: "Benzin Karşılaştırması",
     feature2Desc: "Gerçek şarj giderlerinizi benzin fiyat ve tüketim referanslarıyla karşılaştırarak net tasarrufunuzu görün.",
     feature3Title: "Toplam Sahiplik Maliyeti (TCO)",
     feature3Desc: "Kasko, bakım, vergi, otopark ve aksesuar giderlerinizi kaydederek eksiksiz TCO analizi elde edin.",
+    ctaBannerTitle: "Eksiksiz kişisel EV sahipliği için ihtiyacınız olan her şey.",
+    ctaPoint1: "Çoklu para birimi ve özel benzin kıyaslama desteği",
+    ctaPoint2: "Geçmiş şarj tabloları için toplu Excel ve CSV aktarım motoru",
+    ctaPoint3: "Turso bulut veritabanı senkronizasyonlu yerel mimari",
+    startTrackingNow: "Şimdi Takip Etmeye Başlayın",
 
     // Dashboard & Common Actions
     activeVehicle: "Aktif Araç",
@@ -347,6 +370,8 @@ export const translations = {
     importCompleted: "İçe Aktarma Başarıyla Tamamlandı",
     expectedHeaders: "Beklenen Sütun Başlıkları",
     expectedHeadersDesc: "İçe aktarma motoru yaygın başlıkları otomatik eşleştirir. Dosyanız şunları içermelidir:",
+    downloadTemplate: "Excel Şablonunu İndir",
+    templateDesc: "Şarj verilerinizi otomatik aktarım için hazırlamak üzere örnek Excel şablonumuzu indirin.",
 
     // Settings Page
     settingsTitle: "Araç ve Sistem Ayarları",
@@ -356,7 +381,7 @@ export const translations = {
     vehicleName: "Araç Adı / Takma Adı",
     batteryCapacity: "Batarya Kullanılabilir Kapasitesi (kWh)",
     currencySymbol: "Para Birimi Sembolü",
-    languageSelection: "Dil Seçimi",
+    languageSelection: "Language Selection",
     initialOdometer: "Başlangıç Kilometresi (km)",
     currentOdometer: "Mevcut Kilometre (km)",
     saveAppSettings: "Uygulama Tercihlerini Kaydet",

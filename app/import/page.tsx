@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { UploadCloud, FileSpreadsheet, CheckCircle2 } from "lucide-react";
+import { UploadCloud, FileSpreadsheet, CheckCircle2, Download } from "lucide-react";
+import * as XLSX from "xlsx";
 import { importExcelAction } from "@/app/actions";
 import { useLanguage } from "@/components/layout/language-provider";
 
@@ -13,6 +14,38 @@ export default function ImportPage() {
     failedCount: number;
   } | null>(null);
   const { t, language } = useLanguage();
+
+  const handleDownloadTemplate = () => {
+    const isTr = language === "tr";
+    const sampleData = [
+      {
+        [isTr ? "Tarih" : "Date"]: "2026-06-15",
+        [isTr ? "Enerji (kWh)" : "Energy (kWh)"]: 45.2,
+        [isTr ? "Maliyet" : "Cost"]: 22.60,
+        [isTr ? "Tip" : "Charging Type"]: "DC",
+        [isTr ? "İstasyon" : "Provider"]: "Tesla Supercharger",
+        [isTr ? "Kilometre" : "Odometer (km)"]: 18500,
+        [isTr ? "Notlar" : "Notes"]: "Highway Rest Stop #4",
+      },
+      {
+        [isTr ? "Tarih" : "Date"]: "2026-06-18",
+        [isTr ? "Enerji (kWh)" : "Energy (kWh)"]: 28.0,
+        [isTr ? "Maliyet" : "Cost"]: 4.20,
+        [isTr ? "Tip" : "Charging Type"]: "AC",
+        [isTr ? "İstasyon" : "Provider"]: "Home Wallbox",
+        [isTr ? "Kilometre" : "Odometer (km)"]: 18670,
+        [isTr ? "Notlar" : "Notes"]: "Overnight AC Charge",
+      },
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Charging Sessions");
+    XLSX.writeFile(
+      workbook,
+      isTr ? "ev_tracker_sarj_sablonu.xlsx" : "ev_tracker_charging_template.xlsx"
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,13 +65,24 @@ export default function ImportPage() {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto animate-fade-in">
-      <div>
-        <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-white font-outfit tracking-tight">
-          {t("importTitle")}
-        </h2>
-        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-          {t("importDesc")}
-        </p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-extrabold text-neutral-900 dark:text-white font-outfit tracking-tight">
+            {t("importTitle")}
+          </h2>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+            {t("importDesc")}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleDownloadTemplate}
+          className="py-2.5 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 rounded-xl font-bold text-xs shadow-sm active:scale-[0.99] transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap"
+        >
+          <Download className="w-4 h-4 text-emerald-500" />
+          <span>{t("downloadTemplate")}</span>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -101,15 +145,16 @@ export default function ImportPage() {
 
         {/* Guidelines Card */}
         <section className="bg-white dark:bg-neutral-900/40 p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-md space-y-4">
-          <h3 className="text-sm font-bold text-neutral-900 dark:text-white font-outfit uppercase tracking-wider">
-            {t("expectedHeaders")}
-          </h3>
+          <div className="space-y-1">
+            <h3 className="text-sm font-bold text-neutral-900 dark:text-white font-outfit uppercase tracking-wider">
+              {t("expectedHeaders")}
+            </h3>
+            <p className="text-xs text-neutral-500">
+              {t("templateDesc")}
+            </p>
+          </div>
 
-          <p className="text-xs text-neutral-500">
-            {t("expectedHeadersDesc")}
-          </p>
-
-          <ul className="text-xs space-y-2 text-neutral-700 dark:text-neutral-300 font-medium">
+          <ul className="text-xs space-y-2 text-neutral-700 dark:text-neutral-300 font-medium pt-2 border-t border-neutral-100 dark:border-neutral-800">
             <li className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 dark:bg-neutral-100" />
               <span><strong>{t("tableDate")}:</strong> Date, Charging Date, Tarih</span>

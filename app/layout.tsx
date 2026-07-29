@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { cookies } from "next/headers";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { LanguageProvider } from "@/components/layout/language-provider";
 import { Header } from "@/components/layout/header";
@@ -21,10 +22,12 @@ export default async function RootLayout({
 }>) {
   const user = await getCurrentUser();
   const { settings } = await getOrCreateDefaultVehicleAndSettings();
-  const initialLanguage = settings.language || "en";
+  const cookieStore = await cookies();
+  const cookieLang = cookieStore.get("ev_tracker_lang")?.value;
+  const initialLanguage = cookieLang || settings.language || "en";
 
   return (
-    <html lang={initialLanguage} className="h-full dark">
+    <html lang={initialLanguage} className="h-full dark" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -33,7 +36,10 @@ export default async function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen flex flex-col justify-between bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 transition-colors duration-300 font-sans antialiased">
+      <body
+        suppressHydrationWarning
+        className="min-h-screen flex flex-col justify-between bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 transition-colors duration-300 font-sans antialiased"
+      >
         <ThemeProvider>
           <LanguageProvider initialLanguage={initialLanguage}>
             <Header user={user} />

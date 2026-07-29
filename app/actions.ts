@@ -299,10 +299,17 @@ export async function updateSettingsAction(formData: FormData): Promise<void> {
   const initialOdometerKm = parseFloat(formData.get("initialOdometerKm") as string);
   const currentOdometerKm = parseFloat(formData.get("currentOdometerKm") as string);
 
+  // If language changed and currency wasn't explicitly changed, map default currency
+  let finalCurrencySymbol = currencySymbol;
+  if (formData.has("language") && !formData.has("currencySymbol")) {
+    if (language === "tr" && settings.currencySymbol === "$") finalCurrencySymbol = "₺";
+    if (language === "en" && settings.currencySymbol === "₺") finalCurrencySymbol = "$";
+  }
+
   await prisma.settings.update({
-    where: { id: "default" },
+    where: { id: settings.id },
     data: {
-      currencySymbol,
+      currencySymbol: finalCurrencySymbol,
       defaultFuelPricePerL,
       defaultFuelConsumptionPer100km,
       language,
