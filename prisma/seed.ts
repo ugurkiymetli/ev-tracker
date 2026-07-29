@@ -5,7 +5,7 @@ import { createClient } from "@libsql/client";
 async function ensureTablesExist() {
   const url = process.env.DATABASE_URL || "";
   if (url.startsWith("libsql://") || url.startsWith("https://")) {
-    console.log("Ensuring Turso database tables exist...");
+    console.log("Ensuring Turso database tables exist and are up to date...");
     const client = createClient({
       url: process.env.DATABASE_URL!,
       authToken: process.env.TURSO_AUTH_TOKEN,
@@ -62,6 +62,7 @@ async function ensureTablesExist() {
         "amount" REAL NOT NULL,
         "date" DATETIME NOT NULL,
         "description" TEXT,
+        "odometerKm" REAL,
         "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         "updatedAt" DATETIME NOT NULL,
         FOREIGN KEY ("vehicleId") REFERENCES "Vehicle" ("id") ON DELETE CASCADE
@@ -94,7 +95,15 @@ async function ensureTablesExist() {
         "updatedAt" DATETIME NOT NULL
       );
     `);
-    console.log("Turso tables created successfully!");
+
+    // Ensure odometerKm column is added if Expense table pre-existed without it
+    try {
+      await client.execute('ALTER TABLE "Expense" ADD COLUMN "odometerKm" REAL;');
+    } catch (e) {
+      // Column already exists
+    }
+
+    console.log("Turso tables and columns verified successfully!");
   }
 }
 
