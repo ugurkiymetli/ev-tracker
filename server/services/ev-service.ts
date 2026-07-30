@@ -11,6 +11,7 @@ import { calculateIceComparison } from "../calculators/ice-comparison";
 import { ParsedChargingSessionRow } from "../importers/excel-importer";
 
 let columnsChecked = false;
+let providersSeeded = false;
 
 /**
  * Ensures stationCount and isDeleted columns exist in the physical database table.
@@ -18,6 +19,7 @@ let columnsChecked = false;
  */
 export async function ensureChargingProviderColumns() {
   if (columnsChecked) return;
+  columnsChecked = true;
   try {
     await prisma.$executeRawUnsafe(
       `ALTER TABLE "ChargingProvider" ADD COLUMN "stationCount" INTEGER NOT NULL DEFAULT 0;`
@@ -33,16 +35,22 @@ export async function ensureChargingProviderColumns() {
   } catch (e) {
     // Column already exists or alter ignored
   }
-
-  columnsChecked = true;
 }
 
 /**
  * Seeds Turkish charging providers from tr-charging-providers.json into DB if needed.
+ * Fast single-transaction execution, runs ONLY once when database is empty.
  */
 export async function seedTrChargingProviders() {
+  if (providersSeeded) return;
   await ensureChargingProviderColumns();
   try {
+    const count = await prisma.chargingProvider.count();
+    if (count >= 50) {
+      providersSeeded = true;
+      return;
+    }
+
     const jsonPath = path.join(process.cwd(), "tr-charging-providers.json");
     if (fs.existsSync(jsonPath)) {
       const rawData = fs.readFileSync(jsonPath, "utf-8");
@@ -53,18 +61,17 @@ export async function seedTrChargingProviders() {
         "AC Price"?: number;
       }> = JSON.parse(rawData);
 
-      for (const item of providersArr) {
-        if (!item.BrandName) continue;
-        const name = item.BrandName.trim();
-        const dcPrice = item["DC Price"];
-        const acPrice = item["AC Price"];
-        const defaultPrice = dcPrice || acPrice || null;
-        const type = dcPrice ? "FAST_CHARGER" : "PUBLIC";
+      const ops = providersArr
+        .filter((item) => item.BrandName)
+        .map((item) => {
+          const name = item.BrandName.trim();
+          const dcPrice = item["DC Price"];
+          const acPrice = item["AC Price"];
+          const defaultPrice = dcPrice || acPrice || null;
+          const type = dcPrice ? "FAST_CHARGER" : "PUBLIC";
+          const stationCount = parseInt(item.StationCount || "0", 10);
 
-        const stationCount = parseInt(item.StationCount || "0", 10);
-
-        try {
-          await prisma.chargingProvider.upsert({
+          return prisma.chargingProvider.upsert({
             where: { name },
             update: {
               pricePerKwhDefault: defaultPrice,
@@ -78,22 +85,10 @@ export async function seedTrChargingProviders() {
               stationCount,
             },
           });
-        } catch (upsertErr) {
-          // Fallback upsert without new columns if DB migration pending
-          await prisma.chargingProvider.upsert({
-            where: { name },
-            update: {
-              pricePerKwhDefault: defaultPrice,
-              type,
-            },
-            create: {
-              name,
-              type,
-              pricePerKwhDefault: defaultPrice,
-            },
-          });
-        }
-      }
+        });
+
+      await prisma.$transaction(ops);
+      providersSeeded = true;
     }
   } catch (err) {
     console.error("Error seeding TR charging providers:", err);
