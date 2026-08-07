@@ -1,4 +1,6 @@
 import { cookies } from "next/headers";
+import Link from "next/link";
+import { UploadCloud } from "lucide-react";
 import { getDashboardData } from "@/server/services/ev-service";
 import { ChargingSessionDialog } from "@/components/charging/charging-session-dialog";
 import { ChargingTableView } from "@/components/charging/charging-table-view";
@@ -28,7 +30,16 @@ export default async function ChargingPage() {
           </p>
         </div>
 
-        <ChargingSessionDialog providers={allProviders} userTopProviderIds={userTopProviderIds} />
+        <div className="flex items-center gap-3">
+          <Link
+            href="/import"
+            className="py-2.5 px-4 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 rounded-xl font-bold text-xs shadow-sm active:scale-[0.99] transition-all flex items-center gap-2 cursor-pointer border border-neutral-200 dark:border-neutral-700"
+          >
+            <UploadCloud className="w-4 h-4" />
+            <span className="hidden sm:inline">{t("navImport")}</span>
+          </Link>
+          <ChargingSessionDialog providers={allProviders} userTopProviderIds={userTopProviderIds} />
+        </div>
       </div>
 
       {/* Interactive Sessions Table Card (FEATURE-008 Sorting & Filtering) */}

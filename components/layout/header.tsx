@@ -28,8 +28,6 @@ export function Header({ user }: HeaderProps) {
     { href: "/charging", label: t("navCharging"), icon: BatteryCharging },
     { href: "/expenses", label: t("navExpenses"), icon: Receipt },
     { href: "/ice-comparison", label: t("navIceComparison"), icon: TrendingUp },
-    { href: "/import", label: t("navImport"), icon: UploadCloud },
-    { href: "/settings", label: t("navSettings"), icon: Settings },
   ];
 
   return (
@@ -77,17 +75,27 @@ export function Header({ user }: HeaderProps) {
 
           <div className="flex items-center gap-2 flex-shrink-0">
             {user ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 md:gap-3">
                 <span className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-neutral-700 dark:text-neutral-300 px-3 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
                   <UserIcon className="w-3.5 h-3.5" />
                   <span>{user.username}</span>
                 </span>
 
+                <Link
+                  href="/settings"
+                  title={t("navSettings")}
+                  className="p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900/80 hover:bg-neutral-200 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white border border-neutral-200 dark:border-neutral-800 transition-all cursor-pointer flex items-center"
+                >
+                  <Settings className="w-4 h-4" />
+                </Link>
+
+                <div className="w-[1px] h-6 bg-neutral-200 dark:bg-neutral-800 mx-1 hidden sm:block"></div>
+
                 <form action={signOutAction}>
                   <button
                     type="submit"
                     title={t("signOut")}
-                    className="p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900/80 hover:bg-rose-500/10 text-neutral-600 dark:text-neutral-400 hover:text-rose-600 dark:hover:text-rose-400 border border-neutral-200 dark:border-neutral-800 transition-all cursor-pointer flex items-center gap-1 text-xs font-bold"
+                    className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold"
                   >
                     <LogOut className="w-4 h-4" />
                     <span className="hidden md:inline">{t("signOut")}</span>
