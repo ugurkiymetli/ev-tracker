@@ -2,8 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/db/prisma";
+import { translations } from "@/lib/i18n/translations";
 import { getOrCreateDefaultVehicleAndSettings, importValidChargingSessions, findOrCreateProvider } from "@/server/services/ev-service";
+
+async function tServer(key: keyof typeof translations.en) {
+  const cookieStore = await cookies();
+  const lang = cookieStore.get("ev_tracker_lang")?.value === "tr" ? "tr" : "en";
+  return translations[lang][key] || translations.en[key];
+}
 import { parseExcelFileBuffer, type ParsedChargingSessionRow } from "@/server/importers/excel-importer";
 import { hashPassword, verifyPassword, createAuthSession, destroyAuthSession } from "@/lib/auth/auth";
 
@@ -13,18 +21,15 @@ export async function signUpAction(formData: FormData): Promise<{ error?: string
   const email = (formData.get("email") as string)?.trim() || null;
 
   if (!username || username.length < 3) {
-    return { error: "Username must be at least 3 characters long." };
+    return { error: await tServer("errUsernameShort") };
   }
   if (!password || password.length < 4) {
-    return { error: "Password must be at least 4 characters long." };
+    return { error: await tServer("errPasswordShort") };
   }
 
-  const existingUser = await prisma.user.findUnique({
-    where: { username },
-  });
-
-  if (existingUser) {
-    return { error: "Username is already taken." };
+  const existing = await prisma.user.findUnique({ where: { username } });
+  if (existing) {
+    return { error: await tServer("errUsernameExists") };
   }
 
   const passwordHash = hashPassword(password);
@@ -72,7 +77,7 @@ export async function signInAction(formData: FormData): Promise<{ error?: string
   const password = formData.get("password") as string;
 
   if (!username || !password) {
-    return { error: "Please enter both username and password." };
+    return { error: await tServer("errBothCredentials") };
   }
 
   const user = await prisma.user.findUnique({
@@ -80,7 +85,7 @@ export async function signInAction(formData: FormData): Promise<{ error?: string
   });
 
   if (!user || !verifyPassword(password, user.passwordHash)) {
-    return { error: "Invalid username or password." };
+    return { error: await tServer("errInvalidCredentials") };
   }
 
   await createAuthSession(user);
@@ -101,13 +106,14 @@ export async function createChargingSessionAction(formData: FormData): Promise<v
   const energyChargedKwh = parseFloat(formData.get("energyChargedKwh") as string);
   const cost = parseFloat(formData.get("cost") as string);
   const chargingType = (formData.get("chargingType") as string) || "AC";
+  const pricePerKwh = cost / energyChargedKwh;
   const providerName = (formData.get("providerName") as string)?.trim();
   const odometerKmStr = formData.get("odometerKm") as string;
   const location = (formData.get("location") as string)?.trim();
   const notes = (formData.get("notes") as string)?.trim();
 
-  if (!dateStr || isNaN(energyChargedKwh) || isNaN(cost) || energyChargedKwh <= 0) {
-    throw new Error("Invalid session input data");
+  if (!dateStr || !chargingType || isNaN(energyChargedKwh) || isNaN(cost) || isNaN(pricePerKwh)) {
+    throw new Error(await tServer("errInvalidSessionInput"));
   }
 
   let providerId: string | null = null;
@@ -116,7 +122,6 @@ export async function createChargingSessionAction(formData: FormData): Promise<v
     if (provider) providerId = provider.id;
   }
 
-  const pricePerKwh = cost / energyChargedKwh;
   const odometerKm = odometerKmStr ? parseFloat(odometerKmStr) : null;
 
   await prisma.chargingSession.create({
@@ -151,13 +156,14 @@ export async function updateChargingSessionAction(formData: FormData): Promise<v
   const energyChargedKwh = parseFloat(formData.get("energyChargedKwh") as string);
   const cost = parseFloat(formData.get("cost") as string);
   const chargingType = (formData.get("chargingType") as string) || "AC";
+  const pricePerKwh = cost / energyChargedKwh;
   const providerName = (formData.get("providerName") as string)?.trim();
   const odometerKmStr = formData.get("odometerKm") as string;
   const location = (formData.get("location") as string)?.trim();
   const notes = (formData.get("notes") as string)?.trim();
 
-  if (!sessionId || !dateStr || isNaN(energyChargedKwh) || isNaN(cost) || energyChargedKwh <= 0) {
-    throw new Error("Invalid session update data");
+  if (!dateStr || !chargingType || isNaN(energyChargedKwh) || isNaN(cost) || isNaN(pricePerKwh)) {
+    throw new Error(await tServer("errInvalidSessionUpdate"));
   }
 
   let providerId: string | null = null;
@@ -166,7 +172,6 @@ export async function updateChargingSessionAction(formData: FormData): Promise<v
     if (provider) providerId = provider.id;
   }
 
-  const pricePerKwh = cost / energyChargedKwh;
   const odometerKm = odometerKmStr ? parseFloat(odometerKmStr) : null;
 
   await prisma.chargingSession.update({
@@ -212,8 +217,8 @@ export async function createExpenseAction(formData: FormData): Promise<void> {
   const dateStr = formData.get("date") as string;
   const description = (formData.get("description") as string)?.trim();
 
-  if (!title || isNaN(amount) || amount <= 0 || !dateStr) {
-    throw new Error("Invalid expense details");
+  if (!title || !dateStr || isNaN(amount)) {
+    throw new Error(await tServer("errInvalidExpenseDetails"));
   }
 
   await prisma.expense.create({
@@ -238,9 +243,9 @@ export async function deleteExpenseAction(id: string): Promise<void> {
 }
 
 export async function previewImportExcelAction(formData: FormData) {
-  const file = formData.get("file") as File;
-  if (!file || file.size === 0) {
-    throw new Error("No valid file uploaded");
+  const file = formData.get("file");
+  if (!file || !(file instanceof File) || file.size === 0) {
+    throw new Error(await tServer("errNoValidFile"));
   }
 
   const arrayBuffer = await file.arrayBuffer();
@@ -523,7 +528,7 @@ export async function seedDemoDataAction(): Promise<void> {
 }
 
 export async function softDeleteProviderAction(providerId: string) {
-  if (!providerId) throw new Error("Provider ID is required");
+  if (!providerId) throw new Error(await tServer("errProviderIdRequired"));
   await prisma.chargingProvider.update({
     where: { id: providerId },
     data: { isDeleted: true },
