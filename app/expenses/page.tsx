@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { getDashboardData } from "@/server/services/ev-service";
 import { deleteExpenseAction } from "@/app/actions";
 import { ExpenseForm } from "@/components/expenses/expense-form";
@@ -10,7 +11,10 @@ export const revalidate = 0;
 export default async function ExpensesPage() {
   const { expenses, settings, stats } = await getDashboardData();
   const sym = settings.currencySymbol || "$";
-  const lang = (settings.language === "tr" ? "tr" : "en") as "en" | "tr";
+  const cookieStore = await cookies();
+  const cookieLang = cookieStore.get("ev_tracker_lang")?.value;
+  const dbLang = settings.language;
+  const lang = (cookieLang === "tr" || (!cookieLang && dbLang === "tr") ? "tr" : "en") as "en" | "tr";
   const t = (key: keyof typeof translations.en) => translations[lang][key] || translations.en[key];
 
   const todayStr = new Date().toISOString().split("T")[0];

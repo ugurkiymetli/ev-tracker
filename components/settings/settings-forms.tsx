@@ -10,6 +10,7 @@ import {
 } from "@/app/actions";
 import { useLanguage } from "@/components/layout/language-provider";
 import { useToast } from "@/components/ui/toast";
+import { EV_CATALOG } from "@/server/data/vehicles-catalog";
 import { Vehicle, Settings } from "@/types";
 
 interface ProviderSimple {
@@ -38,6 +39,16 @@ export function SettingsForms({
   const [savingBenchmark, setSavingBenchmark] = useState(false);
   const [seeding, setSeeding] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const initialMake =
+    EV_CATALOG.find((b) => b.name.toLowerCase() === (vehicle.make || "").toLowerCase())?.name ||
+    EV_CATALOG[0].name;
+  const [selectedMake, setSelectedMake] = useState<string>(initialMake);
+  const [selectedModel, setSelectedModel] = useState<string>(
+    vehicle.model || EV_CATALOG[0].models[0]
+  );
+
+  const currentBrandObj = EV_CATALOG.find((b) => b.name === selectedMake);
+  const availableModels = currentBrandObj ? currentBrandObj.models : [];
 
   const [providerSearch, setProviderSearch] = useState("");
   const [providerList, setProviderList] = useState<ProviderSimple[]>(providers);
@@ -63,8 +74,8 @@ export function SettingsForms({
       });
     } catch (err: any) {
       toast({
-        title: "Error",
-        description: err.message || "Failed to save app settings.",
+        title: t("errorTitle"),
+        description: err.message || t("errSaveApp"),
         variant: "error",
       });
     } finally {
@@ -85,8 +96,8 @@ export function SettingsForms({
       });
     } catch (err: any) {
       toast({
-        title: "Error",
-        description: err.message || "Failed to save vehicle profile.",
+        title: t("errorTitle"),
+        description: err.message || t("errSaveVehicle"),
         variant: "error",
       });
     } finally {
@@ -107,8 +118,8 @@ export function SettingsForms({
       });
     } catch (err: any) {
       toast({
-        title: "Error",
-        description: err.message || "Failed to save gasoline benchmark.",
+        title: t("errorTitle"),
+        description: err.message || t("errSaveBenchmark"),
         variant: "error",
       });
     } finally {
@@ -127,8 +138,8 @@ export function SettingsForms({
       });
     } catch (err: any) {
       toast({
-        title: "Error",
-        description: err.message || "Failed to seed demo data.",
+        title: t("errorTitle"),
+        description: err.message || t("errSeedDemo"),
         variant: "error",
       });
     } finally {
@@ -148,8 +159,8 @@ export function SettingsForms({
       });
     } catch (err: any) {
       toast({
-        title: "Error",
-        description: err.message || "Failed to delete data.",
+        title: t("errorTitle"),
+        description: err.message || t("errDeleteData"),
         variant: "error",
       });
     } finally {
@@ -158,19 +169,19 @@ export function SettingsForms({
   };
 
   const handleSoftDeleteProvider = async (providerId: string, name: string) => {
-    if (!confirm(`Are you sure you want to remove "${name}" from providers list?`)) return;
+    if (!confirm(t("confirmRemoveProvider"))) return;
     try {
       await softDeleteProviderAction(providerId);
       setProviderList((prev) => prev.filter((p) => p.id !== providerId));
       toast({
-        title: "Şarj İstasyonu Silindi",
-        description: `"${name}" sağlayıcısı listeden kaldırıldı.`,
+        title: t("providerRemovedTitle"),
+        description: `${name} ${t("providerRemovedDesc")}`,
         variant: "success",
       });
     } catch (err: any) {
       toast({
-        title: "Hata",
-        description: err.message || "Provider silinemedi.",
+        title: t("errorTitle"),
+        description: t("errRemoveProvider"),
         variant: "error",
       });
     }
@@ -288,6 +299,65 @@ export function SettingsForms({
             </div>
           </div>
 
+          {/* Vehicle Make, Model, and Year (BUG-002 Fix) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
+                {t("vehicleMake")}
+              </label>
+              <select
+                name="vehicleMake"
+                value={selectedMake}
+                onChange={(e) => {
+                  const newMake = e.target.value;
+                  setSelectedMake(newMake);
+                  const bObj = EV_CATALOG.find((b) => b.name === newMake);
+                  if (bObj && bObj.models.length > 0) {
+                    setSelectedModel(bObj.models[0]);
+                  }
+                }}
+                className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-medium cursor-pointer"
+              >
+                {EV_CATALOG.map((b) => (
+                  <option key={b.name} value={b.name}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
+                {t("vehicleModel")}
+              </label>
+              <select
+                name="vehicleModel"
+                value={selectedModel}
+                onChange={(e) => setSelectedModel(e.target.value)}
+                className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-medium cursor-pointer"
+              >
+                {availableModels.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
+                {t("vehicleYear")}
+              </label>
+              <input
+                type="number"
+                name="vehicleYear"
+                defaultValue={vehicle.year || 2024}
+                required
+                className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-medium"
+              />
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
@@ -388,7 +458,7 @@ export function SettingsForms({
           <div className="flex items-center gap-2.5">
             <Zap className="w-5 h-5 text-neutral-900 dark:text-neutral-100" />
             <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 font-outfit m-0">
-              Charging Networks & Providers ({providerList.length})
+              {t("chargingNetworksAndProviders")} ({providerList.length})
             </h3>
           </div>
         </div>
@@ -396,7 +466,7 @@ export function SettingsForms({
         <div className="relative">
           <input
             type="text"
-            placeholder="Search provider to manage or soft-delete..."
+            placeholder={t("searchProvider")}
             value={providerSearch}
             onChange={(e) => setProviderSearch(e.target.value)}
             className="glass-input w-full pl-9 px-3.5 py-2 rounded-xl text-xs font-medium"
@@ -423,7 +493,7 @@ export function SettingsForms({
                   type="button"
                   onClick={() => handleSoftDeleteProvider(prov.id, prov.name)}
                   className="p-1.5 text-neutral-400 hover:text-rose-600 hover:bg-rose-500/10 rounded-lg transition-all cursor-pointer"
-                  title="Remove / Soft-Delete Provider"
+                  title={t("removeProvider")}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -431,7 +501,7 @@ export function SettingsForms({
             ))
           ) : (
             <div className="p-4 text-center text-xs text-neutral-400 italic">
-              No matching providers found
+              {t("noMatchingProviders")}
             </div>
           )}
         </div>
@@ -444,7 +514,7 @@ export function SettingsForms({
             {t("demoDataGen")}
           </h3>
           <p className="text-xs text-neutral-500 mt-1">
-            {t("demoDataDesc")} ({sessionsCount} {t("sessionsCount")} logged)
+            {t("demoDataDesc")} ({sessionsCount} {t("sessionsCount")} {t("logged")})
           </p>
         </div>
 

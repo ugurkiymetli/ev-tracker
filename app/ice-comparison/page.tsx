@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { getDashboardData } from "@/server/services/ev-service";
 import { updateSettingsAction } from "@/app/actions";
 import { TrendingUp, Fuel, Zap, Leaf, CheckCircle2, BarChart2 } from "lucide-react";
@@ -8,7 +9,10 @@ export const revalidate = 0;
 export default async function IceComparisonPage() {
   const { stats, settings, iceComparison } = await getDashboardData();
   const sym = settings.currencySymbol || "$";
-  const lang = (settings.language === "tr" ? "tr" : "en") as "en" | "tr";
+  const cookieStore = await cookies();
+  const cookieLang = cookieStore.get("ev_tracker_lang")?.value;
+  const dbLang = settings.language;
+  const lang = (cookieLang === "tr" || (!cookieLang && dbLang === "tr") ? "tr" : "en") as "en" | "tr";
   const t = (key: keyof typeof translations.en) => translations[lang][key] || translations.en[key];
 
   return (

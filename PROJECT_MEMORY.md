@@ -25,7 +25,7 @@ The primary goal is to become a comprehensive personal EV dashboard that answers
 
 ## UI & Styling
 
-- Vanilla CSS with CSS Variables & Glassmorphism design tokens ([STYLING_RULES.md](file:///Users/ugurkiymetli/Developer/ev-tracker/STYLING_RULES.md))
+- Vanilla CSS with CSS Variables & Glassmorphism design tokens ([STYLING_RULES.md](file:///Users/ugurkiymetli/Developer/ev-tracker/.antigravity/STYLING_RULES.md))
 - Tailwind CSS
 - Lucide React Icons
 - Recharts (Composed Bar & Line Charts, Vertical Bar Charts)
@@ -44,6 +44,15 @@ The primary goal is to become a comprehensive personal EV dashboard that answers
 ## File Processing
 
 - `xlsx` (SheetJS) for Excel (`.xlsx`, `.xls`) & CSV import pipeline.
+
+---
+
+# Issues & Feature Tracking
+
+All reported bugs and feature requests are tracked in [ISSUES_BACKLOG.md](file:///Users/ugurkiymetli/Developer/ev-tracker/ISSUES_BACKLOG.md).
+
+- **Bugs Tracked:** BUG-001 through BUG-006 (i18n consistency, vehicle brand/model selector, dashboard modal stations, decimal kWh inputs, modal alignment).
+- **Features Tracked:** FEATURE-001 through FEATURE-010 (loading indicators, browser language detection, simplified footer, onboarding flow, flexible cost entry, AC/DC visual selector, optional fields, table sorting/filtering, average charging power, monthly ICE energy comparison).
 
 ---
 

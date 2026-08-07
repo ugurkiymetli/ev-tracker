@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Language, translations } from "@/lib/i18n/translations";
 
 interface LanguageContextType {
@@ -35,34 +36,33 @@ export function LanguageProvider({
   initialLanguage?: string;
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const [language, setLanguageState] = useState<Language>(() => {
-    if (initialLanguage === "en" || initialLanguage === "tr") {
-      return initialLanguage as Language;
-    }
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("ev_tracker_lang") as Language;
       if (stored === "en" || stored === "tr") return stored;
+    }
+    if (initialLanguage === "en" || initialLanguage === "tr") {
+      return initialLanguage as Language;
     }
     return "en";
   });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      if (initialLanguage === "en" || initialLanguage === "tr") {
+      const stored = localStorage.getItem("ev_tracker_lang") as Language;
+      if (stored === "en" || stored === "tr") {
+        setLanguageState(stored);
+        document.cookie = `ev_tracker_lang=${stored}; path=/; max-age=31536000; SameSite=Lax`;
+      } else if (initialLanguage === "en" || initialLanguage === "tr") {
         setLanguageState(initialLanguage as Language);
         localStorage.setItem("ev_tracker_lang", initialLanguage);
         document.cookie = `ev_tracker_lang=${initialLanguage}; path=/; max-age=31536000; SameSite=Lax`;
       } else {
-        const stored = localStorage.getItem("ev_tracker_lang") as Language;
-        if (stored === "en" || stored === "tr") {
-          setLanguageState(stored);
-          document.cookie = `ev_tracker_lang=${stored}; path=/; max-age=31536000; SameSite=Lax`;
-        } else {
-          const detected = detectBrowserLanguage();
-          setLanguageState(detected);
-          localStorage.setItem("ev_tracker_lang", detected);
-          document.cookie = `ev_tracker_lang=${detected}; path=/; max-age=31536000; SameSite=Lax`;
-        }
+        const detected = detectBrowserLanguage();
+        setLanguageState(detected);
+        localStorage.setItem("ev_tracker_lang", detected);
+        document.cookie = `ev_tracker_lang=${detected}; path=/; max-age=31536000; SameSite=Lax`;
       }
     }
   }, [initialLanguage]);
@@ -72,6 +72,9 @@ export function LanguageProvider({
     if (typeof window !== "undefined") {
       localStorage.setItem("ev_tracker_lang", lang);
       document.cookie = `ev_tracker_lang=${lang}; path=/; max-age=31536000; SameSite=Lax`;
+      try {
+        router.refresh();
+      } catch (e) {}
     }
   };
 

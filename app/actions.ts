@@ -349,6 +349,10 @@ export async function updateSettingsAction(formData: FormData): Promise<void> {
     : settings.language;
 
   const vehicleName = (formData.get("vehicleName") as string)?.trim();
+  const vehicleMake = (formData.get("vehicleMake") as string)?.trim();
+  const vehicleModel = (formData.get("vehicleModel") as string)?.trim();
+  const vehicleYearStr = formData.get("vehicleYear") as string;
+  const vehicleYear = vehicleYearStr ? parseInt(vehicleYearStr, 10) : undefined;
   const batteryCapacityKwh = parseFloat(formData.get("batteryCapacityKwh") as string);
   const initialOdometerKm = parseFloat(formData.get("initialOdometerKm") as string);
   const currentOdometerKm = parseFloat(formData.get("currentOdometerKm") as string);
@@ -370,11 +374,14 @@ export async function updateSettingsAction(formData: FormData): Promise<void> {
     },
   });
 
-  if (vehicleName || !isNaN(batteryCapacityKwh)) {
+  if (vehicleName || vehicleMake || vehicleModel || !isNaN(batteryCapacityKwh)) {
     await prisma.vehicle.update({
       where: { id: vehicle.id },
       data: {
         name: vehicleName || vehicle.name,
+        make: vehicleMake || vehicle.make,
+        model: vehicleModel || vehicle.model,
+        year: vehicleYear && !isNaN(vehicleYear) ? vehicleYear : vehicle.year,
         batteryCapacityKwh: !isNaN(batteryCapacityKwh) ? batteryCapacityKwh : vehicle.batteryCapacityKwh,
         initialOdometerKm: !isNaN(initialOdometerKm) ? initialOdometerKm : vehicle.initialOdometerKm,
         currentOdometerKm: !isNaN(currentOdometerKm) ? currentOdometerKm : vehicle.currentOdometerKm,

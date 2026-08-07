@@ -18,20 +18,26 @@ import {
   Trash2,
 } from "lucide-react";
 
+import { cookies } from "next/headers";
 import LandingPage from "./landing/page";
 
 export const revalidate = 0;
 
 export default async function MainPage() {
-  const { user, vehicle, settings, stats, monthlyTrends, providerStats, sessions } =
+  const { user, vehicle, settings, stats, monthlyTrends, providerStats, sessions, allProviders = [], userTopProviderIds = [] } =
     await getDashboardData();
 
   if (!user) {
     return <LandingPage />;
   }
 
+  const cookieStore = await cookies();
+  const cookieLang = cookieStore.get("ev_tracker_lang")?.value;
+  const lang = (cookieLang === "tr" || cookieLang === "en")
+    ? (cookieLang as "en" | "tr")
+    : (settings.language === "tr" ? "tr" : "en");
+
   const sym = settings.currencySymbol || "$";
-  const lang = (settings.language === "tr" ? "tr" : "en") as "en" | "tr";
   const t = (key: keyof typeof translations.en) => translations[lang][key] || translations.en[key];
 
   return (
@@ -54,15 +60,17 @@ export default async function MainPage() {
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <form action={seedDemoDataAction}>
-            <button
-              type="submit"
-              className="py-2.5 px-3 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 rounded-xl font-semibold text-xs transition-all active:scale-[0.99] border border-neutral-200 dark:border-neutral-700 flex items-center gap-1.5 cursor-pointer"
-            >
-              <Cpu className="w-3.5 h-3.5" />
-              <span>{sessions.length === 0 ? t("seedDemoData") : t("resetDemoData")}</span>
-            </button>
-          </form>
+          {sessions.length === 0 && (
+            <form action={seedDemoDataAction}>
+              <button
+                type="submit"
+                className="py-2.5 px-3 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 rounded-xl font-semibold text-xs transition-all active:scale-[0.99] border border-neutral-200 dark:border-neutral-700 flex items-center gap-1.5 cursor-pointer"
+              >
+                <Cpu className="w-3.5 h-3.5" />
+                <span>{t("seedDemoData")}</span>
+              </button>
+            </form>
+          )}
 
           {sessions.length > 0 && (
             <form action={deleteAllDataAction}>
@@ -76,7 +84,7 @@ export default async function MainPage() {
             </form>
           )}
 
-          <ChargingSessionDialog />
+          <ChargingSessionDialog providers={allProviders} userTopProviderIds={userTopProviderIds} />
         </div>
       </div>
 

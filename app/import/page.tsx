@@ -241,11 +241,11 @@ export default function ImportPage() {
                                 return { ...prev, previewRows: nextRows };
                               });
                             }}
-                            placeholder="Şarj İstasyonu / Marka"
+                            placeholder={t("placeholderProviderImport")}
                             className="glass-input px-2.5 py-1 text-xs rounded-lg font-bold w-44 border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white"
                           />
                         ) : (
-                          <span className="text-neutral-400 italic">Unspecified</span>
+                          <span className="text-neutral-400 italic">{t("unspecified")}</span>
                         )}
                       </td>
                       <td className="px-3 py-3">
