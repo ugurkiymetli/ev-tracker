@@ -50,7 +50,7 @@ export default function SignInPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" suppressHydrationWarning>
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
               {t("username")}
@@ -60,6 +60,7 @@ export default function SignInPage() {
               name="username"
               required
               autoFocus
+              suppressHydrationWarning
               className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-medium"
             />
           </div>
@@ -72,6 +73,7 @@ export default function SignInPage() {
               type="password"
               name="password"
               required
+              suppressHydrationWarning
               className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-medium"
             />
           </div>

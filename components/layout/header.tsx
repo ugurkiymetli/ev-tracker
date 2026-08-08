@@ -31,18 +31,18 @@ export function Header({ user }: HeaderProps) {
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-900 px-4 py-3.5 transition-colors duration-300">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <header className="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-900 px-3 py-2 md:px-4 md:py-3.5 transition-colors duration-300">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2.5 md:gap-4">
         {/* Logo & Title */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center text-white dark:text-neutral-950 shadow-md group-hover:scale-105 transition-transform">
-            <Zap className="w-5 h-5 fill-current" />
+        <Link href="/" className="flex items-center gap-2 md:gap-3 group">
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center text-white dark:text-neutral-950 shadow-md group-hover:scale-105 transition-transform">
+            <Zap className="w-4 h-4 md:w-5 md:h-5 fill-current" />
           </div>
           <div>
-            <h1 className="text-xl font-extrabold text-neutral-900 dark:text-white tracking-tight font-outfit m-0 leading-none uppercase">
+            <h1 className="text-base md:text-xl font-extrabold text-neutral-900 dark:text-white tracking-tight font-outfit m-0 leading-none uppercase">
               {t("appName")}
             </h1>
-            <p className="text-[10px] text-neutral-500 dark:text-neutral-400 font-semibold tracking-wider uppercase mt-1">
+            <p className="text-[9px] md:text-[10px] text-neutral-500 dark:text-neutral-400 font-semibold tracking-wider uppercase mt-0.5 md:mt-1">
               {t("appTagline")}
             </p>
           </div>
@@ -51,7 +51,7 @@ export function Header({ user }: HeaderProps) {
         {/* Navigation & Controls */}
         <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 justify-between md:justify-end">
           {!isAuthPage && user && (
-            <nav className="flex-grow md:flex-grow-0 flex bg-neutral-100 dark:bg-neutral-900/80 p-1 rounded-xl border border-neutral-200 dark:border-neutral-800/80">
+            <nav className="flex-grow md:flex-grow-0 flex bg-neutral-100 dark:bg-neutral-900/80 p-0.5 md:p-1 rounded-xl border border-neutral-200 dark:border-neutral-800/80">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
@@ -59,7 +59,7 @@ export function Header({ user }: HeaderProps) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+                    className={`flex items-center justify-center gap-1.5 px-2.5 py-1.5 md:px-3 md:py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
                       isActive
                         ? "bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 shadow-sm"
                         : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"

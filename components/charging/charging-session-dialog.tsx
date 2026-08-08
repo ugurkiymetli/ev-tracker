@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Pencil, X, BatteryCharging, Zap, Clock, Gauge } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Plus, Pencil, X, BatteryCharging, Zap, Clock, Gauge, ChevronDown } from "lucide-react";
 import { createChargingSessionAction, updateChargingSessionAction } from "@/app/actions";
 import { useLanguage } from "@/components/layout/language-provider";
 import { useToast } from "@/components/ui/toast";
@@ -18,17 +19,24 @@ interface ChargingSessionDialogProps {
   session?: ChargingSession;
   providers?: ChargingProviderSimple[];
   userTopProviderIds?: string[];
+  defaultOpen?: boolean;
 }
 
 export function ChargingSessionDialog({
   session,
   providers = [],
   userTopProviderIds = [],
+  defaultOpen = false,
 }: ChargingSessionDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
+  const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const { t } = useLanguage();
   const { toast } = useToast();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isEdit = Boolean(session);
 
@@ -37,6 +45,7 @@ export function ChargingSessionDialog({
     session?.chargingType === "DC" ? "DC" : "AC"
   );
   const [costMode, setCostMode] = useState<"TOTAL" | "PER_KWH">("TOTAL");
+  const [showOptional, setShowOptional] = useState(false);
 
   const [energyVal, setEnergyVal] = useState<string>(
     session?.energyChargedKwh ? String(session.energyChargedKwh) : ""
@@ -156,16 +165,16 @@ export function ChargingSessionDialog({
         </button>
       )}
 
-      {open && (
-        <div 
-          className="fixed inset-0 z-50 flex items-start justify-center pt-[10px] pb-[10px] px-2 sm:px-4 bg-neutral-900/20 dark:bg-black/70 backdrop-blur-xl animate-fade-in text-left font-sans" 
-          aria-labelledby="modal-title" 
-          role="dialog" 
+      {open && mounted && createPortal(
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-start sm:justify-end bg-neutral-900/60 dark:bg-black/80 backdrop-blur-sm transition-opacity font-sans"
+          aria-labelledby="drawer-title"
+          role="dialog"
           aria-modal="true"
           onClick={() => setOpen(false)}
         >
-          <div 
-            className="relative w-full max-w-lg max-h-[calc(100vh-20px)] overflow-y-auto bg-white dark:bg-neutral-900 rounded-[28px] border border-neutral-200/60 dark:border-neutral-800/60 shadow-[0_0_80px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_0_80px_-15px_rgba(0,0,0,0.5)] p-5 sm:p-6 space-y-4"
+          <div
+            className="relative w-full sm:w-[480px] max-h-[90dvh] sm:max-h-none sm:h-[100dvh] overflow-y-auto text-left bg-white dark:bg-neutral-900 rounded-t-[28px] sm:rounded-none sm:border-l border-neutral-200/60 dark:border-neutral-800/60 shadow-[0_-8px_40px_rgba(0,0,0,0.12)] sm:shadow-[-8px_0_40px_rgba(0,0,0,0.12)] p-5 sm:p-6 space-y-4 flex flex-col animate-drawer"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -191,7 +200,38 @@ export function ChargingSessionDialog({
                 <input type="hidden" name="sessionId" value={session.id} />
               )}
 
-              {/* Date & Visual Charging Type Selector */}
+              {/* Visual Charging Type Selector */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
+                  {t("fieldType")}
+                </label>
+                <div className="grid grid-cols-2 gap-1.5 p-1 bg-neutral-100 dark:bg-neutral-800/80 rounded-xl border border-neutral-200 dark:border-neutral-700/80">
+                  <button
+                    type="button"
+                    onClick={() => setChargingType("AC")}
+                    className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${chargingType === "AC"
+                      ? "bg-emerald-500 text-white dark:text-neutral-950 font-extrabold shadow-sm"
+                      : "text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-400"
+                      }`}
+                  >
+                    <BatteryCharging className="w-3.5 h-3.5" />
+                    <span>AC</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setChargingType("DC")}
+                    className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${chargingType === "DC"
+                      ? "bg-amber-500 text-neutral-950 font-extrabold shadow-sm"
+                      : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+                      }`}
+                  >
+                    <Zap className="w-3.5 h-3.5 fill-current" />
+                    <span>{t("dcFast")}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Date & Energy */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
@@ -207,58 +247,25 @@ export function ChargingSessionDialog({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
-                    {t("fieldType")}
-                  </label>
-                  <div className="grid grid-cols-2 gap-1.5 p-1 bg-neutral-100 dark:bg-neutral-800/80 rounded-xl border border-neutral-200 dark:border-neutral-700/80">
-                    <button
-                      type="button"
-                      onClick={() => setChargingType("AC")}
-                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                        chargingType === "AC"
-                          ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm"
-                          : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
-                      }`}
-                    >
-                      <BatteryCharging className="w-3.5 h-3.5" />
-                      <span>AC</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setChargingType("DC")}
-                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                        chargingType === "DC"
-                          ? "bg-amber-500 text-neutral-950 font-extrabold shadow-sm"
-                          : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
-                      }`}
-                    >
-                      <Zap className="w-3.5 h-3.5 fill-current" />
-                      <span>{t("dcFast")}</span>
-                    </button>
+                  <div className="flex justify-between items-center">
+                    <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
+                      {t("fieldEnergy")}
+                    </label>
+                    <span className="text-[10px] text-neutral-400 font-medium">
+                      {t("supportsDecimal")}
+                    </span>
                   </div>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    name="energyChargedKwh"
+                    value={energyVal}
+                    onChange={(e) => setEnergyVal(e.target.value)}
+                    placeholder="45.125"
+                    required
+                    className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-bold tracking-wide"
+                  />
                 </div>
-              </div>
-
-              {/* Energy (kWh) Input with 3 Decimal Precision */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between items-center">
-                  <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
-                    {t("fieldEnergy")}
-                  </label>
-                  <span className="text-[10px] text-neutral-400 font-medium">
-                    {t("supportsDecimal")}
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  name="energyChargedKwh"
-                  value={energyVal}
-                  onChange={(e) => setEnergyVal(e.target.value)}
-                  placeholder="45.125"
-                  required
-                  className="glass-input w-full px-3.5 py-2.5 rounded-xl text-base font-bold tracking-wide"
-                />
               </div>
 
               {/* Cost Entry Mode Selector (FEATURE-005) */}
@@ -271,22 +278,20 @@ export function ChargingSessionDialog({
                     <button
                       type="button"
                       onClick={() => setCostMode("TOTAL")}
-                      className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
-                        costMode === "TOTAL"
-                          ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-xs"
-                          : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
-                      }`}
+                      className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${costMode === "TOTAL"
+                        ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-xs"
+                        : "text-neutral-500 hover:text-neutral-900 text-xs dark:hover:text-white"
+                        }`}
                     >
                       {t("modeTotalCost")}
                     </button>
                     <button
                       type="button"
                       onClick={() => setCostMode("PER_KWH")}
-                      className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${
-                        costMode === "PER_KWH"
-                          ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-xs"
-                          : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
-                      }`}
+                      className={`px-2.5 py-1 rounded-md transition-all cursor-pointer ${costMode === "PER_KWH"
+                        ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-xs"
+                        : "text-neutral-500 hover:text-neutral-900 text-xs dark:hover:text-white"
+                        }`}
                     >
                       {t("modePricePerKwh")}
                     </button>
@@ -349,79 +354,94 @@ export function ChargingSessionDialog({
                 </div>
               </div>
 
-              {/* Provider & Odometer */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
-                    {t("fieldProvider")}
-                  </label>
-                  <ProviderAutocomplete
-                    providers={providers}
-                    userTopProviderIds={userTopProviderIds}
-                    initialValue={session?.provider?.name || session?.location || ""}
-                    name="providerName"
-                    placeholder={t("placeholderProvider")}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
-                    {t("fieldOdometer")}
-                  </label>
-                  <input
-                    type="number"
-                    name="odometerKm"
-                    defaultValue={session?.odometerKm ?? ""}
-                    placeholder={t("placeholderOdometer")}
-                    className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
-                  />
-                </div>
-              </div>
-
-              {/* Optional Fields: Duration & Avg Power Calculation (FEATURE-007 & FEATURE-009) */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-neutral-400" />
-                    <span>{t("fieldDuration")}</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={durationMins}
-                    onChange={(e) => setDurationMins(e.target.value)}
-                    placeholder={t("placeholderDuration")}
-                    className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit flex items-center gap-1">
-                    <Gauge className="w-3.5 h-3.5 text-neutral-400" />
-                    <span>{t("avgPower")}</span>
-                  </label>
-                  <div className="px-3.5 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white text-sm font-bold border border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
-                    <span>{avgPowerKw ? `${avgPowerKw} kW` : "—"}</span>
-                    {avgPowerKw && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-extrabold uppercase">
-                        {t("calculatedBadge")}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Notes */}
+              {/* Provider */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
-                  {t("fieldNotes")}
+                  {t("fieldProvider")}
                 </label>
-                <input
-                  type="text"
-                  name="notes"
-                  defaultValue={session?.notes || ""}
-                  placeholder={t("placeholderNotes")}
-                  className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
+                <ProviderAutocomplete
+                  providers={providers}
+                  userTopProviderIds={userTopProviderIds}
+                  initialValue={session?.provider?.name || session?.location || ""}
+                  name="providerName"
+                  placeholder={t("placeholderProvider")}
                 />
+              </div>
+
+              {/* Optional Fields Accordion */}
+              <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                <button
+                  type="button"
+                  onClick={() => setShowOptional(!showOptional)}
+                  className="flex items-center justify-between w-full py-2 text-xs font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider font-outfit transition-colors hover:text-neutral-900 dark:hover:text-neutral-100"
+                >
+                  <span>{t("optionalFields")}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${showOptional ? "rotate-180" : ""}`} />
+                </button>
+
+                {showOptional && (
+                  <div className="pt-3 space-y-4 animate-fade-in">
+                    {/* Odometer */}
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
+                        {t("fieldOdometer")}
+                      </label>
+                      <input
+                        type="number"
+                        name="odometerKm"
+                        defaultValue={session?.odometerKm ?? ""}
+                        placeholder={t("placeholderOdometer")}
+                        className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
+                      />
+                    </div>
+
+                    {/* Duration & Avg Power Calculation (FEATURE-007 & FEATURE-009) */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-neutral-400" />
+                          <span>{t("fieldDuration")}</span>
+                        </label>
+                        <input
+                          type="number"
+                          value={durationMins}
+                          onChange={(e) => setDurationMins(e.target.value)}
+                          placeholder={t("placeholderDuration")}
+                          className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit flex items-center gap-1">
+                          <Gauge className="w-3.5 h-3.5 text-neutral-400" />
+                          <span>{t("avgPower")}</span>
+                        </label>
+                        <div className="px-3.5 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white text-sm font-bold border border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
+                          <span>{avgPowerKw ? `${avgPowerKw} kW` : "—"}</span>
+                          {avgPowerKw && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-extrabold uppercase">
+                              {t("calculatedBadge")}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Notes */}
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
+                        {t("fieldNotes")}
+                      </label>
+                      <input
+                        type="text"
+                        name="notes"
+                        defaultValue={session?.notes || ""}
+                        placeholder={t("placeholderNotes")}
+                        className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Modal Buttons */}
@@ -443,7 +463,8 @@ export function ChargingSessionDialog({
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

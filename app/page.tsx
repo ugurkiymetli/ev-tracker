@@ -3,7 +3,6 @@ import { getDashboardData } from "@/server/services/ev-service";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { MonthlyTrendChart } from "@/components/dashboard/monthly-trend-chart";
 import { ProviderBreakdownChart } from "@/components/dashboard/provider-breakdown-chart";
-import { ChargingSessionDialog } from "@/components/charging/charging-session-dialog";
 import { seedDemoDataAction, deleteAllDataAction } from "@/app/actions";
 import { translations } from "@/lib/i18n/translations";
 import {
@@ -16,6 +15,7 @@ import {
   ArrowRight,
   Cpu,
   Trash2,
+  Plus,
 } from "lucide-react";
 
 import { cookies } from "next/headers";
@@ -84,7 +84,13 @@ export default async function MainPage() {
             </form>
           )}
 
-          <ChargingSessionDialog providers={allProviders} userTopProviderIds={userTopProviderIds} />
+          <Link
+            href="/charging?log=true"
+            className="py-2.5 px-4 bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 rounded-xl font-bold text-xs shadow-md hover:shadow-lg active:scale-[0.99] transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>{t("logSession")}</span>
+          </Link>
         </div>
       </div>
 

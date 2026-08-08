@@ -8,7 +8,13 @@ import { translations } from "@/lib/i18n/translations";
 
 export const revalidate = 0;
 
-export default async function ChargingPage() {
+export default async function ChargingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await searchParams;
+  const shouldOpenLog = params?.log === "true";
   const { sessions, settings, allProviders = [], userTopProviderIds = [] } = await getDashboardData();
   const sym = settings.currencySymbol || "$";
   const cookieStore = await cookies();
@@ -38,7 +44,7 @@ export default async function ChargingPage() {
             <UploadCloud className="w-4 h-4" />
             <span className="hidden sm:inline">{t("navImport")}</span>
           </Link>
-          <ChargingSessionDialog providers={allProviders} userTopProviderIds={userTopProviderIds} />
+          <ChargingSessionDialog providers={allProviders} userTopProviderIds={userTopProviderIds} defaultOpen={shouldOpenLog} />
         </div>
       </div>
 
