@@ -156,8 +156,8 @@ export function ChargingTableView({
               type="button"
               onClick={() => setTypeFilter("AC")}
               className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${typeFilter === "AC"
-                  ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-xs"
-                  : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+                  ? "bg-emerald-500 text-white dark:text-neutral-950 shadow-xs"
+                  : "text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-400"
                 }`}
             >
               AC
@@ -285,10 +285,10 @@ export function ChargingTableView({
                       <span
                         className={`inline-flex items-center gap-1 px-1.5 py-0.5 sm:px-2 rounded-md text-[10px] font-bold ${isDc
                             ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
-                            : "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700"
+                            : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
                           }`}
                       >
-                        <Zap className="w-3 h-3" />
+                        {isDc ? <Zap className="w-3 h-3" /> : <BatteryCharging className="w-3 h-3" />}
                         {session.chargingType}
                       </span>
                     </td>
