@@ -18,6 +18,7 @@ interface ChargingTableViewProps {
   userTopProviderIds?: string[];
   currencySymbol: string;
   lang: "en" | "tr";
+  isAdmin?: boolean;
 }
 
 type SortField = "date" | "provider" | "energy" | "cost" | "price" | "odometer";
@@ -29,6 +30,7 @@ export function ChargingTableView({
   userTopProviderIds = [],
   currencySymbol,
   lang,
+  isAdmin = false,
 }: ChargingTableViewProps) {
   const { t } = useLanguage();
 
@@ -311,6 +313,7 @@ export function ChargingTableView({
                         session={session}
                         providers={providers}
                         userTopProviderIds={userTopProviderIds}
+                        isAdmin={isAdmin}
                       />
                     </td>
                   </tr>

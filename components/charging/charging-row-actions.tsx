@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Trash2, Check, X } from "lucide-react";
 import { deleteChargingSessionAction } from "@/app/actions";
+import { adminDeleteSessionAction } from "@/server/actions/admin";
 import { ChargingSessionDialog } from "@/components/charging/charging-session-dialog";
 import { useToast } from "@/components/ui/toast";
 import { ChargingSession } from "@/types";
@@ -17,12 +18,14 @@ interface ChargingRowActionsProps {
   session: ChargingSession;
   providers: ProviderSimple[];
   userTopProviderIds?: string[];
+  isAdmin?: boolean;
 }
 
 export function ChargingRowActions({
   session,
   providers,
   userTopProviderIds = [],
+  isAdmin = false,
 }: ChargingRowActionsProps) {
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -31,7 +34,11 @@ export function ChargingRowActions({
   const handleConfirmDelete = async () => {
     setDeleting(true);
     try {
-      await deleteChargingSessionAction(session.id);
+      if (isAdmin) {
+        await adminDeleteSessionAction(session.id);
+      } else {
+        await deleteChargingSessionAction(session.id);
+      }
       toast({
         title: "Oturum Silindi",
         description: "Şarj oturumu başarıyla silindi.",
@@ -83,6 +90,7 @@ export function ChargingRowActions({
         session={session}
         providers={providers}
         userTopProviderIds={userTopProviderIds}
+        isAdmin={isAdmin}
       />
       <button
         type="button"

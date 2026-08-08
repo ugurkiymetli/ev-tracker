@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Pencil, X, BatteryCharging, Zap, Clock, Gauge, ChevronDown } from "lucide-react";
 import { createChargingSessionAction, updateChargingSessionAction } from "@/app/actions";
+import { adminUpdateSessionAction } from "@/server/actions/admin";
 import { useLanguage } from "@/components/layout/language-provider";
 import { useToast } from "@/components/ui/toast";
 import { ProviderAutocomplete } from "@/components/ui/provider-autocomplete";
@@ -20,6 +21,7 @@ interface ChargingSessionDialogProps {
   providers?: ChargingProviderSimple[];
   userTopProviderIds?: string[];
   defaultOpen?: boolean;
+  isAdmin?: boolean;
 }
 
 export function ChargingSessionDialog({
@@ -27,6 +29,7 @@ export function ChargingSessionDialog({
   providers = [],
   userTopProviderIds = [],
   defaultOpen = false,
+  isAdmin = false,
 }: ChargingSessionDialogProps) {
   const [open, setOpen] = useState(defaultOpen);
   const [mounted, setMounted] = useState(false);
@@ -116,7 +119,11 @@ export function ChargingSessionDialog({
       formData.set("chargingType", chargingType);
 
       if (isEdit) {
-        await updateChargingSessionAction(formData);
+        if (isAdmin) {
+          await adminUpdateSessionAction(formData);
+        } else {
+          await updateChargingSessionAction(formData);
+        }
       } else {
         await createChargingSessionAction(formData);
       }
