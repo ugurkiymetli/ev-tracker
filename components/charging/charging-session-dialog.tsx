@@ -174,7 +174,7 @@ export function ChargingSessionDialog({
           onClick={() => setOpen(false)}
         >
           <div
-            className="relative w-full sm:w-[480px] max-h-[90dvh] sm:max-h-none sm:h-[100dvh] overflow-y-auto text-left bg-white dark:bg-neutral-900 rounded-t-[28px] sm:rounded-none sm:border-l border-neutral-200/60 dark:border-neutral-800/60 shadow-[0_-8px_40px_rgba(0,0,0,0.12)] sm:shadow-[-8px_0_40px_rgba(0,0,0,0.12)] p-5 sm:p-6 space-y-4 flex flex-col animate-drawer"
+            className="relative w-full sm:w-[540px] max-h-[90dvh] sm:max-h-none sm:h-[100dvh] overflow-y-auto text-left bg-white dark:bg-neutral-900 rounded-t-[28px] sm:rounded-none sm:border-l border-neutral-200/60 dark:border-neutral-800/60 shadow-[0_-8px_40px_rgba(0,0,0,0.12)] sm:shadow-[-8px_0_40px_rgba(0,0,0,0.12)] p-5 sm:p-6 space-y-4 flex flex-col animate-drawer"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -232,40 +232,38 @@ export function ChargingSessionDialog({
               </div>
 
               {/* Date & Energy */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
-                    {t("fieldDate")}
-                  </label>
-                  <input
-                    type="date"
-                    name="date"
-                    defaultValue={initialDateStr}
-                    required
-                    className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium dark:[color-scheme:dark]"
-                  />
-                </div>
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
+                  {t("fieldDate")}
+                </label>
+                <input
+                  type="date"
+                  name="date"
+                  defaultValue={initialDateStr}
+                  required
+                  className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium dark:[color-scheme:dark]"
+                />
+              </div>
 
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center">
-                    <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
-                      {t("fieldEnergy")}
-                    </label>
-                    <span className="text-[10px] text-neutral-400 font-medium">
-                      {t("supportsDecimal")}
-                    </span>
-                  </div>
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    name="energyChargedKwh"
-                    value={energyVal}
-                    onChange={(e) => setEnergyVal(e.target.value)}
-                    placeholder="45.125"
-                    required
-                    className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-bold tracking-wide"
-                  />
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
+                    {t("fieldEnergy")}
+                  </label>
+                  <span className="text-[10px] text-neutral-400 font-medium">
+                    {t("supportsDecimal")}
+                  </span>
                 </div>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  name="energyChargedKwh"
+                  value={energyVal}
+                  onChange={(e) => setEnergyVal(e.target.value)}
+                  placeholder="45.125"
+                  required
+                  className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-bold tracking-wide"
+                />
               </div>
 
               {/* Cost Entry Mode Selector (FEATURE-005) */}

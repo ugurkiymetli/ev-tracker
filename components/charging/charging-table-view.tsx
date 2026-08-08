@@ -178,12 +178,12 @@ export function ChargingTableView({
 
       {/* Sessions Table */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse text-xs">
+        <table className="w-full text-left border-collapse text-xs whitespace-nowrap sm:whitespace-normal">
           <thead>
-            <tr className="border-b border-neutral-200 dark:border-neutral-800 text-neutral-400 dark:text-neutral-500 font-bold uppercase tracking-wider select-none">
+            <tr className="border-b border-neutral-200 dark:border-neutral-800 text-neutral-400 dark:text-neutral-500 font-bold uppercase tracking-wider select-none text-[10px] sm:text-xs">
               <th
                 onClick={() => handleSort("date")}
-                className="pb-3 px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
+                className="pb-3 px-2 sm:px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
               >
                 <div className="flex items-center gap-1">
                   <span>{t("tableDate")}</span>
@@ -193,7 +193,7 @@ export function ChargingTableView({
 
               <th
                 onClick={() => handleSort("provider")}
-                className="pb-3 px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
+                className="pb-3 px-2 sm:px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
               >
                 <div className="flex items-center gap-1">
                   <span>{t("tableProvider")}</span>
@@ -201,11 +201,11 @@ export function ChargingTableView({
                 </div>
               </th>
 
-              <th className="pb-3 px-3">{t("tableType")}</th>
+              <th className="pb-3 px-2 sm:px-3">{t("tableType")}</th>
 
               <th
                 onClick={() => handleSort("energy")}
-                className="pb-3 px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
+                className="pb-3 px-2 sm:px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
               >
                 <div className="flex items-center gap-1">
                   <span>{t("tableEnergy")}</span>
@@ -215,7 +215,7 @@ export function ChargingTableView({
 
               <th
                 onClick={() => handleSort("cost")}
-                className="pb-3 px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
+                className="pb-3 px-2 sm:px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
               >
                 <div className="flex items-center gap-1">
                   <span>{t("tableCost")}</span>
@@ -225,7 +225,7 @@ export function ChargingTableView({
 
               <th
                 onClick={() => handleSort("price")}
-                className="pb-3 px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
+                className="pb-3 px-2 sm:px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
               >
                 <div className="flex items-center gap-1">
                   <span>{t("tablePricePerKwh")}</span>
@@ -235,7 +235,7 @@ export function ChargingTableView({
 
               <th
                 onClick={() => handleSort("odometer")}
-                className="pb-3 px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
+                className="pb-3 px-2 sm:px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
               >
                 <div className="flex items-center gap-1">
                   <span>{t("tableOdometer")}</span>
@@ -243,7 +243,7 @@ export function ChargingTableView({
                 </div>
               </th>
 
-              <th className="pb-3 px-3 text-right">{t("tableAction")}</th>
+              <th className="pb-3 px-2 sm:px-3 text-right">{t("tableAction")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60 font-medium">
@@ -268,10 +268,10 @@ export function ChargingTableView({
                     key={session.id}
                     className="hover:bg-neutral-50 dark:hover:bg-neutral-800/30 transition-colors"
                   >
-                    <td className="py-3.5 px-3 font-semibold text-neutral-900 dark:text-neutral-100 whitespace-nowrap">
+                    <td className="py-3 px-2 sm:px-3 font-semibold text-neutral-900 dark:text-neutral-100 whitespace-nowrap">
                       {dateStr}
                     </td>
-                    <td className="py-3.5 px-3 text-neutral-800 dark:text-neutral-200">
+                    <td className="py-3 px-2 sm:px-3 text-neutral-800 dark:text-neutral-200">
                       <div className="font-bold text-neutral-900 dark:text-white">
                         {session.provider?.name || session.location || "Standard Charge"}
                       </div>
@@ -281,9 +281,9 @@ export function ChargingTableView({
                         </div>
                       )}
                     </td>
-                    <td className="py-3.5 px-3">
+                    <td className="py-3 px-2 sm:px-3">
                       <span
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold ${isDc
+                        className={`inline-flex items-center gap-1 px-1.5 py-0.5 sm:px-2 rounded-md text-[10px] font-bold ${isDc
                             ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
                             : "bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700"
                           }`}
@@ -292,21 +292,21 @@ export function ChargingTableView({
                         {session.chargingType}
                       </span>
                     </td>
-                    <td className="py-3.5 px-3 text-neutral-900 dark:text-neutral-100 font-bold">
+                    <td className="py-3 px-2 sm:px-3 text-neutral-900 dark:text-neutral-100 font-bold">
                       {session.energyChargedKwh.toFixed(1)} kWh
                     </td>
-                    <td className="py-3.5 px-3 font-bold text-neutral-900 dark:text-neutral-100">
+                    <td className="py-3 px-2 sm:px-3 font-bold text-neutral-900 dark:text-neutral-100">
                       {currencySymbol}
                       {session.cost.toFixed(2)}
                     </td>
-                    <td className="py-3.5 px-3 text-neutral-500 dark:text-neutral-400">
+                    <td className="py-3 px-2 sm:px-3 text-neutral-500 dark:text-neutral-400">
                       {currencySymbol}
                       {session.pricePerKwh.toFixed(2)}
                     </td>
-                    <td className="py-3.5 px-3 text-neutral-500 dark:text-neutral-400">
+                    <td className="py-3 px-2 sm:px-3 text-neutral-500 dark:text-neutral-400">
                       {session.odometerKm ? `${session.odometerKm.toLocaleString()} km` : "—"}
                     </td>
-                    <td className="py-3.5 px-3 text-right">
+                    <td className="py-3 px-2 sm:px-3 text-right">
                       <ChargingRowActions
                         session={session}
                         providers={providers}
