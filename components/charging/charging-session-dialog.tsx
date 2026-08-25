@@ -167,14 +167,14 @@ export function ChargingSessionDialog({
 
       {open && mounted && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-end sm:items-start sm:justify-end bg-neutral-900/60 dark:bg-black/80 backdrop-blur-sm transition-opacity font-sans"
+          className="fixed inset-0 z-50 flex items-end sm:items-start sm:justify-end bg-neutral-900/60 dark:bg-black/80 backdrop-blur-sm transition-opacity font-sans overscroll-contain"
           aria-labelledby="drawer-title"
           role="dialog"
           aria-modal="true"
           onClick={() => setOpen(false)}
         >
           <div
-            className="relative w-full sm:w-[540px] max-h-[90dvh] sm:max-h-none sm:h-[100dvh] overflow-y-auto text-left bg-white dark:bg-neutral-900 rounded-t-[28px] sm:rounded-none sm:border-l border-neutral-200/60 dark:border-neutral-800/60 shadow-[0_-8px_40px_rgba(0,0,0,0.12)] sm:shadow-[-8px_0_40px_rgba(0,0,0,0.12)] p-5 sm:p-6 space-y-4 flex flex-col animate-drawer"
+            className="relative w-full sm:w-[540px] max-h-[85vh] sm:max-h-none sm:h-[100dvh] overflow-y-auto text-left bg-white dark:bg-neutral-900 rounded-t-[28px] sm:rounded-none sm:border-l border-neutral-200/60 dark:border-neutral-800/60 shadow-[0_-8px_40px_rgba(0,0,0,0.12)] sm:shadow-[-8px_0_40px_rgba(0,0,0,0.12)] p-5 sm:p-6 space-y-4 flex flex-col animate-drawer overscroll-contain"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -241,7 +241,7 @@ export function ChargingSessionDialog({
                   name="date"
                   defaultValue={initialDateStr}
                   required
-                  className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium dark:[color-scheme:dark]"
+                  className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium dark:[color-scheme:dark]"
                 />
               </div>
 
@@ -262,7 +262,7 @@ export function ChargingSessionDialog({
                   onChange={(e) => setEnergyVal(e.target.value)}
                   placeholder="45.125"
                   required
-                  className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-bold tracking-wide"
+                  className="glass-input w-full px-3.5 py-2.5 rounded-xl text-base sm:text-sm font-bold tracking-wide"
                 />
               </div>
 
@@ -311,7 +311,7 @@ export function ChargingSessionDialog({
                           onChange={(e) => setCostVal(e.target.value)}
                           placeholder="185.50"
                           required
-                          className="glass-input w-full px-3 py-1.5 rounded-lg text-sm font-bold"
+                          className="glass-input w-full px-3 py-1.5 rounded-lg text-base sm:text-sm font-bold"
                         />
                       </div>
                       <div>
@@ -336,7 +336,7 @@ export function ChargingSessionDialog({
                           onChange={(e) => setPricePerKwhVal(e.target.value)}
                           placeholder="4.15"
                           required
-                          className="glass-input w-full px-3 py-1.5 rounded-lg text-sm font-bold"
+                          className="glass-input w-full px-3 py-1.5 rounded-lg text-base sm:text-sm font-bold"
                         />
                       </div>
                       <div>
@@ -389,7 +389,7 @@ export function ChargingSessionDialog({
                         name="odometerKm"
                         defaultValue={session?.odometerKm ?? ""}
                         placeholder={t("placeholderOdometer")}
-                        className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
+                        className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
                       />
                     </div>
 
@@ -405,7 +405,7 @@ export function ChargingSessionDialog({
                           value={durationMins}
                           onChange={(e) => setDurationMins(e.target.value)}
                           placeholder={t("placeholderDuration")}
-                          className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
+                          className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
                         />
                       </div>
 
@@ -435,7 +435,7 @@ export function ChargingSessionDialog({
                         name="notes"
                         defaultValue={session?.notes || ""}
                         placeholder={t("placeholderNotes")}
-                        className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
+                        className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
                       />
                     </div>
                   </div>

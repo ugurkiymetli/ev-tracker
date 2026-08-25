@@ -90,7 +90,7 @@ export function ProviderAutocomplete({
           }}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="glass-input w-full px-3.5 py-2.5 pr-9 rounded-xl text-sm font-medium focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all"
+          className="glass-input w-full px-3.5 py-2.5 pr-9 rounded-xl text-base sm:text-sm font-medium focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all"
         />
         <button
           type="button"

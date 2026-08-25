@@ -64,6 +64,13 @@
   textarea {
     touch-action: manipulation;
   }
+
+  /* Prevent iOS WebKit auto-zoom on inputs (font-size < 16px triggers auto-zoom) */
+  @media screen and (max-width: 767px) {
+    input, select, textarea, .glass-input {
+      font-size: 16px;
+    }
+  }
 }
 
 /* Custom Minimal Scrollbars */
@@ -117,6 +124,8 @@ body {
 
 .animate-drawer {
   animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (min-width: 640px) {
