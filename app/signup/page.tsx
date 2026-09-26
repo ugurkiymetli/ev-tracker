@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Zap, UserPlus, AlertCircle } from "lucide-react";
+import { Zap, UserPlus, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { signUpAction } from "@/app/actions";
 import { useLanguage } from "@/components/layout/language-provider";
 
 export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -74,9 +76,10 @@ export default function SignUpPage() {
             />
           </div>
 
-          <div className="space-y-1.5">
+          {/* TODO: Enable email when email authentication is implemented */}
+          <div className="space-y-1.5 hidden">
             <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
-              {t("emailOpt")}
+              {t("email")}
             </label>
             <input
               type="email"
@@ -91,26 +94,46 @@ export default function SignUpPage() {
             <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
               {t("password")}
             </label>
-            <input
-              type="password"
-              name="password"
-              required
-              suppressHydrationWarning
-              className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-medium"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                required
+                suppressHydrationWarning
+                className="glass-input w-full px-3.5 py-2.5 pr-10 rounded-xl text-sm font-medium"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors cursor-pointer p-1 rounded-lg focus:outline-none"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
               {t("confirmPassword")}
             </label>
-            <input
-              type="password"
-              name="confirmPassword"
-              required
-              suppressHydrationWarning
-              className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-medium"
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                required
+                suppressHydrationWarning
+                className="glass-input w-full px-3.5 py-2.5 pr-10 rounded-xl text-sm font-medium"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors cursor-pointer p-1 rounded-lg focus:outline-none"
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
           <button

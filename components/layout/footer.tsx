@@ -9,11 +9,6 @@ export function Footer() {
   return (
     <footer className="mt-12 border-t border-neutral-200 dark:border-neutral-900 bg-white/50 dark:bg-neutral-950/50 py-6 px-4 text-xs text-neutral-500 dark:text-neutral-400 font-sans">
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2 font-medium">
-          <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-          <span>{t("footerLocalFirst")}</span>
-        </div>
-
         <div className="flex items-center gap-4 font-semibold">
           <a
             href="https://github.com/ugurkiymetli/"

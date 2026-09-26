@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sliders, Car, Fuel, Globe, DollarSign, CheckCircle2, Cpu, Trash2, Zap, Search } from "lucide-react";
+import { Sliders, Car, Fuel, Globe, DollarSign, CheckCircle2, Cpu, Trash2, Zap, Search, Sun, Moon } from "lucide-react";
 import {
   updateSettingsAction,
   seedDemoDataAction,
@@ -9,6 +9,7 @@ import {
   softDeleteProviderAction,
 } from "@/app/actions";
 import { useLanguage } from "@/components/layout/language-provider";
+import { useTheme } from "@/components/layout/theme-provider";
 import { useToast } from "@/components/ui/toast";
 import { EV_CATALOG } from "@/server/data/vehicles-catalog";
 import { Vehicle, Settings } from "@/types";
@@ -33,6 +34,7 @@ export function SettingsForms({
   providers = [],
 }: SettingsFormsProps) {
   const { t, setLanguage } = useLanguage();
+  const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const [savingApp, setSavingApp] = useState(false);
   const [savingVehicle, setSavingVehicle] = useState(false);
@@ -198,7 +200,7 @@ export function SettingsForms({
         </p>
       </div>
 
-      {/* 1. App Settings Panel (Language & Currency Symbol) */}
+      {/* 1. App Settings Panel (Theme, Language & Currency Symbol) */}
       <section className="bg-white dark:bg-neutral-900/40 p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-md space-y-6">
         <div className="flex items-center gap-2.5 pb-3 border-b border-neutral-200 dark:border-neutral-800">
           <Sliders className="w-5 h-5 text-neutral-900 dark:text-neutral-100" />
@@ -208,7 +210,23 @@ export function SettingsForms({
         </div>
 
         <form onSubmit={handleAppSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider flex items-center gap-1.5">
+                {theme === "dark" ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+                <span>{t("themeSelection")}</span>
+              </label>
+              <select
+                name="theme"
+                value={theme}
+                onChange={(e) => setTheme(e.target.value as "dark" | "light")}
+                className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-medium focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all cursor-pointer"
+              >
+                <option value="dark">{t("themeDark")}</option>
+                <option value="light">{t("themeLight")}</option>
+              </select>
+            </div>
+
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider flex items-center gap-1.5">
                 <Globe className="w-3.5 h-3.5" />
@@ -217,6 +235,12 @@ export function SettingsForms({
               <select
                 name="language"
                 defaultValue={settings.language || "en"}
+                onChange={(e) => {
+                  const newLang = e.target.value as "en" | "tr";
+                  if (newLang === "en" || newLang === "tr") {
+                    setLanguage(newLang);
+                  }
+                }}
                 className="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm font-medium focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all cursor-pointer"
               >
                 <option value="en">English (US / UK) 🇬🇧</option>
