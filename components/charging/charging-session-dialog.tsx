@@ -53,6 +53,7 @@ export function ChargingSessionDialog({
       session?.endBatteryPct
   );
   const [showOptional, setShowOptional] = useState(hasOptionalData);
+  const [showOdometerTooltip, setShowOdometerTooltip] = useState(false);
 
   const [energyVal, setEnergyVal] = useState<string>(
     session?.energyChargedKwh ? String(session.energyChargedKwh) : ""
@@ -444,11 +445,22 @@ export function ChargingSessionDialog({
                         <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
                           {t("fieldOdometer")}
                         </label>
-                        <div className="relative group flex items-center">
-                          <Info className="w-3.5 h-3.5 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-help transition-colors" />
-                          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 hidden group-hover:block w-64 p-2.5 bg-neutral-900 dark:bg-neutral-800 text-white dark:text-neutral-100 text-[11px] font-medium leading-relaxed rounded-xl shadow-xl border border-neutral-700 dark:border-neutral-700 z-50 pointer-events-none">
-                            {t("odometerInfoTooltip")}
-                          </div>
+                        <div className="relative flex items-center">
+                          <button
+                            type="button"
+                            onClick={() => setShowOdometerTooltip((prev) => !prev)}
+                            onMouseEnter={() => setShowOdometerTooltip(true)}
+                            onMouseLeave={() => setShowOdometerTooltip(false)}
+                            className="p-0.5 rounded-full text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 focus:outline-none focus:text-neutral-700 dark:focus:text-neutral-200 transition-colors"
+                            aria-label={t("odometerInfoTooltip")}
+                          >
+                            <Info className="w-3.5 h-3.5" />
+                          </button>
+                          {showOdometerTooltip && (
+                            <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 w-64 p-2.5 bg-neutral-900 dark:bg-neutral-800 text-white dark:text-neutral-100 text-[11px] font-medium leading-relaxed rounded-xl shadow-xl border border-neutral-700 dark:border-neutral-700 z-50 animate-fade-in pointer-events-none">
+                              {t("odometerInfoTooltip")}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <input

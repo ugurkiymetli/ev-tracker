@@ -160,12 +160,12 @@ export function ChargingSessionDetailsModal({
                       <div
                         style={{ width: `${session.startBatteryPct}%` }}
                         className="h-full bg-neutral-400 dark:bg-neutral-500"
-                        title={`Start: ${session.startBatteryPct}%`}
+                        title={`${t("startLabel")}: ${session.startBatteryPct}%`}
                       ></div>
                       <div
                         style={{ width: `${Math.max(0, batteryGain)}%` }}
                         className="h-full bg-emerald-500 animate-pulse"
-                        title={`Gain: +${batteryGain}%`}
+                        title={`${t("gainLabel")}: +${batteryGain}%`}
                       ></div>
                     </div>
                   </div>
