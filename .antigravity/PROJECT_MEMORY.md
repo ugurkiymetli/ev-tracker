@@ -33,6 +33,7 @@ The primary goal is to become a comprehensive personal EV dashboard that answers
 ## Data & Authentication
 
 - **Database:** Prisma ORM 7.9 (SQLite for local dev & Turso libSQL for serverless production)
+- **Database Schema Sync Directive:** Whenever `prisma/schema.prisma` is updated with new columns or models, **ALWAYS** update `scripts/sync-turso-db.mjs` with necessary `ALTER TABLE` statements and execute `npm run db:push:turso` to keep production in sync!
 - **User Authentication:** Account System (`User` model with username, password, session cookies)
 - **Sign In / Sign Up Pages:** Dedicated auth pages (`/signin`, `/signup`) with secure server actions
 - **Landing Page:** Public showcase landing page (`/landing` or `/`) for app introduction and onboarding

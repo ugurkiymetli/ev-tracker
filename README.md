@@ -43,7 +43,13 @@ npx prisma db push
 npx tsx prisma/seed.ts
 ```
 
-### 4. Run Development Server
+### 4. Sync Production Database Schema (Turso)
+Whenever `prisma/schema.prisma` is modified with new models or columns, update `scripts/sync-turso-db.mjs` if needed and run:
+```bash
+npm run db:push:turso
+```
+
+### 5. Run Development Server
 ```bash
 npm run dev
 ```
