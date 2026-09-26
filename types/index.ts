@@ -44,6 +44,8 @@ export interface ChargingSession {
   durationMinutes?: number | null;
   location?: string | null;
   notes?: string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
 export interface Expense {

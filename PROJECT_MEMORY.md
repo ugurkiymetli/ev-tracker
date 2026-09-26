@@ -77,6 +77,10 @@ All reported bugs and feature requests are tracked in [ISSUES_BACKLOG.md](file:/
 ## Charging Analytics
 
 - [x] Detailed Charging Session History Table & Filters
+- [x] Charging Session Table Pagination (10, 25, 50, 100 per page) & LocalStorage Preferences Persistence
+- [x] Session Details Overview Modal (Battery range visualization, session duration, average charging speed kW, and key session metrics)
+- [x] Mandatory Battery Pair Validation (Enforced start & end battery percentage input coupling)
+- [x] Tie-breaker Sorting for Table Views (Secondary `createdAt` descending ordering for identical dates)
 - [x] AC Level 2 vs DC Fast Charger Statistics & Distribution Ratio
 - [x] Charging Provider & Station Network Breakdown
 - [x] Cost per Charge & Average Price per kWh calculation

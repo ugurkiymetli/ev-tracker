@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Zap, BatteryCharging, ArrowUpDown, ArrowUp, ArrowDown, Search, Filter } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { Zap, BatteryCharging, ArrowUpDown, ArrowUp, ArrowDown, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { ChargingSession } from "@/types";
 import { ChargingRowActions } from "@/components/charging/charging-row-actions";
 import { useLanguage } from "@/components/layout/language-provider";
@@ -23,6 +23,8 @@ interface ChargingTableViewProps {
 type SortField = "date" | "provider" | "energy" | "cost" | "price" | "odometer";
 type SortOrder = "asc" | "desc";
 
+const STORAGE_KEY = "ev-tracker-charging-table-preferences";
+
 export function ChargingTableView({
   sessions,
   providers,
@@ -36,14 +38,66 @@ export function ChargingTableView({
   const [typeFilter, setTypeFilter] = useState<"ALL" | "AC" | "DC">("ALL");
   const [sortField, setSortField] = useState<SortField>("date");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // 1. Restore preferences from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed.searchQuery === "string") setSearchQuery(parsed.searchQuery);
+        if (["ALL", "AC", "DC"].includes(parsed.typeFilter)) setTypeFilter(parsed.typeFilter);
+        if (["date", "provider", "energy", "cost", "price", "odometer"].includes(parsed.sortField)) setSortField(parsed.sortField);
+        if (["asc", "desc"].includes(parsed.sortOrder)) setSortOrder(parsed.sortOrder);
+        if (typeof parsed.pageSize === "number" && [10, 25, 50, 100].includes(parsed.pageSize)) setPageSize(parsed.pageSize);
+        if (typeof parsed.currentPage === "number" && parsed.currentPage > 0) setCurrentPage(parsed.currentPage);
+      }
+    } catch (e) {
+      // Ignore localStorage errors
+    } finally {
+      setIsHydrated(true);
+    }
+  }, []);
+
+  // 2. Persist preferences to localStorage on change
+  useEffect(() => {
+    if (!isHydrated) return;
+    try {
+      const stateToSave = {
+        searchQuery,
+        typeFilter,
+        sortField,
+        sortOrder,
+        pageSize,
+        currentPage,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+    } catch (e) {
+      // Ignore localStorage write errors
+    }
+  }, [searchQuery, typeFilter, sortField, sortOrder, pageSize, currentPage, isHydrated]);
 
   const handleSort = (field: SortField) => {
+    setCurrentPage(1);
     if (sortField === field) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
       setSortOrder("desc");
     }
+  };
+
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    setCurrentPage(1);
+  };
+
+  const handleTypeFilterChange = (val: "ALL" | "AC" | "DC") => {
+    setTypeFilter(val);
+    setCurrentPage(1);
   };
 
   const filteredAndSortedSessions = useMemo(() => {
@@ -69,10 +123,24 @@ export function ChargingTableView({
         let valB: any = 0;
 
         switch (sortField) {
-          case "date":
-            valA = new Date(a.date).getTime();
-            valB = new Date(b.date).getTime();
+          case "date": {
+            const timeA = new Date(a.date).getTime();
+            const timeB = new Date(b.date).getTime();
+            if (timeA !== timeB) {
+              valA = timeA;
+              valB = timeB;
+            } else {
+              // Tie-breaker: newer created record displays first (above)
+              const createdA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+              const createdB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+              if (sortOrder === "desc") {
+                return createdB - createdA;
+              } else {
+                return createdA - createdB;
+              }
+            }
             break;
+          }
           case "provider":
             valA = (a.provider?.name || a.location || "").toLowerCase();
             valB = (b.provider?.name || b.location || "").toLowerCase();
@@ -100,6 +168,18 @@ export function ChargingTableView({
         return 0;
       });
   }, [sessions, searchQuery, typeFilter, sortField, sortOrder]);
+
+  // Pagination Math
+  const totalItems = filteredAndSortedSessions.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+
+  const startIndex = totalItems === 0 ? 0 : (safeCurrentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalItems);
+
+  const paginatedSessions = useMemo(() => {
+    return filteredAndSortedSessions.slice(startIndex, endIndex);
+  }, [filteredAndSortedSessions, startIndex, endIndex]);
 
   const renderSortIcon = (field: SortField) => {
     if (sortField !== field) {
@@ -133,7 +213,7 @@ export function ChargingTableView({
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             placeholder={t("filterByStation")}
             className="glass-input w-full pl-9 pr-3.5 py-1.5 rounded-xl text-xs font-medium"
           />
@@ -144,7 +224,7 @@ export function ChargingTableView({
           <div className="flex bg-neutral-100 dark:bg-neutral-800 p-0.5 rounded-xl border border-neutral-200 dark:border-neutral-700 text-[11px] font-bold">
             <button
               type="button"
-              onClick={() => setTypeFilter("ALL")}
+              onClick={() => handleTypeFilterChange("ALL")}
               className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${typeFilter === "ALL"
                   ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-xs"
                   : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
@@ -154,7 +234,7 @@ export function ChargingTableView({
             </button>
             <button
               type="button"
-              onClick={() => setTypeFilter("AC")}
+              onClick={() => handleTypeFilterChange("AC")}
               className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${typeFilter === "AC"
                   ? "bg-emerald-500 text-white dark:text-neutral-950 shadow-xs"
                   : "text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-400"
@@ -164,7 +244,7 @@ export function ChargingTableView({
             </button>
             <button
               type="button"
-              onClick={() => setTypeFilter("DC")}
+              onClick={() => handleTypeFilterChange("DC")}
               className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${typeFilter === "DC"
                   ? "bg-amber-500 text-neutral-950 shadow-xs"
                   : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
@@ -247,14 +327,14 @@ export function ChargingTableView({
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60 font-medium">
-            {filteredAndSortedSessions.length === 0 ? (
+            {paginatedSessions.length === 0 ? (
               <tr>
                 <td colSpan={8} className="py-8 text-center text-neutral-400 font-medium">
                   No charging sessions match your filters.
                 </td>
               </tr>
             ) : (
-              filteredAndSortedSessions.map((session: ChargingSession) => {
+              paginatedSessions.map((session: ChargingSession) => {
                 const d = new Date(session.date);
                 const dateStr = d.toLocaleDateString(lang === "tr" ? "tr-TR" : "en-US", {
                   month: "short",
@@ -311,6 +391,8 @@ export function ChargingTableView({
                         session={session}
                         providers={providers}
                         userTopProviderIds={userTopProviderIds}
+                        currencySymbol={currencySymbol}
+                        lang={lang}
                       />
                     </td>
                   </tr>
@@ -320,6 +402,98 @@ export function ChargingTableView({
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Bar */}
+      {totalItems > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-neutral-200 dark:border-neutral-800 text-xs font-medium text-neutral-600 dark:text-neutral-400">
+          {/* Showing records summary & Rows per page */}
+          <div className="flex flex-wrap items-center gap-4">
+            <span>
+              {t("showingRecords")
+                .replace("{start}", String(startIndex + 1))
+                .replace("{end}", String(endIndex))
+                .replace("{total}", String(totalItems))}
+            </span>
+
+            <div className="flex items-center gap-1.5">
+              <label htmlFor="pageSizeSelect" className="text-neutral-500 font-bold">
+                {t("rowsPerPage")}
+              </label>
+              <select
+                id="pageSizeSelect"
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="glass-input px-2 py-1 rounded-lg text-xs font-bold cursor-pointer"
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Page Controls */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-neutral-500 font-bold mr-1">
+              {t("pageOf")
+                .replace("{current}", String(safeCurrentPage))
+                .replace("{total}", String(totalPages))}
+            </span>
+
+            <button
+              type="button"
+              disabled={safeCurrentPage <= 1}
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              className="p-1.5 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              aria-label={t("prevPage")}
+              title={t("prevPage")}
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            {/* Numerical Page Buttons */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter((p) => p === 1 || p === totalPages || Math.abs(p - safeCurrentPage) <= 1)
+              .map((p, idx, arr) => {
+                const prevPageNum = arr[idx - 1];
+                const showEllipsis = prevPageNum && p - prevPageNum > 1;
+
+                return (
+                  <span key={p} className="flex items-center gap-1">
+                    {showEllipsis && <span className="px-1 text-neutral-400">...</span>}
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage(p)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        p === safeCurrentPage
+                          ? "bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 shadow-xs"
+                          : "bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  </span>
+                );
+              })}
+
+            <button
+              type="button"
+              disabled={safeCurrentPage >= totalPages}
+              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+              className="p-1.5 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              aria-label={t("nextPage")}
+              title={t("nextPage")}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

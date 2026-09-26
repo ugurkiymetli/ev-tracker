@@ -66,6 +66,16 @@ export function ChargingSessionDialog({
   const [durationMins, setDurationMins] = useState<string>(
     session?.durationMinutes ? String(session.durationMinutes) : ""
   );
+  const [startBatteryVal, setStartBatteryVal] = useState<string>(
+    session?.startBatteryPct !== undefined && session?.startBatteryPct !== null
+      ? String(session.startBatteryPct)
+      : ""
+  );
+  const [endBatteryVal, setEndBatteryVal] = useState<string>(
+    session?.endBatteryPct !== undefined && session?.endBatteryPct !== null
+      ? String(session.endBatteryPct)
+      : ""
+  );
 
   // Helper numeric parsers supporting comma (,) and period (.)
   const parseNum = (str: string) => {
@@ -110,6 +120,46 @@ export function ChargingSessionDialog({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+
+    // Validation for battery percentage pairing
+    const hasStart = startBatteryVal.trim() !== "";
+    const hasEnd = endBatteryVal.trim() !== "";
+
+    if ((hasStart && !hasEnd) || (!hasStart && hasEnd)) {
+      toast({
+        title: t("errorTitle"),
+        description: t("errBatteryBothRequired"),
+        variant: "error",
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (hasStart && hasEnd) {
+      const startNum = parseNum(startBatteryVal);
+      const endNum = parseNum(endBatteryVal);
+
+      if (startNum < 0 || startNum > 100 || endNum < 0 || endNum > 100) {
+        toast({
+          title: t("errorTitle"),
+          description: t("errBatteryInvalidRange"),
+          variant: "error",
+        });
+        setLoading(false);
+        return;
+      }
+
+      if (endNum < startNum) {
+        toast({
+          title: t("errorTitle"),
+          description: t("errEndBatteryLowerThanStart"),
+          variant: "error",
+        });
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       const formData = new FormData(e.currentTarget);
 
@@ -421,7 +471,9 @@ export function ChargingSessionDialog({
                           min="0"
                           max="100"
                           name="startBatteryPct"
-                          defaultValue={session?.startBatteryPct ?? ""}
+                          value={startBatteryVal}
+                          onChange={(e) => setStartBatteryVal(e.target.value)}
+                          required={Boolean(endBatteryVal.trim())}
                           placeholder={t("placeholderBatteryStart")}
                           className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
                         />
@@ -436,7 +488,9 @@ export function ChargingSessionDialog({
                           min="0"
                           max="100"
                           name="endBatteryPct"
-                          defaultValue={session?.endBatteryPct ?? ""}
+                          value={endBatteryVal}
+                          onChange={(e) => setEndBatteryVal(e.target.value)}
+                          required={Boolean(startBatteryVal.trim())}
                           placeholder={t("placeholderBatteryEnd")}
                           className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
                         />

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Trash2, Check, X } from "lucide-react";
 import { deleteChargingSessionAction } from "@/app/actions";
 import { ChargingSessionDialog } from "@/components/charging/charging-session-dialog";
+import { ChargingSessionDetailsModal } from "@/components/charging/charging-session-details-modal";
 import { useToast } from "@/components/ui/toast";
 import { ChargingSession } from "@/types";
 
@@ -17,12 +18,16 @@ interface ChargingRowActionsProps {
   session: ChargingSession;
   providers: ProviderSimple[];
   userTopProviderIds?: string[];
+  currencySymbol?: string;
+  lang?: "en" | "tr";
 }
 
 export function ChargingRowActions({
   session,
   providers,
   userTopProviderIds = [],
+  currencySymbol = "$",
+  lang = "en",
 }: ChargingRowActionsProps) {
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -79,6 +84,11 @@ export function ChargingRowActions({
 
   return (
     <div className="flex items-center justify-end gap-1">
+      <ChargingSessionDetailsModal
+        session={session}
+        currencySymbol={currencySymbol}
+        lang={lang}
+      />
       <ChargingSessionDialog
         session={session}
         providers={providers}
