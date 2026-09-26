@@ -126,9 +126,12 @@ All reported bugs and feature requests are tracked in [ISSUES_BACKLOG.md](file:/
 - [ ] **Excel / CSV Data Export**: Download full charging logs and expense histories back into `.csv` or `.xlsx` files.
 - [ ] **Monthly & Yearly Filter Selectors**: Filter dashboard charts and table records by specific months or years.
 
-## 🚗 Phase 3: Multi-Vehicle Support & Trip Tracking
+## 🚗 Phase 3: Multi-Vehicle Support, Deep-Linking & Trip Tracking
 - [ ] **Multi-Vehicle Switcher**: Manage multiple EVs (e.g. Tesla Model Y + Hyundai Ioniq 5) under a single user account.
-- [x] **Trip & Road-trip Logger (`/journeys`)**: Standalone Journeys manager to track multi-day road trips, driven distance, attached charging sessions, and interactive timeline.
+- [x] **Trip & Road-trip Logger (`/journeys`)**: Standalone Journeys manager to track multi-day road trips, driven distance, attached charging sessions, start & end battery percentages, vehicle battery capacity net energy consumption math, vehicle badge info, and interactive timeline.
+- [ ] **URL Deep-Linking & Modal Routing (`/journeys?journeyId=xyz`, `/charging?sessionId=xyz`)**: Click any journey badge from the charging table or dashboard to open the detailed journey or session modal directly via URL searchParams or intercepting route.
+- [ ] **Public Shared Journeys (`/shared/journey/[journeyId]`)**: Generate public, shareable links for journeys so unauthenticated guests can view trip details, consumption rates, charging stops, and costs.
+- [ ] **Trip Start & Finish Locations & Multi-Stop Waypoints**: Add explicit origin (start location), destination (finish location), and waypoint stops (e.g. Istanbul ➔ Antalya ➔ Istanbul round-trip).
 - [ ] **Home vs Public Charging Split**: Dedicated tag and analytics chart comparing Home Charging electricity rates vs Public Fast Charger rates.
 
 ## 🔋 Phase 4: Advanced Battery Health & Intelligence

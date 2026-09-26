@@ -347,6 +347,7 @@ export async function getJourneys(vehicleId: string) {
   return await prisma.journey.findMany({
     where: { vehicleId },
     include: {
+      vehicle: true,
       chargingSessions: {
         include: { provider: true },
         orderBy: [{ date: "asc" }, { createdAt: "asc" }],
@@ -363,6 +364,7 @@ export async function getJourneyById(journeyId: string) {
   return await prisma.journey.findUnique({
     where: { id: journeyId },
     include: {
+      vehicle: true,
       chargingSessions: {
         include: { provider: true },
         orderBy: [{ date: "asc" }, { createdAt: "asc" }],
@@ -382,6 +384,8 @@ export async function createJourney(data: {
   startOdometerKm?: number | null;
   endOdometerKm?: number | null;
   distanceKm?: number | null;
+  startBatteryPct?: number | null;
+  endBatteryPct?: number | null;
   notes?: string | null;
   sessionIds?: string[];
 }) {
@@ -413,6 +417,8 @@ export async function updateJourney(
     startOdometerKm?: number | null;
     endOdometerKm?: number | null;
     distanceKm?: number | null;
+    startBatteryPct?: number | null;
+    endBatteryPct?: number | null;
     notes?: string | null;
     sessionIds?: string[];
   }

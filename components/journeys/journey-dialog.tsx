@@ -66,6 +66,16 @@ export function JourneyDialog({
   const [distanceKm, setDistanceKm] = useState(
     journey?.distanceKm ? String(journey.distanceKm) : ""
   );
+  const [startBattery, setStartBattery] = useState(
+    journey?.startBatteryPct !== undefined && journey?.startBatteryPct !== null
+      ? String(journey.startBatteryPct)
+      : ""
+  );
+  const [endBattery, setEndBattery] = useState(
+    journey?.endBatteryPct !== undefined && journey?.endBatteryPct !== null
+      ? String(journey.endBatteryPct)
+      : ""
+  );
   const [notes, setNotes] = useState(journey?.notes || "");
 
   // Selected session IDs
@@ -100,6 +110,8 @@ export function JourneyDialog({
       if (startOdo) formData.append("startOdometerKm", startOdo);
       if (endOdo) formData.append("endOdometerKm", endOdo);
       if (distanceKm) formData.append("distanceKm", distanceKm);
+      if (startBattery) formData.append("startBatteryPct", startBattery);
+      if (endBattery) formData.append("endBatteryPct", endBattery);
       if (notes) formData.append("notes", notes);
 
       selectedSessionIds.forEach((id) => formData.append("sessionIds", id));
@@ -280,6 +292,38 @@ export function JourneyDialog({
                         value={distanceKm}
                         onChange={(e) => setDistanceKm(e.target.value)}
                         placeholder={t("placeholderDistanceKm")}
+                        className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Start & End Battery Percentages */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex flex-col justify-end space-y-1.5">
+                      <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit min-h-[28px] flex items-end">
+                        {t("startBatteryPct")}
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={startBattery}
+                        onChange={(e) => setStartBattery(e.target.value)}
+                        placeholder={t("placeholderBatteryStart")}
+                        className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
+                      />
+                    </div>
+                    <div className="flex flex-col justify-end space-y-1.5">
+                      <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit min-h-[28px] flex items-end">
+                        {t("endBatteryPct")}
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={endBattery}
+                        onChange={(e) => setEndBattery(e.target.value)}
+                        placeholder={t("placeholderBatteryEnd")}
                         className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
                       />
                     </div>

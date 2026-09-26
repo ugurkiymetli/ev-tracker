@@ -568,6 +568,8 @@ export async function createJourneyAction(formData: FormData): Promise<void> {
   const startOdometerStr = formData.get("startOdometerKm") as string;
   const endOdometerStr = formData.get("endOdometerKm") as string;
   const distanceStr = formData.get("distanceKm") as string;
+  const startBatteryStr = formData.get("startBatteryPct") as string;
+  const endBatteryStr = formData.get("endBatteryPct") as string;
   const notes = (formData.get("notes") as string)?.trim() || null;
   const sessionIdsRaw = formData.getAll("sessionIds") as string[];
 
@@ -578,6 +580,8 @@ export async function createJourneyAction(formData: FormData): Promise<void> {
   const startOdometerKm = startOdometerStr ? parseFloat(startOdometerStr) : null;
   const endOdometerKm = endOdometerStr ? parseFloat(endOdometerStr) : null;
   let distanceKm = distanceStr ? parseFloat(distanceStr) : null;
+  const startBatteryPct = startBatteryStr ? parseFloat(startBatteryStr) : null;
+  const endBatteryPct = endBatteryStr ? parseFloat(endBatteryStr) : null;
 
   if (!distanceKm && startOdometerKm !== null && endOdometerKm !== null && endOdometerKm >= startOdometerKm) {
     distanceKm = endOdometerKm - startOdometerKm;
@@ -591,6 +595,8 @@ export async function createJourneyAction(formData: FormData): Promise<void> {
     startOdometerKm,
     endOdometerKm,
     distanceKm,
+    startBatteryPct,
+    endBatteryPct,
     notes,
     sessionIds: sessionIdsRaw.filter(Boolean),
   });
@@ -606,6 +612,8 @@ export async function updateJourneyAction(journeyId: string, formData: FormData)
   const startOdometerStr = formData.get("startOdometerKm") as string;
   const endOdometerStr = formData.get("endOdometerKm") as string;
   const distanceStr = formData.get("distanceKm") as string;
+  const startBatteryStr = formData.get("startBatteryPct") as string;
+  const endBatteryStr = formData.get("endBatteryPct") as string;
   const notes = (formData.get("notes") as string)?.trim() || null;
   const sessionIdsRaw = formData.getAll("sessionIds") as string[];
 
@@ -616,6 +624,8 @@ export async function updateJourneyAction(journeyId: string, formData: FormData)
   const startOdometerKm = startOdometerStr ? parseFloat(startOdometerStr) : null;
   const endOdometerKm = endOdometerStr ? parseFloat(endOdometerStr) : null;
   let distanceKm = distanceStr ? parseFloat(distanceStr) : null;
+  const startBatteryPct = startBatteryStr ? parseFloat(startBatteryStr) : null;
+  const endBatteryPct = endBatteryStr ? parseFloat(endBatteryStr) : null;
 
   if (!distanceKm && startOdometerKm !== null && endOdometerKm !== null && endOdometerKm >= startOdometerKm) {
     distanceKm = endOdometerKm - startOdometerKm;
@@ -628,6 +638,8 @@ export async function updateJourneyAction(journeyId: string, formData: FormData)
     startOdometerKm,
     endOdometerKm,
     distanceKm,
+    startBatteryPct,
+    endBatteryPct,
     notes,
     sessionIds: sessionIdsRaw.filter(Boolean),
   });

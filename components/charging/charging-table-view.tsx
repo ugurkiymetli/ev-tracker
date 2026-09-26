@@ -112,7 +112,8 @@ export function ChargingTableView({
           const providerName = (s.provider?.name || "").toLowerCase();
           const location = (s.location || "").toLowerCase();
           const notes = (s.notes || "").toLowerCase();
-          if (!providerName.includes(q) && !location.includes(q) && !notes.includes(q)) {
+          const journeyName = (s.journey?.name || "").toLowerCase();
+          if (!providerName.includes(q) && !location.includes(q) && !notes.includes(q) && !journeyName.includes(q)) {
             return false;
           }
         }
@@ -226,8 +227,8 @@ export function ChargingTableView({
               type="button"
               onClick={() => handleTypeFilterChange("ALL")}
               className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${typeFilter === "ALL"
-                  ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-xs"
-                  : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+                ? "bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-xs"
+                : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
                 }`}
             >
               {t("filterAll")} ({sessions.length})
@@ -236,8 +237,8 @@ export function ChargingTableView({
               type="button"
               onClick={() => handleTypeFilterChange("AC")}
               className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${typeFilter === "AC"
-                  ? "bg-emerald-500 text-white dark:text-neutral-950 shadow-xs"
-                  : "text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-400"
+                ? "bg-emerald-500 text-white dark:text-neutral-950 shadow-xs"
+                : "text-neutral-500 hover:text-emerald-600 dark:hover:text-emerald-400"
                 }`}
             >
               AC
@@ -246,8 +247,8 @@ export function ChargingTableView({
               type="button"
               onClick={() => handleTypeFilterChange("DC")}
               className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${typeFilter === "DC"
-                  ? "bg-amber-500 text-neutral-950 shadow-xs"
-                  : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+                ? "bg-amber-500 text-neutral-950 shadow-xs"
+                : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
                 }`}
             >
               DC
@@ -313,6 +314,10 @@ export function ChargingTableView({
                 </div>
               </th>
 
+              <th className="pb-3 px-2 sm:px-3 font-bold">{t("batteryGain")}</th>
+
+              <th className="pb-3 px-2 sm:px-3 font-bold text-center">{t("navJourneys")}</th>
+
               <th
                 onClick={() => handleSort("odometer")}
                 className="pb-3 px-2 sm:px-3 cursor-pointer hover:text-neutral-900 dark:hover:text-white transition-colors group"
@@ -329,7 +334,7 @@ export function ChargingTableView({
           <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60 font-medium">
             {paginatedSessions.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-8 text-center text-neutral-400 font-medium">
+                <td colSpan={10} className="py-8 text-center text-neutral-400 font-medium">
                   No charging sessions match your filters.
                 </td>
               </tr>
@@ -342,6 +347,11 @@ export function ChargingTableView({
                   year: "numeric",
                 });
                 const isDc = session.chargingType === "DC";
+                const hasBatteryInfo =
+                  session.startBatteryPct !== undefined &&
+                  session.startBatteryPct !== null &&
+                  session.endBatteryPct !== undefined &&
+                  session.endBatteryPct !== null;
 
                 return (
                   <tr
@@ -354,12 +364,6 @@ export function ChargingTableView({
                     <td className="py-3 px-2 sm:px-3 text-neutral-800 dark:text-neutral-200">
                       <div className="font-bold text-neutral-900 dark:text-white flex items-center gap-1.5 flex-wrap">
                         <span>{session.provider?.name || session.location || "Standard Charge"}</span>
-                        {session.journey && (
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-950 text-[9px] font-extrabold font-outfit uppercase">
-                            <Compass className="w-2.5 h-2.5" />
-                            <span>{session.journey.name}</span>
-                          </span>
-                        )}
                       </div>
                       {session.notes && (
                         <div className="text-[10px] text-neutral-400 font-normal">
@@ -370,8 +374,8 @@ export function ChargingTableView({
                     <td className="py-3 px-2 sm:px-3">
                       <span
                         className={`inline-flex items-center gap-1 px-1.5 py-0.5 sm:px-2 rounded-md text-[10px] font-bold ${isDc
-                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
-                            : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                          ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                          : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
                           }`}
                       >
                         {isDc ? <Zap className="w-3 h-3" /> : <BatteryCharging className="w-3 h-3" />}
@@ -388,6 +392,39 @@ export function ChargingTableView({
                     <td className="py-3 px-2 sm:px-3 text-neutral-500 dark:text-neutral-400">
                       {currencySymbol}
                       {session.pricePerKwh.toFixed(2)}
+                    </td>
+                    <td className="py-3 px-2 sm:px-3 whitespace-nowrap">
+                      {hasBatteryInfo ? (
+                        <div>
+                          <span className="text-neutral-900 dark:text-neutral-100 font-bold">
+                            {session.startBatteryPct}% → {session.endBatteryPct}%
+                          </span>
+                          {session.durationMinutes ? (
+                            <div className="text-[10px] text-neutral-400 font-normal">
+                              {(session.energyChargedKwh / (session.durationMinutes / 60)).toFixed(1)} kW ({session.durationMinutes}{t("minsAbbrev")})
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : session.durationMinutes ? (
+                        <div>
+                          <span className="text-neutral-400 text-[11px]">—</span>
+                          <div className="text-[10px] text-neutral-400 font-normal">
+                            {(session.energyChargedKwh / (session.durationMinutes / 60)).toFixed(1)} kW ({session.durationMinutes}{t("minsAbbrev")})
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-neutral-400 text-[11px]">—</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-2 sm:px-3 text-center whitespace-nowrap">
+                      {session.journey?.name ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-950 text-[10px] font-bold shadow-xs">
+                          <Compass className="w-2.5 h-2.5" />
+                          <span>{session.journey.name}</span>
+                        </span>
+                      ) : (
+                        <span className="text-neutral-400 text-[11px]">—</span>
+                      )}
                     </td>
                     <td className="py-3 px-2 sm:px-3 text-neutral-500 dark:text-neutral-400">
                       {session.odometerKm ? `${session.odometerKm.toLocaleString()} km` : "—"}
@@ -474,11 +511,10 @@ export function ChargingTableView({
                     <button
                       type="button"
                       onClick={() => setCurrentPage(p)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                        p === safeCurrentPage
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${p === safeCurrentPage
                           ? "bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 shadow-xs"
                           : "bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300"
-                      }`}
+                        }`}
                     >
                       {p}
                     </button>

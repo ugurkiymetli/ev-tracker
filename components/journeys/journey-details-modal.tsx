@@ -14,6 +14,7 @@ import {
   Trash2,
   ChevronRight,
   TrendingUp,
+  Car,
 } from "lucide-react";
 import { deleteJourneyAction } from "@/app/actions";
 import { useLanguage } from "@/components/layout/language-provider";
@@ -71,11 +72,42 @@ export function JourneyDetailsModal({
   // Attached sessions list
   const sessions = journey.chargingSessions || [];
   const totalCost = sessions.reduce((acc, s) => acc + s.cost, 0);
-  const totalEnergy = sessions.reduce((acc, s) => acc + s.energyChargedKwh, 0);
-  const totalDurationMins = sessions.reduce(
+  const totalEnergyCharged = sessions.reduce((acc, s) => acc + s.energyChargedKwh, 0);
+
+  const startBat = journey.startBatteryPct;
+  const endBat = journey.endBatteryPct;
+  const batCapacity = journey.vehicle?.batteryCapacityKwh;
+
+  const hasBatteryData =
+    startBat !== undefined &&
+    startBat !== null &&
+    endBat !== undefined &&
+    endBat !== null &&
+    batCapacity &&
+    batCapacity > 0;
+
+  // Battery energy net delta: (start% - end%) * capacity / 100
+  const batteryNetDeltaKwh = hasBatteryData
+    ? (batCapacity! * (startBat! - endBat!)) / 100
+    : 0;
+
+  // Real net energy consumed for the trip = energy charged + battery net delta
+  const totalEnergyConsumed = hasBatteryData
+    ? Math.max(0, totalEnergyCharged + batteryNetDeltaKwh)
+    : totalEnergyCharged;
+
+  const acSessions = sessions.filter((s) => s.chargingType === "AC");
+  const dcSessions = sessions.filter((s) => s.chargingType === "DC");
+
+  const acDurationMins = acSessions.reduce(
     (acc, s) => acc + (s.durationMinutes || 0),
     0
   );
+  const dcDurationMins = dcSessions.reduce(
+    (acc, s) => acc + (s.durationMinutes || 0),
+    0
+  );
+  const totalDurationMins = acDurationMins + dcDurationMins;
 
   const distanceKm = journey.distanceKm || 0;
 
@@ -84,11 +116,11 @@ export function JourneyDetailsModal({
     distanceKm > 0 ? ((totalCost / distanceKm) * 100).toFixed(2) : null;
 
   const avgConsumption =
-    distanceKm > 0 ? ((totalEnergy / distanceKm) * 100).toFixed(1) : null;
+    distanceKm > 0 ? ((totalEnergyConsumed / distanceKm) * 100).toFixed(1) : null;
 
   const avgPowerKw =
     totalDurationMins > 0
-      ? (totalEnergy / (totalDurationMins / 60)).toFixed(1)
+      ? (totalEnergyCharged / (totalDurationMins / 60)).toFixed(1)
       : null;
 
   const formatDuration = (mins: number) => {
@@ -153,6 +185,14 @@ export function JourneyDetailsModal({
                     <h2 className="text-xl font-extrabold text-neutral-900 dark:text-white font-outfit">
                       {journey.name}
                     </h2>
+                    {journey.vehicle && (
+                      <p className="text-xs text-neutral-700 dark:text-neutral-300 font-semibold flex items-center gap-1.5 mt-0.5">
+                        <Car className="w-3.5 h-3.5 text-neutral-400" />
+                        <span>
+                          {journey.vehicle.make} {journey.vehicle.model} ({journey.vehicle.batteryCapacityKwh} kWh)
+                        </span>
+                      </p>
+                    )}
                     <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium flex items-center gap-1.5 mt-0.5">
                       <Calendar className="w-3.5 h-3.5 text-neutral-400" />
                       <span>
@@ -218,11 +258,16 @@ export function JourneyDetailsModal({
                   <div className="p-3.5 rounded-xl bg-neutral-100/70 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-800">
                     <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400 text-xs font-bold font-outfit uppercase">
                       <BatteryCharging className="w-3.5 h-3.5 text-emerald-500" />
-                      <span>{t("totalEnergyCharged")}</span>
+                      <span>{hasBatteryData ? t("totalEnergyConsumed") || "Total Energy Consumed" : t("totalEnergyCharged")}</span>
                     </div>
                     <p className="text-lg font-extrabold text-neutral-900 dark:text-white mt-1">
-                      {totalEnergy.toFixed(1)} kWh
+                      {totalEnergyConsumed.toFixed(1)} kWh
                     </p>
+                    {hasBatteryData && (
+                      <p className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5 font-medium">
+                        {startBat}% → {endBat}% {t("batteryLabel")}
+                      </p>
+                    )}
                   </div>
 
                   {/* Cost per 100km */}
@@ -240,32 +285,52 @@ export function JourneyDetailsModal({
                 </div>
 
                 {/* Additional Stats Row */}
-                <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-neutral-900 text-white dark:bg-neutral-800 border border-neutral-800 dark:border-neutral-700">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-white/10 text-white">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl bg-neutral-100/70 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-800">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-lg bg-neutral-200/80 dark:bg-white/10 text-neutral-900 dark:text-white mt-0.5">
                       <Clock className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-[11px] text-neutral-400 uppercase font-bold tracking-wider font-outfit">
+                      <p className="text-[11px] text-neutral-500 dark:text-neutral-400 uppercase font-bold tracking-wider font-outfit">
                         {t("fieldDuration")}
                       </p>
-                      <p className="text-sm font-extrabold">
+                      <p className="text-sm font-extrabold text-neutral-900 dark:text-white">
                         {totalDurationMins > 0
                           ? formatDuration(totalDurationMins)
                           : "—"}
                       </p>
+                      {totalDurationMins > 0 &&
+                        (dcDurationMins > 0 || acDurationMins > 0) && (
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1 text-[11px] font-medium">
+                            {dcDurationMins > 0 && (
+                              <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-bold">
+                                <Zap className="w-3 h-3 fill-current" />
+                                <span>DC: {formatDuration(dcDurationMins)}</span>
+                              </span>
+                            )}
+                            {dcDurationMins > 0 && acDurationMins > 0 && (
+                              <span className="text-neutral-400 dark:text-neutral-500">•</span>
+                            )}
+                            {acDurationMins > 0 && (
+                              <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                                <BatteryCharging className="w-3 h-3" />
+                                <span>AC: {formatDuration(acDurationMins)}</span>
+                              </span>
+                            )}
+                          </div>
+                        )}
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-white/10 text-white">
+                    <div className="p-2 rounded-lg bg-neutral-200/80 dark:bg-white/10 text-neutral-900 dark:text-white">
                       <Gauge className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="text-[11px] text-neutral-400 uppercase font-bold tracking-wider font-outfit">
+                      <p className="text-[11px] text-neutral-500 dark:text-neutral-400 uppercase font-bold tracking-wider font-outfit">
                         {t("avgConsumption")}
                       </p>
-                      <p className="text-sm font-extrabold">
+                      <p className="text-sm font-extrabold text-neutral-900 dark:text-white">
                         {avgConsumption ? `${avgConsumption} kWh/100km` : "—"}
                       </p>
                     </div>
@@ -307,7 +372,10 @@ export function JourneyDetailsModal({
                           <p className="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium">
                             {startFormatted}{" "}
                             {journey.startOdometerKm &&
-                              `• ${journey.startOdometerKm} km`}
+                              `• ${journey.startOdometerKm} km`}{" "}
+                            {journey.startBatteryPct !== undefined &&
+                              journey.startBatteryPct !== null &&
+                              `• ${journey.startBatteryPct}% ${t("batteryLabel")}`}
                           </p>
                         </div>
                       </div>
@@ -318,10 +386,9 @@ export function JourneyDetailsModal({
                           lang === "tr" ? "tr-TR" : "en-US",
                           {
                             weekday: "short",
+                            year: "numeric",
                             month: "short",
                             day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
                           }
                         );
                         const isDc = session.chargingType === "DC";
@@ -337,11 +404,10 @@ export function JourneyDetailsModal({
                           >
                             {/* Node indicator */}
                             <div
-                              className={`absolute -left-6 top-4 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm ${
-                                isDc
-                                  ? "bg-amber-500 text-neutral-950"
-                                  : "bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950"
-                              }`}
+                              className={`absolute -left-6 top-4 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm ${isDc
+                                ? "bg-amber-500 text-neutral-950"
+                                : "bg-emerald-500 text-neutral-950"
+                                }`}
                             >
                               ⚡
                             </div>
@@ -352,11 +418,10 @@ export function JourneyDetailsModal({
                                   {providerName}
                                 </span>
                                 <span
-                                  className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded ${
-                                    isDc
-                                      ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
-                                      : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
-                                  }`}
+                                  className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded ${isDc
+                                    ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                                    : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                                    }`}
                                 >
                                   {session.chargingType}
                                 </span>
@@ -400,9 +465,9 @@ export function JourneyDetailsModal({
                               ) : null}
 
                               {session.startBatteryPct !== undefined &&
-                              session.startBatteryPct !== null &&
-                              session.endBatteryPct !== undefined &&
-                              session.endBatteryPct !== null ? (
+                                session.startBatteryPct !== null &&
+                                session.endBatteryPct !== undefined &&
+                                session.endBatteryPct !== null ? (
                                 <div>
                                   <span className="text-[10px] uppercase text-neutral-400 font-bold block">
                                     {t("chargedPercentage")}
@@ -437,7 +502,10 @@ export function JourneyDetailsModal({
                           <p className="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium">
                             {endFormatted}{" "}
                             {journey.endOdometerKm &&
-                              `• ${journey.endOdometerKm} km`}
+                              `• ${journey.endOdometerKm} km`}{" "}
+                            {journey.endBatteryPct !== undefined &&
+                              journey.endBatteryPct !== null &&
+                              `• ${journey.endBatteryPct}% ${t("batteryLabel")}`}
                           </p>
                         </div>
                       </div>

@@ -413,7 +413,7 @@ export default function LandingPage() {
                           {session.startBattery}% → {session.endBattery}%
                         </span>
                         <span className="text-[10px] text-neutral-400 block font-normal">
-                          {kwSpeed} kW ({session.durationMins}m)
+                          {kwSpeed} kW ({session.durationMins}{t("minsAbbrev")})
                         </span>
                       </td>
                       <td className="py-3 px-4 text-center whitespace-nowrap">
