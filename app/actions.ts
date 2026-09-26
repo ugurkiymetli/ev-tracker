@@ -573,6 +573,11 @@ export async function createJourneyAction(formData: FormData): Promise<void> {
   const notes = (formData.get("notes") as string)?.trim() || null;
   const sessionIdsRaw = formData.getAll("sessionIds") as string[];
 
+  const startLocation = (formData.get("startLocation") as string)?.trim() || null;
+  const endLocation = (formData.get("endLocation") as string)?.trim() || null;
+  const isRoundTrip = formData.get("isRoundTrip") === "true" || formData.get("isRoundTrip") === "on";
+  const isPublic = formData.get("isPublic") !== "false" && formData.get("isPublic") !== "off";
+
   if (!name || !startDateStr || !endDateStr) {
     throw new Error(await tServer("errSaveJourney"));
   }
@@ -597,6 +602,10 @@ export async function createJourneyAction(formData: FormData): Promise<void> {
     distanceKm,
     startBatteryPct,
     endBatteryPct,
+    startLocation,
+    endLocation,
+    isRoundTrip,
+    isPublic,
     notes,
     sessionIds: sessionIdsRaw.filter(Boolean),
   });
@@ -614,6 +623,10 @@ export async function updateJourneyAction(journeyId: string, formData: FormData)
   const distanceStr = formData.get("distanceKm") as string;
   const startBatteryStr = formData.get("startBatteryPct") as string;
   const endBatteryStr = formData.get("endBatteryPct") as string;
+  const startLocation = (formData.get("startLocation") as string)?.trim() || null;
+  const endLocation = (formData.get("endLocation") as string)?.trim() || null;
+  const isRoundTrip = formData.get("isRoundTrip") === "true" || formData.get("isRoundTrip") === "on";
+  const isPublic = formData.get("isPublic") !== "false" && formData.get("isPublic") !== "off";
   const notes = (formData.get("notes") as string)?.trim() || null;
   const sessionIdsRaw = formData.getAll("sessionIds") as string[];
 
@@ -640,6 +653,10 @@ export async function updateJourneyAction(journeyId: string, formData: FormData)
     distanceKm,
     startBatteryPct,
     endBatteryPct,
+    startLocation,
+    endLocation,
+    isRoundTrip,
+    isPublic,
     notes,
     sessionIds: sessionIdsRaw.filter(Boolean),
   });

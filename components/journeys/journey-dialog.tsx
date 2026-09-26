@@ -77,6 +77,10 @@ export function JourneyDialog({
       : ""
   );
   const [notes, setNotes] = useState(journey?.notes || "");
+  const [startLocation, setStartLocation] = useState(journey?.startLocation || "");
+  const [endLocation, setEndLocation] = useState(journey?.endLocation || "");
+  const [isRoundTrip, setIsRoundTrip] = useState(journey?.isRoundTrip ?? false);
+  const [isPublic, setIsPublic] = useState(journey?.isPublic ?? true);
 
   // Selected session IDs
   const initialSelectedIds =
@@ -112,6 +116,10 @@ export function JourneyDialog({
       if (distanceKm) formData.append("distanceKm", distanceKm);
       if (startBattery) formData.append("startBatteryPct", startBattery);
       if (endBattery) formData.append("endBatteryPct", endBattery);
+      if (startLocation) formData.append("startLocation", startLocation);
+      if (endLocation) formData.append("endLocation", endLocation);
+      formData.append("isRoundTrip", isRoundTrip ? "true" : "false");
+      formData.append("isPublic", isPublic ? "true" : "false");
       if (notes) formData.append("notes", notes);
 
       selectedSessionIds.forEach((id) => formData.append("sessionIds", id));
@@ -254,6 +262,49 @@ export function JourneyDialog({
                         onChange={(e) => setEndDate(e.target.value)}
                         className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium dark:[color-scheme:dark]"
                       />
+                    </div>
+                  </div>
+
+                  {/* Route & Locations (Start, Destination, Round Trip) */}
+                  <div className="space-y-2 p-3 bg-neutral-50 dark:bg-neutral-800/40 rounded-xl border border-neutral-200/80 dark:border-neutral-800/80">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
+                          {t("startLocation")}
+                        </label>
+                        <input
+                          type="text"
+                          value={startLocation}
+                          onChange={(e) => setStartLocation(e.target.value)}
+                          placeholder={t("placeholderStartLocation")}
+                          className="glass-input w-full px-3 py-1.5 rounded-lg text-xs font-medium"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
+                          {t("endLocation")}
+                        </label>
+                        <input
+                          type="text"
+                          value={endLocation}
+                          onChange={(e) => setEndLocation(e.target.value)}
+                          placeholder={t("placeholderEndLocation")}
+                          className="glass-input w-full px-3 py-1.5 rounded-lg text-xs font-medium"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <input
+                        type="checkbox"
+                        id="isRoundTripCheck"
+                        checked={isRoundTrip}
+                        onChange={(e) => setIsRoundTrip(e.target.checked)}
+                        className="w-4 h-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-500"
+                      />
+                      <label htmlFor="isRoundTripCheck" className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 cursor-pointer">
+                        🔄 {t("isRoundTrip")}
+                      </label>
                     </div>
                   </div>
 

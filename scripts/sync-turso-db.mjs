@@ -37,6 +37,10 @@ async function run() {
     );`,
     "ALTER TABLE Journey ADD COLUMN startBatteryPct REAL;",
     "ALTER TABLE Journey ADD COLUMN endBatteryPct REAL;",
+    "ALTER TABLE Journey ADD COLUMN startLocation TEXT;",
+    "ALTER TABLE Journey ADD COLUMN endLocation TEXT;",
+    "ALTER TABLE Journey ADD COLUMN isRoundTrip INTEGER DEFAULT 0;",
+    "ALTER TABLE Journey ADD COLUMN isPublic INTEGER DEFAULT 1;",
 
     // ChargingSession new fields & relation
     "ALTER TABLE ChargingSession ADD COLUMN journeyId TEXT;",

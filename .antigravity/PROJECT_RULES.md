@@ -19,9 +19,9 @@
    - Every primary/secondary action button must include hover state, press feedback (`active:scale-[0.99]`), and explicit `cursor-pointer`.
    - Ensure full dark mode support with curated color tokens.
 
-5. **Internationalization Integrity**
-   - Every user-facing text string, button label, modal title, table header, chart tooltip, and badge text must be translated in `lib/i18n/translations.ts`.
-   - Never hardcode user-visible strings in JSX/TSX components.
+5. **Internationalization Integrity (MANDATORY)**
+   - **WHEN ADDING ANY CONSTANT TEXT, MAKE SURE IT IS READ FROM TRANSLATIONS (`lib/i18n/translations.ts`), NEVER WRITTEN DIRECTLY TO A COMPONENT.**
+   - Every user-facing text string, button label, modal title, card label, table header, chart tooltip, toast message, and badge text must exist in both English (EN) and Turkish (TR) translation dictionaries.
 
 6. **Settings & Action Safety**
    - `updateSettingsAction` must preserve unsubmitted form fields by checking `formData.has(...)`.

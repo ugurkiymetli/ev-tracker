@@ -62,6 +62,10 @@ export interface Journey {
   distanceKm?: number | null;
   startBatteryPct?: number | null;
   endBatteryPct?: number | null;
+  startLocation?: string | null;
+  endLocation?: string | null;
+  isRoundTrip?: boolean;
+  isPublic?: boolean;
   notes?: string | null;
   chargingSessions?: ChargingSession[];
   createdAt?: Date | string;

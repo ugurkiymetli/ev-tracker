@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import { Zap, BatteryCharging, Compass, ArrowUpDown, ArrowUp, ArrowDown, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { ChargingSession } from "@/types";
 import { ChargingRowActions } from "@/components/charging/charging-row-actions";
@@ -418,10 +419,13 @@ export function ChargingTableView({
                     </td>
                     <td className="py-3 px-2 sm:px-3 text-center whitespace-nowrap">
                       {session.journey?.name ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-950 text-[10px] font-bold shadow-xs">
+                        <Link
+                          href={`/journeys/${session.journey.id}`}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-neutral-100 dark:hover:bg-white dark:text-neutral-950 text-[10px] font-bold shadow-xs transition-all cursor-pointer"
+                        >
                           <Compass className="w-2.5 h-2.5" />
                           <span>{session.journey.name}</span>
-                        </span>
+                        </Link>
                       ) : (
                         <span className="text-neutral-400 text-[11px]">—</span>
                       )}

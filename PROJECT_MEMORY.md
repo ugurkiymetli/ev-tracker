@@ -129,9 +129,10 @@ All reported bugs and feature requests are tracked in [ISSUES_BACKLOG.md](file:/
 ## 🚗 Phase 3: Multi-Vehicle Support, Deep-Linking & Trip Tracking
 - [ ] **Multi-Vehicle Switcher**: Manage multiple EVs (e.g. Tesla Model Y + Hyundai Ioniq 5) under a single user account.
 - [x] **Trip & Road-trip Logger (`/journeys`)**: Standalone Journeys manager to track multi-day road trips, driven distance, attached charging sessions, start & end battery percentages, vehicle battery capacity net energy consumption math, vehicle badge info, and interactive timeline.
-- [ ] **URL Deep-Linking & Modal Routing (`/journeys?journeyId=xyz`, `/charging?sessionId=xyz`)**: Click any journey badge from the charging table or dashboard to open the detailed journey or session modal directly via URL searchParams or intercepting route.
-- [ ] **Public Shared Journeys (`/shared/journey/[journeyId]`)**: Generate public, shareable links for journeys so unauthenticated guests can view trip details, consumption rates, charging stops, and costs.
-- [ ] **Trip Start & Finish Locations & Multi-Stop Waypoints**: Add explicit origin (start location), destination (finish location), and waypoint stops (e.g. Istanbul ➔ Antalya ➔ Istanbul round-trip).
+- [x] **Standalone Journeys Page & URL Deep-Linking (`/journeys/[journeyId]`, `/journeys?journeyId=xyz`)**: Standalone full-page detail view for journeys with route parameters, editable journey details, and direct badge links from charging table views.
+- [x] **Public Shared Journeys (`/shared/journey/[journeyId]`)**: Publicly accessible, unauthenticated shareable trip report page for guests to inspect consumption, costs, waypoints, and timeline.
+- [x] **Start & End Locations + Round-Trip Flag**: Integrated `startLocation`, `endLocation`, and `isRoundTrip` support for road trips.
+- [x] **Centralized Duration Formatting Utilities (`lib/utils.ts`)**: Extracted `formatDurationText` and `formatDurationDetailed` with full `i18n` support.
 - [ ] **Home vs Public Charging Split**: Dedicated tag and analytics chart comparing Home Charging electricity rates vs Public Fast Charger rates.
 
 ## 🔋 Phase 4: Advanced Battery Health & Intelligence

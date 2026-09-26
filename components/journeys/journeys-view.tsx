@@ -1,10 +1,10 @@
 "use client";
 
-import { Compass, Calendar, Gauge, Zap, BatteryCharging, Plus } from "lucide-react";
+import Link from "next/link";
+import { Compass, Calendar, Gauge, Zap, BatteryCharging, Plus, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/components/layout/language-provider";
 import { Journey, ChargingSession } from "@/types";
 import { JourneyDialog } from "./journey-dialog";
-import { JourneyDetailsModal } from "./journey-details-modal";
 
 interface JourneysViewProps {
   journeys: Journey[];
@@ -208,11 +208,13 @@ export function JourneysView({
                   <span className="text-xs font-semibold text-neutral-500">
                     {sessions.length} {t("sessionsAttached")}
                   </span>
-                  <JourneyDetailsModal
-                    journey={journey}
-                    availableSessions={availableSessions}
-                    currencySymbol={currencySymbol}
-                  />
+                  <Link
+                    href={`/journeys/${journey.id}`}
+                    className="py-1.5 px-3.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 font-bold text-xs shadow-xs transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>{t("viewJourneyDetails")}</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
               </div>
             );

@@ -386,6 +386,10 @@ export async function createJourney(data: {
   distanceKm?: number | null;
   startBatteryPct?: number | null;
   endBatteryPct?: number | null;
+  startLocation?: string | null;
+  endLocation?: string | null;
+  isRoundTrip?: boolean;
+  isPublic?: boolean;
   notes?: string | null;
   sessionIds?: string[];
 }) {
@@ -419,6 +423,10 @@ export async function updateJourney(
     distanceKm?: number | null;
     startBatteryPct?: number | null;
     endBatteryPct?: number | null;
+    startLocation?: string | null;
+    endLocation?: string | null;
+    isRoundTrip?: boolean;
+    isPublic?: boolean;
     notes?: string | null;
     sessionIds?: string[];
   }

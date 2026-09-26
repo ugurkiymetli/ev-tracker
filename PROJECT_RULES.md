@@ -33,6 +33,13 @@ Good code should require little explanation.
 
 ---
 
+### Internationalization (i18n) & Constant Text
+
+- **WHEN ADDING ANY CONSTANT TEXT, MAKE SURE IT IS READ FROM TRANSLATIONS (`lib/i18n/translations.ts`), NEVER WRITTEN DIRECTLY TO A COMPONENT.**
+- Every user-facing text string, button label, modal title, table header, tooltip, and badge text must exist in both English (EN) and Turkish (TR) translation dictionaries.
+
+---
+
 ## Tech Stack
 
 ### Framework
