@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Zap, BatteryCharging, ArrowUpDown, ArrowUp, ArrowDown, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { Zap, BatteryCharging, Compass, ArrowUpDown, ArrowUp, ArrowDown, Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { ChargingSession } from "@/types";
 import { ChargingRowActions } from "@/components/charging/charging-row-actions";
 import { useLanguage } from "@/components/layout/language-provider";
@@ -352,8 +352,14 @@ export function ChargingTableView({
                       {dateStr}
                     </td>
                     <td className="py-3 px-2 sm:px-3 text-neutral-800 dark:text-neutral-200">
-                      <div className="font-bold text-neutral-900 dark:text-white">
-                        {session.provider?.name || session.location || "Standard Charge"}
+                      <div className="font-bold text-neutral-900 dark:text-white flex items-center gap-1.5 flex-wrap">
+                        <span>{session.provider?.name || session.location || "Standard Charge"}</span>
+                        {session.journey && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-950 text-[9px] font-extrabold font-outfit uppercase">
+                            <Compass className="w-2.5 h-2.5" />
+                            <span>{session.journey.name}</span>
+                          </span>
+                        )}
                       </div>
                       {session.notes && (
                         <div className="text-[10px] text-neutral-400 font-normal">

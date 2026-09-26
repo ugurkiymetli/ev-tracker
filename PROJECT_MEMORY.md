@@ -115,7 +115,7 @@ All reported bugs and feature requests are tracked in [ISSUES_BACKLOG.md](file:/
 # Roadmap & Future Expansion Plan
 
 ## 🔐 Phase 1: Authentication & User Onboarding (COMPLETED)
-- [x] **Public Landing Page (`/landing` or `/`)**: Modern landing page with hero banner, key feature highlights, interactive analytics teaser, and CTA buttons.
+- [x] **Public Landing Page (`/landing` or `/`)**: Modern landing page with hero banner, key feature highlights, interactive analytics teaser, live demo charging history table, interactive road trips & journeys timeline preview, and CTA buttons.
 - [x] **Account Schema & Prisma Model**: Added `User` model (`id`, `username`, `passwordHash`, `email`, `createdAt`) linked to `Vehicle` and `Settings`.
 - [x] **Sign Up Page (`/signup`)**: Dedicated registration page with username, password, and instant account setup.
 - [x] **Sign In Page (`/signin`)**: Dedicated sign-in page with credential validation and session cookie handling.
@@ -128,7 +128,7 @@ All reported bugs and feature requests are tracked in [ISSUES_BACKLOG.md](file:/
 
 ## 🚗 Phase 3: Multi-Vehicle Support & Trip Tracking
 - [ ] **Multi-Vehicle Switcher**: Manage multiple EVs (e.g. Tesla Model Y + Hyundai Ioniq 5) under a single user account.
-- [ ] **Trip & Road-trip Logger**: Track specific road trips (start odometer, end odometer, total kWh charged during trip, hotel/supercharger costs).
+- [x] **Trip & Road-trip Logger (`/journeys`)**: Standalone Journeys manager to track multi-day road trips, driven distance, attached charging sessions, and interactive timeline.
 - [ ] **Home vs Public Charging Split**: Dedicated tag and analytics chart comparing Home Charging electricity rates vs Public Fast Charger rates.
 
 ## 🔋 Phase 4: Advanced Battery Health & Intelligence

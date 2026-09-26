@@ -43,7 +43,24 @@ export interface ChargingSession {
   odometerKm?: number | null;
   durationMinutes?: number | null;
   location?: string | null;
+  journeyId?: string | null;
+  journey?: Journey | null;
   notes?: string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+}
+
+export interface Journey {
+  id: string;
+  vehicleId: string;
+  name: string;
+  startDate: Date | string;
+  endDate: Date | string;
+  startOdometerKm?: number | null;
+  endOdometerKm?: number | null;
+  distanceKm?: number | null;
+  notes?: string | null;
+  chargingSessions?: ChargingSession[];
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }

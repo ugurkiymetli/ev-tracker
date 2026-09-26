@@ -100,7 +100,7 @@ export function ExpenseForm() {
             name="date"
             defaultValue={todayStr}
             required
-            className="glass-input w-full px-3.5 py-2 rounded-xl text-sm font-medium"
+            className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium dark:[color-scheme:dark]"
           />
         </div>
 

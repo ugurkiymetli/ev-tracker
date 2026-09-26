@@ -115,7 +115,7 @@ The primary goal is to become a comprehensive personal EV dashboard that answers
 
 ## 🚗 Phase 3: Multi-Vehicle Support & Trip Tracking
 - [ ] **Multi-Vehicle Switcher**: Manage multiple EVs (e.g. Tesla Model Y + Hyundai Ioniq 5) under a single user account.
-- [ ] **Trip & Road-trip Logger**: Track specific road trips (start odometer, end odometer, total kWh charged during trip, hotel/supercharger costs).
+- [x] **Trip & Road-trip Logger (`/journeys`)**: Standalone Journeys manager to track multi-day road trips, driven distance, attached charging sessions, and interactive timeline.
 - [ ] **Home vs Public Charging Split**: Dedicated tag and analytics chart comparing Home Charging electricity rates vs Public Fast Charger rates.
 
 ## 🔋 Phase 4: Advanced Battery Health & Intelligence

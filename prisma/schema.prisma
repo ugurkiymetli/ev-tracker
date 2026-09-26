@@ -36,6 +36,7 @@ model Vehicle {
   chargingSessions    ChargingSession[]
   expenses            Expense[]
   trips               Trip[]
+  journeys            Journey[]
 }
 
 model ChargingProvider {
@@ -55,6 +56,7 @@ model ChargingSession {
   id                  String            @id @default(uuid())
   vehicleId           String
   providerId          String?
+  journeyId           String?
   date                DateTime
   energyChargedKwh    Float
   cost                Float
@@ -71,6 +73,24 @@ model ChargingSession {
 
   vehicle             Vehicle           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   provider            ChargingProvider? @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  journey             Journey?          @relation(fields: [journeyId], references: [id], onDelete: SetNull)
+}
+
+model Journey {
+  id                  String            @id @default(uuid())
+  vehicleId           String
+  name                String
+  startDate           DateTime
+  endDate             DateTime
+  startOdometerKm     Float?
+  endOdometerKm       Float?
+  distanceKm          Float?
+  notes               String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  vehicle             Vehicle           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  chargingSessions    ChargingSession[]
 }
 
 model Expense {

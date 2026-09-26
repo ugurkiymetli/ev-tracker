@@ -18,7 +18,24 @@ const client = createClient({ url, authToken });
 
 async function run() {
   const alterStatements = [
-    // ChargingSession new fields
+    // Journey model creation
+    `CREATE TABLE IF NOT EXISTS Journey (
+      id TEXT PRIMARY KEY,
+      vehicleId TEXT NOT NULL,
+      name TEXT NOT NULL,
+      startDate DATETIME NOT NULL,
+      endDate DATETIME NOT NULL,
+      startOdometerKm REAL,
+      endOdometerKm REAL,
+      distanceKm REAL,
+      notes TEXT,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (vehicleId) REFERENCES Vehicle(id) ON DELETE CASCADE
+    );`,
+
+    // ChargingSession new fields & relation
+    "ALTER TABLE ChargingSession ADD COLUMN journeyId TEXT;",
     "ALTER TABLE ChargingSession ADD COLUMN durationMinutes REAL;",
     "ALTER TABLE ChargingSession ADD COLUMN startBatteryPct REAL;",
     "ALTER TABLE ChargingSession ADD COLUMN endBatteryPct REAL;",

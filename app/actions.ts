@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db/prisma";
 import { translations } from "@/lib/i18n/translations";
-import { getOrCreateDefaultVehicleAndSettings, importValidChargingSessions, findOrCreateProvider } from "@/server/services/ev-service";
+import { getOrCreateDefaultVehicleAndSettings, importValidChargingSessions, findOrCreateProvider, createJourney, updateJourney, deleteJourney } from "@/server/services/ev-service";
 
 async function tServer(key: keyof typeof translations.en) {
   const cookieStore = await cookies();
@@ -557,4 +557,87 @@ export async function softDeleteProviderAction(providerId: string) {
   revalidatePath("/settings");
   revalidatePath("/import");
   return { success: true };
+}
+
+export async function createJourneyAction(formData: FormData): Promise<void> {
+  const { vehicle } = await getOrCreateDefaultVehicleAndSettings();
+
+  const name = (formData.get("name") as string)?.trim();
+  const startDateStr = formData.get("startDate") as string;
+  const endDateStr = formData.get("endDate") as string;
+  const startOdometerStr = formData.get("startOdometerKm") as string;
+  const endOdometerStr = formData.get("endOdometerKm") as string;
+  const distanceStr = formData.get("distanceKm") as string;
+  const notes = (formData.get("notes") as string)?.trim() || null;
+  const sessionIdsRaw = formData.getAll("sessionIds") as string[];
+
+  if (!name || !startDateStr || !endDateStr) {
+    throw new Error(await tServer("errSaveJourney"));
+  }
+
+  const startOdometerKm = startOdometerStr ? parseFloat(startOdometerStr) : null;
+  const endOdometerKm = endOdometerStr ? parseFloat(endOdometerStr) : null;
+  let distanceKm = distanceStr ? parseFloat(distanceStr) : null;
+
+  if (!distanceKm && startOdometerKm !== null && endOdometerKm !== null && endOdometerKm >= startOdometerKm) {
+    distanceKm = endOdometerKm - startOdometerKm;
+  }
+
+  await createJourney({
+    vehicleId: vehicle.id,
+    name,
+    startDate: new Date(startDateStr),
+    endDate: new Date(endDateStr),
+    startOdometerKm,
+    endOdometerKm,
+    distanceKm,
+    notes,
+    sessionIds: sessionIdsRaw.filter(Boolean),
+  });
+
+  revalidatePath("/journeys");
+  revalidatePath("/charging");
+}
+
+export async function updateJourneyAction(journeyId: string, formData: FormData): Promise<void> {
+  const name = (formData.get("name") as string)?.trim();
+  const startDateStr = formData.get("startDate") as string;
+  const endDateStr = formData.get("endDate") as string;
+  const startOdometerStr = formData.get("startOdometerKm") as string;
+  const endOdometerStr = formData.get("endOdometerKm") as string;
+  const distanceStr = formData.get("distanceKm") as string;
+  const notes = (formData.get("notes") as string)?.trim() || null;
+  const sessionIdsRaw = formData.getAll("sessionIds") as string[];
+
+  if (!name || !startDateStr || !endDateStr) {
+    throw new Error(await tServer("errSaveJourney"));
+  }
+
+  const startOdometerKm = startOdometerStr ? parseFloat(startOdometerStr) : null;
+  const endOdometerKm = endOdometerStr ? parseFloat(endOdometerStr) : null;
+  let distanceKm = distanceStr ? parseFloat(distanceStr) : null;
+
+  if (!distanceKm && startOdometerKm !== null && endOdometerKm !== null && endOdometerKm >= startOdometerKm) {
+    distanceKm = endOdometerKm - startOdometerKm;
+  }
+
+  await updateJourney(journeyId, {
+    name,
+    startDate: new Date(startDateStr),
+    endDate: new Date(endDateStr),
+    startOdometerKm,
+    endOdometerKm,
+    distanceKm,
+    notes,
+    sessionIds: sessionIdsRaw.filter(Boolean),
+  });
+
+  revalidatePath("/journeys");
+  revalidatePath("/charging");
+}
+
+export async function deleteJourneyAction(id: string): Promise<void> {
+  await deleteJourney(id);
+  revalidatePath("/journeys");
+  revalidatePath("/charging");
 }

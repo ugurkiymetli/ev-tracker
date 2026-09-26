@@ -230,7 +230,7 @@ export async function getDashboardData() {
 
   const sessions = await prisma.chargingSession.findMany({
     where: { vehicleId: vehicle.id },
-    include: { provider: true },
+    include: { provider: true, journey: true },
     orderBy: { date: "desc" },
   });
 
@@ -338,4 +338,121 @@ export async function importValidChargingSessions(
   }
 
   return importedCount;
+}
+
+/**
+ * Fetches all journeys for a vehicle with attached charging sessions.
+ */
+export async function getJourneys(vehicleId: string) {
+  return await prisma.journey.findMany({
+    where: { vehicleId },
+    include: {
+      chargingSessions: {
+        include: { provider: true },
+        orderBy: [{ date: "asc" }, { createdAt: "asc" }],
+      },
+    },
+    orderBy: { startDate: "desc" },
+  });
+}
+
+/**
+ * Fetches single journey details by ID.
+ */
+export async function getJourneyById(journeyId: string) {
+  return await prisma.journey.findUnique({
+    where: { id: journeyId },
+    include: {
+      chargingSessions: {
+        include: { provider: true },
+        orderBy: [{ date: "asc" }, { createdAt: "asc" }],
+      },
+    },
+  });
+}
+
+/**
+ * Creates a new Journey and links selected charging session IDs.
+ */
+export async function createJourney(data: {
+  vehicleId: string;
+  name: string;
+  startDate: Date;
+  endDate: Date;
+  startOdometerKm?: number | null;
+  endOdometerKm?: number | null;
+  distanceKm?: number | null;
+  notes?: string | null;
+  sessionIds?: string[];
+}) {
+  const { sessionIds = [], ...journeyData } = data;
+
+  const journey = await prisma.journey.create({
+    data: journeyData,
+  });
+
+  if (sessionIds.length > 0) {
+    await prisma.chargingSession.updateMany({
+      where: { id: { in: sessionIds } },
+      data: { journeyId: journey.id },
+    });
+  }
+
+  return journey;
+}
+
+/**
+ * Updates a Journey and synchronizes linked charging session IDs.
+ */
+export async function updateJourney(
+  journeyId: string,
+  data: {
+    name: string;
+    startDate: Date;
+    endDate: Date;
+    startOdometerKm?: number | null;
+    endOdometerKm?: number | null;
+    distanceKm?: number | null;
+    notes?: string | null;
+    sessionIds?: string[];
+  }
+) {
+  const { sessionIds, ...journeyData } = data;
+
+  const updated = await prisma.journey.update({
+    where: { id: journeyId },
+    data: journeyData,
+  });
+
+  if (sessionIds !== undefined) {
+    // Unlink old sessions
+    await prisma.chargingSession.updateMany({
+      where: { journeyId },
+      data: { journeyId: null },
+    });
+
+    // Link new sessions
+    if (sessionIds.length > 0) {
+      await prisma.chargingSession.updateMany({
+        where: { id: { in: sessionIds } },
+        data: { journeyId },
+      });
+    }
+  }
+
+  return updated;
+}
+
+/**
+ * Deletes a Journey, setting attached charging session journeyIds to null.
+ */
+export async function deleteJourney(journeyId: string) {
+  await prisma.chargingSession.updateMany({
+    where: { journeyId },
+    data: { journeyId: null },
+  });
+
+  return await prisma.journey.delete({
+    where: { id: journeyId },
+  });
 }

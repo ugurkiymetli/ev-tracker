@@ -271,3 +271,7 @@ Add Google Fonts to `index.html`:
    - Main cards, outer form containers: `rounded-2xl`
    - Micro badges: `rounded-lg` or `rounded-md`
 5. **Animation & Touch**: Add `.animate-fade-in` to card containers and interactive view transitions. Ensure touch action optimization on all buttons and inputs.
+6. **Mandatory Standard Tailwind Colors & Dual Light/Dark Mode Audit**:
+   - Every UI component MUST be explicitly checked and verified for both Light Mode AND Dark Mode color visibility before release.
+   - ONLY use standard Tailwind CSS color scale values (`50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950`). NEVER use invalid non-existent values like `neutral-850`.
+   - List items and checklist rows MUST explicitly declare light mode (`bg-neutral-100/80 text-neutral-800 border-neutral-200`) and dark mode (`dark:bg-neutral-800/60 dark:text-neutral-200 dark:border-neutral-800`) background and border pairs.

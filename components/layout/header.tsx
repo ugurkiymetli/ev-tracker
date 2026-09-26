@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Zap, LayoutDashboard, BatteryCharging, Receipt, TrendingUp, Settings, User as UserIcon, LogOut, LogIn } from "lucide-react";
+import { Zap, LayoutDashboard, BatteryCharging, Compass, Receipt, TrendingUp, Settings, User as UserIcon, LogOut, LogIn } from "lucide-react";
 import { useLanguage } from "./language-provider";
 import { signOutAction } from "@/app/actions";
 
@@ -19,6 +19,7 @@ export function Header({ user }: HeaderProps) {
   const navItems = [
     { href: "/", label: t("navDashboard"), icon: LayoutDashboard },
     { href: "/charging", label: t("navCharging"), icon: BatteryCharging },
+    { href: "/journeys", label: t("navJourneys"), icon: Compass },
     { href: "/expenses", label: t("navExpenses"), icon: Receipt },
     { href: "/ice-comparison", label: t("navIceComparison"), icon: TrendingUp },
     { href: "/settings", label: t("navSettings"), icon: Settings },
