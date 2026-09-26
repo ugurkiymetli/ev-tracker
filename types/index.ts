@@ -41,6 +41,7 @@ export interface ChargingSession {
   endBatteryPct?: number | null;
   chargingType: ChargingType | string;
   odometerKm?: number | null;
+  durationMinutes?: number | null;
   location?: string | null;
   notes?: string | null;
 }

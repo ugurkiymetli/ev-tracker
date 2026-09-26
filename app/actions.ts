@@ -109,6 +109,9 @@ export async function createChargingSessionAction(formData: FormData): Promise<v
   const pricePerKwh = cost / energyChargedKwh;
   const providerName = (formData.get("providerName") as string)?.trim();
   const odometerKmStr = formData.get("odometerKm") as string;
+  const durationMinsStr = formData.get("durationMinutes") as string;
+  const startBatteryPctStr = formData.get("startBatteryPct") as string;
+  const endBatteryPctStr = formData.get("endBatteryPct") as string;
   const location = (formData.get("location") as string)?.trim();
   const notes = (formData.get("notes") as string)?.trim();
 
@@ -123,6 +126,9 @@ export async function createChargingSessionAction(formData: FormData): Promise<v
   }
 
   const odometerKm = odometerKmStr ? parseFloat(odometerKmStr) : null;
+  const durationMinutes = durationMinsStr ? parseFloat(durationMinsStr) : null;
+  const startBatteryPct = startBatteryPctStr ? parseFloat(startBatteryPctStr) : null;
+  const endBatteryPct = endBatteryPctStr ? parseFloat(endBatteryPctStr) : null;
 
   await prisma.chargingSession.create({
     data: {
@@ -134,6 +140,9 @@ export async function createChargingSessionAction(formData: FormData): Promise<v
       pricePerKwh: Number(pricePerKwh.toFixed(2)),
       chargingType,
       odometerKm,
+      durationMinutes,
+      startBatteryPct,
+      endBatteryPct,
       location,
       notes,
     },
@@ -159,6 +168,9 @@ export async function updateChargingSessionAction(formData: FormData): Promise<v
   const pricePerKwh = cost / energyChargedKwh;
   const providerName = (formData.get("providerName") as string)?.trim();
   const odometerKmStr = formData.get("odometerKm") as string;
+  const durationMinsStr = formData.get("durationMinutes") as string;
+  const startBatteryPctStr = formData.get("startBatteryPct") as string;
+  const endBatteryPctStr = formData.get("endBatteryPct") as string;
   const location = (formData.get("location") as string)?.trim();
   const notes = (formData.get("notes") as string)?.trim();
 
@@ -173,6 +185,9 @@ export async function updateChargingSessionAction(formData: FormData): Promise<v
   }
 
   const odometerKm = odometerKmStr ? parseFloat(odometerKmStr) : null;
+  const durationMinutes = durationMinsStr ? parseFloat(durationMinsStr) : null;
+  const startBatteryPct = startBatteryPctStr ? parseFloat(startBatteryPctStr) : null;
+  const endBatteryPct = endBatteryPctStr ? parseFloat(endBatteryPctStr) : null;
 
   await prisma.chargingSession.update({
     where: { id: sessionId },
@@ -184,6 +199,9 @@ export async function updateChargingSessionAction(formData: FormData): Promise<v
       pricePerKwh: Number(pricePerKwh.toFixed(2)),
       chargingType,
       odometerKm,
+      durationMinutes,
+      startBatteryPct,
+      endBatteryPct,
       location,
       notes,
     },

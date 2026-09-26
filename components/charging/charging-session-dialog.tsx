@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Plus, Pencil, X, BatteryCharging, Zap, Clock, Gauge, ChevronDown } from "lucide-react";
+import { Plus, Pencil, X, BatteryCharging, Zap, Clock, Gauge, ChevronDown, Info } from "lucide-react";
 import { createChargingSessionAction, updateChargingSessionAction } from "@/app/actions";
 import { useLanguage } from "@/components/layout/language-provider";
 import { useToast } from "@/components/ui/toast";
@@ -45,7 +45,14 @@ export function ChargingSessionDialog({
     session?.chargingType === "DC" ? "DC" : "AC"
   );
   const [costMode, setCostMode] = useState<"TOTAL" | "PER_KWH">("TOTAL");
-  const [showOptional, setShowOptional] = useState(false);
+  const hasOptionalData = Boolean(
+    session?.odometerKm ||
+      session?.durationMinutes ||
+      session?.notes ||
+      session?.startBatteryPct ||
+      session?.endBatteryPct
+  );
+  const [showOptional, setShowOptional] = useState(hasOptionalData);
 
   const [energyVal, setEnergyVal] = useState<string>(
     session?.energyChargedKwh ? String(session.energyChargedKwh) : ""
@@ -56,7 +63,9 @@ export function ChargingSessionDialog({
   const [pricePerKwhVal, setPricePerKwhVal] = useState<string>(
     session?.pricePerKwh ? String(session.pricePerKwh) : ""
   );
-  const [durationMins, setDurationMins] = useState<string>("");
+  const [durationMins, setDurationMins] = useState<string>(
+    session?.durationMinutes ? String(session.durationMinutes) : ""
+  );
 
   // Helper numeric parsers supporting comma (,) and period (.)
   const parseNum = (str: string) => {
@@ -379,11 +388,19 @@ export function ChargingSessionDialog({
 
                 {showOptional && (
                   <div className="pt-3 space-y-4 animate-fade-in">
-                    {/* Odometer */}
+                    {/* Odometer with Info Tooltip */}
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
-                        {t("fieldOdometer")}
-                      </label>
+                      <div className="flex items-center gap-1.5">
+                        <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
+                          {t("fieldOdometer")}
+                        </label>
+                        <div className="relative group flex items-center">
+                          <Info className="w-3.5 h-3.5 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 cursor-help transition-colors" />
+                          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 hidden group-hover:block w-64 p-2.5 bg-neutral-900 dark:bg-neutral-800 text-white dark:text-neutral-100 text-[11px] font-medium leading-relaxed rounded-xl shadow-xl border border-neutral-700 dark:border-neutral-700 z-50 pointer-events-none">
+                            {t("odometerInfoTooltip")}
+                          </div>
+                        </div>
+                      </div>
                       <input
                         type="number"
                         name="odometerKm"
@@ -391,6 +408,39 @@ export function ChargingSessionDialog({
                         placeholder={t("placeholderOdometer")}
                         className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
                       />
+                    </div>
+
+                    {/* Start & End Battery Percentage */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
+                          {t("fieldStartBattery")}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          name="startBatteryPct"
+                          defaultValue={session?.startBatteryPct ?? ""}
+                          placeholder={t("placeholderBatteryStart")}
+                          className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider font-outfit">
+                          {t("fieldEndBattery")}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          name="endBatteryPct"
+                          defaultValue={session?.endBatteryPct ?? ""}
+                          placeholder={t("placeholderBatteryEnd")}
+                          className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
+                        />
+                      </div>
                     </div>
 
                     {/* Duration & Avg Power Calculation (FEATURE-007 & FEATURE-009) */}
@@ -402,6 +452,7 @@ export function ChargingSessionDialog({
                         </label>
                         <input
                           type="number"
+                          name="durationMinutes"
                           value={durationMins}
                           onChange={(e) => setDurationMins(e.target.value)}
                           placeholder={t("placeholderDuration")}

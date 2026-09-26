@@ -63,6 +63,7 @@ model ChargingSession {
   endBatteryPct       Float?
   chargingType        String            @default("AC") // AC or DC
   odometerKm          Float?
+  durationMinutes     Float?
   location            String?
   notes               String?
   createdAt           DateTime          @default(now())
