@@ -142,3 +142,77 @@ input[type="date"] {
   width: 100%;
   box-sizing: border-box;
 }
+
+/* Circling Border Light Animation */
+@keyframes borderBeam {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-border-beam {
+  animation: borderBeam 4s linear infinite;
+}
+
+/* Shimmer Light Sweep */
+@keyframes shimmerSweep {
+  0% { transform: translateX(-150%) skewX(-20deg); }
+  60%, 100% { transform: translateX(250%) skewX(-20deg); }
+}
+
+.animate-shimmer-sweep {
+  animation: shimmerSweep 3.5s ease-in-out infinite;
+}
+
+/* Breathing Amber Glow */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1); }
+  50% { box-shadow: 0 0 22px rgba(245, 158, 11, 0.4), 0 4px 14px rgba(0, 0, 0, 0.15); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+/* Radial Center-to-Border Expanding Ripple Wave */
+@keyframes rippleExpand {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0.75;
+  }
+  60% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.8);
+    opacity: 0;
+  }
+}
+
+.animate-ripple-expand {
+  animation: rippleExpand 3s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
+}
+
+.animate-ripple-expand-delayed {
+  animation: rippleExpand 3s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
+  animation-delay: 1.5s;
+}
+
+/* Subtle Center Breathing Pulse Fading to Borders */
+@keyframes centerBreathingPulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+.animate-center-breathe {
+  animation: centerBreathingPulse 3s ease-in-out infinite;
+}
+
+
+
+

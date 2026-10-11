@@ -106,6 +106,8 @@ export interface DashboardStats {
   estimatedRangeKm: number;
   acSessionsCount: number;
   dcSessionsCount: number;
+  acEnergyChargedKwh: number;
+  dcEnergyChargedKwh: number;
   totalExpensesCost: number;
   totalOwnershipCost: number;
   totalSavedVsIce: number;

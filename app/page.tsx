@@ -3,7 +3,8 @@ import { getDashboardData } from "@/server/services/ev-service";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { MonthlyTrendChart } from "@/components/dashboard/monthly-trend-chart";
 import { ProviderBreakdownChart } from "@/components/dashboard/provider-breakdown-chart";
-import { seedDemoDataAction, deleteAllDataAction } from "@/app/actions";
+import { AcDcRatioCard } from "@/components/dashboard/ac-dc-ratio-card";
+import { seedDemoDataAction } from "@/app/actions";
 import { translations } from "@/lib/i18n/translations";
 import {
   Zap,
@@ -14,8 +15,6 @@ import {
   Compass,
   ArrowRight,
   Cpu,
-  Trash2,
-  Plus,
 } from "lucide-react";
 
 import { cookies } from "next/headers";
@@ -59,12 +58,12 @@ export default async function MainPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
           {sessions.length === 0 && (
-            <form action={seedDemoDataAction}>
+            <form action={seedDemoDataAction} className="w-full sm:w-auto">
               <button
                 type="submit"
-                className="py-2.5 px-3 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 rounded-xl font-semibold text-xs transition-all active:scale-[0.99] border border-neutral-200 dark:border-neutral-700 flex items-center gap-1.5 cursor-pointer"
+                className="w-full sm:w-auto py-2 px-3 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 rounded-xl font-semibold text-xs transition-all active:scale-[0.99] border border-neutral-200 dark:border-neutral-700 flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Cpu className="w-3.5 h-3.5" />
                 <span>{t("seedDemoData")}</span>
@@ -72,24 +71,18 @@ export default async function MainPage() {
             </form>
           )}
 
-          {sessions.length > 0 && (
-            <form action={deleteAllDataAction}>
-              <button
-                type="submit"
-                title={t("deleteAllData")}
-                className="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 rounded-xl font-bold text-xs transition-all active:scale-[0.99] flex items-center gap-1 cursor-pointer"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </form>
-          )}
-
+          {/* Inverted Monotone Theme Button: Dark mode = White button with Black Zap badge; Light mode = Black button with White Zap badge */}
           <Link
             href="/charging?log=true"
-            className="py-2.5 px-4 bg-neutral-900 hover:bg-neutral-800 dark:bg-neutral-100 dark:hover:bg-white text-white dark:text-neutral-950 rounded-xl font-bold text-xs shadow-md hover:shadow-lg active:scale-[0.99] transition-all flex items-center gap-2 cursor-pointer"
+            className="group/btn w-full sm:w-auto py-2.5 px-4 bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-950 rounded-xl font-bold text-xs active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer border border-neutral-800 dark:border-white shadow-md hover:shadow-lg"
           >
-            <Plus className="w-4 h-4" />
-            <span>{t("logSession")}</span>
+            {/* Inverted Clean Zap Icon Badge: White in light mode, Black in dark mode */}
+            <span className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 bg-white dark:bg-black shadow-sm border border-neutral-200/60 dark:border-neutral-800">
+              <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500 dark:text-amber-400 dark:fill-amber-400 group-hover/btn:scale-110 transition-transform" />
+            </span>
+
+            {/* Button Label */}
+            <span className="tracking-tight font-extrabold">{t("logSession")}</span>
           </Link>
         </div>
       </div>
@@ -169,51 +162,13 @@ export default async function MainPage() {
       {/* Additional Stats & Activity Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* AC vs DC Distribution */}
-        <div className="bg-white dark:bg-neutral-900/40 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-md space-y-3">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-outfit">
-            {t("acDcRatio")}
-          </h4>
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold">
-              <span className="text-neutral-900 dark:text-white font-extrabold text-lg">
-                {stats.acSessionsCount}
-              </span>{" "}
-              {t("acSessions")}
-            </div>
-            <div className="text-sm font-semibold">
-              <span className="text-neutral-900 dark:text-white font-extrabold text-lg">
-                {stats.dcSessionsCount}
-              </span>{" "}
-              {t("dcSessions")}
-            </div>
-          </div>
-          <div className="w-full bg-neutral-200 dark:bg-neutral-800 h-3 rounded-full overflow-hidden flex">
-            <div
-              className="bg-neutral-900 dark:bg-neutral-100 h-full transition-all"
-              style={{
-                width: `${
-                  stats.totalSessions > 0
-                    ? (stats.acSessionsCount / stats.totalSessions) * 100
-                    : 50
-                }%`,
-              }}
-            />
-            <div
-              className="bg-amber-500 h-full transition-all"
-              style={{
-                width: `${
-                  stats.totalSessions > 0
-                    ? (stats.dcSessionsCount / stats.totalSessions) * 100
-                    : 50
-                }%`,
-              }}
-            />
-          </div>
-          <div className="flex justify-between text-[10px] text-neutral-500 font-semibold uppercase">
-            <span>{t("level2Home")}</span>
-            <span>{t("fastChargers")}</span>
-          </div>
-        </div>
+        <AcDcRatioCard
+          acSessionsCount={stats.acSessionsCount}
+          dcSessionsCount={stats.dcSessionsCount}
+          acEnergyChargedKwh={stats.acEnergyChargedKwh}
+          dcEnergyChargedKwh={stats.dcEnergyChargedKwh}
+          totalSessions={stats.totalSessions}
+        />
 
         {/* Total Cost of Ownership */}
         <div className="bg-white dark:bg-neutral-900/40 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-md space-y-3">

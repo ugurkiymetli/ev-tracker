@@ -82,7 +82,7 @@ All reported bugs and feature requests are tracked in [ISSUES_BACKLOG.md](file:/
 - [x] Session Details Overview Modal (Battery range visualization, session duration, average charging speed kW, and key session metrics)
 - [x] Mandatory Battery Pair Validation (Enforced start & end battery percentage input coupling)
 - [x] Tie-breaker Sorting for Table Views (Secondary `createdAt` descending ordering for identical dates)
-- [x] AC Level 2 vs DC Fast Charger Statistics & Distribution Ratio
+- [x] AC Level 2 vs DC Fast Charger Statistics & Distribution Ratio (Interactive Session Count & Total kWh toggle, in-bar percentage labels, responsive animation)
 - [x] Charging Provider & Station Network Breakdown
 - [x] Cost per Charge & Average Price per kWh calculation
 - [x] Monthly Energy & Cost Trend Composed Charts

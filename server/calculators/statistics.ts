@@ -187,11 +187,15 @@ export function calculateDashboardStats(
 
   let acSessionsCount = 0;
   let dcSessionsCount = 0;
+  let acEnergyChargedKwh = 0;
+  let dcEnergyChargedKwh = 0;
   sessions.forEach((s) => {
     if (s.chargingType === "DC") {
       dcSessionsCount += 1;
+      dcEnergyChargedKwh += s.energyChargedKwh;
     } else {
       acSessionsCount += 1;
+      acEnergyChargedKwh += s.energyChargedKwh;
     }
   });
 
@@ -220,6 +224,8 @@ export function calculateDashboardStats(
     estimatedRangeKm,
     acSessionsCount,
     dcSessionsCount,
+    acEnergyChargedKwh: Number(acEnergyChargedKwh.toFixed(1)),
+    dcEnergyChargedKwh: Number(dcEnergyChargedKwh.toFixed(1)),
     totalExpensesCost: Number(totalExpensesCost.toFixed(2)),
     totalOwnershipCost: Number(totalOwnershipCost.toFixed(2)),
     totalSavedVsIce,
