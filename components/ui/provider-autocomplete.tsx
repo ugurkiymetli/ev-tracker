@@ -29,6 +29,15 @@ export function ProviderAutocomplete({
   const [query, setQuery] = useState(initialValue);
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const openDropdown = () => {
+    setIsOpen(true);
+    // Scroll container so input & dropdown options below are visible on mobile
+    setTimeout(() => {
+      containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+  };
 
   const cleanQuery = query.toLowerCase().trim();
 
@@ -80,15 +89,16 @@ export function ProviderAutocomplete({
     <div ref={containerRef} className="relative w-full">
       <div className="relative flex items-center">
         <input
+          ref={inputRef}
           type="text"
           name={name}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
-            setIsOpen(true);
+            openDropdown();
             if (onChange) onChange(e.target.value);
           }}
-          onFocus={() => setIsOpen(true)}
+          onFocus={openDropdown}
           placeholder={placeholder}
           className="glass-input w-full px-3.5 py-2.5 pr-9 rounded-xl text-base sm:text-sm font-medium focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all"
         />
@@ -103,7 +113,7 @@ export function ProviderAutocomplete({
 
       {/* Categorized Dropdown List */}
       {isOpen && (
-        <div className="absolute left-0 right-0 top-full mt-1.5 z-50 max-h-64 overflow-y-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-2xl divide-y divide-neutral-100 dark:divide-neutral-800/80 font-sans text-xs">
+        <div className="absolute left-0 right-0 z-50 top-full mt-1.5 max-h-56 sm:max-h-64 overflow-y-auto overscroll-contain bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-2xl divide-y divide-neutral-100 dark:divide-neutral-800/80 font-sans text-xs">
           
           {/* SECTION 1: User's Top 3 Most Used */}
           {filteredUserTop.length > 0 && (

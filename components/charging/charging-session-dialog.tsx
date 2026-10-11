@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Pencil, X, BatteryCharging, Zap, Clock, Gauge, ChevronDown, Info } from "lucide-react";
 import { createChargingSessionAction, updateChargingSessionAction } from "@/app/actions";
@@ -52,8 +52,29 @@ export function ChargingSessionDialog({
       session?.startBatteryPct ||
       session?.endBatteryPct
   );
-  const [showOptional, setShowOptional] = useState(hasOptionalData);
+  const [showOptional, setShowOptional] = useState(true);
   const [showOdometerTooltip, setShowOdometerTooltip] = useState(false);
+
+  // Refs for mobile keyboard focus chaining
+  const energyRef = useRef<HTMLInputElement>(null);
+  const costRef = useRef<HTMLInputElement>(null);
+  const pricePerKwhRef = useRef<HTMLInputElement>(null);
+  const odometerRef = useRef<HTMLInputElement>(null);
+  const startBatteryRef = useRef<HTMLInputElement>(null);
+  const endBatteryRef = useRef<HTMLInputElement>(null);
+  const durationRef = useRef<HTMLInputElement>(null);
+  const notesRef = useRef<HTMLInputElement>(null);
+
+  const focusNext = (ref: React.RefObject<HTMLInputElement | null>) => {
+    ref.current?.focus();
+  };
+
+  const scrollToField = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Give the keyboard time to appear before scrolling
+    setTimeout(() => {
+      e.target.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 150);
+  };
 
   const [energyVal, setEnergyVal] = useState<string>(
     session?.energyChargedKwh ? String(session.energyChargedKwh) : ""
@@ -315,6 +336,7 @@ export function ChargingSessionDialog({
                   </span>
                 </div>
                 <input
+                  ref={energyRef}
                   type="text"
                   inputMode="decimal"
                   name="energyChargedKwh"
@@ -322,6 +344,9 @@ export function ChargingSessionDialog({
                   onChange={(e) => setEnergyVal(e.target.value)}
                   placeholder="45.125"
                   required
+                  enterKeyHint="next"
+                  onFocus={scrollToField}
+                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(costMode === "TOTAL" ? costRef : pricePerKwhRef))}
                   className="glass-input w-full px-3.5 py-2.5 rounded-xl text-base sm:text-sm font-bold tracking-wide"
                 />
               </div>
@@ -364,6 +389,7 @@ export function ChargingSessionDialog({
                           {t("fieldCost")}
                         </label>
                         <input
+                          ref={costRef}
                           type="text"
                           inputMode="decimal"
                           name="cost"
@@ -371,6 +397,9 @@ export function ChargingSessionDialog({
                           onChange={(e) => setCostVal(e.target.value)}
                           placeholder="185.50"
                           required
+                          enterKeyHint="next"
+                          onFocus={scrollToField}
+                          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(odometerRef))}
                           className="glass-input w-full px-3 py-1.5 rounded-lg text-base sm:text-sm font-bold"
                         />
                       </div>
@@ -390,12 +419,16 @@ export function ChargingSessionDialog({
                           {t("fieldPricePerKwh")}
                         </label>
                         <input
+                          ref={pricePerKwhRef}
                           type="text"
                           inputMode="decimal"
                           value={pricePerKwhVal}
                           onChange={(e) => setPricePerKwhVal(e.target.value)}
                           placeholder="4.15"
                           required
+                          enterKeyHint="next"
+                          onFocus={scrollToField}
+                          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(odometerRef))}
                           className="glass-input w-full px-3 py-1.5 rounded-lg text-base sm:text-sm font-bold"
                         />
                       </div>
@@ -464,10 +497,14 @@ export function ChargingSessionDialog({
                         </div>
                       </div>
                       <input
+                        ref={odometerRef}
                         type="number"
                         name="odometerKm"
                         defaultValue={session?.odometerKm ?? ""}
                         placeholder={t("placeholderOdometer")}
+                        enterKeyHint="next"
+                        onFocus={scrollToField}
+                        onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(startBatteryRef))}
                         className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
                       />
                     </div>
@@ -479,6 +516,7 @@ export function ChargingSessionDialog({
                           {t("fieldStartBattery")}
                         </label>
                         <input
+                          ref={startBatteryRef}
                           type="number"
                           min="0"
                           max="100"
@@ -487,6 +525,9 @@ export function ChargingSessionDialog({
                           onChange={(e) => setStartBatteryVal(e.target.value)}
                           required={Boolean(endBatteryVal.trim())}
                           placeholder={t("placeholderBatteryStart")}
+                          enterKeyHint="next"
+                          onFocus={scrollToField}
+                          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(endBatteryRef))}
                           className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
                         />
                       </div>
@@ -496,6 +537,7 @@ export function ChargingSessionDialog({
                           {t("fieldEndBattery")}
                         </label>
                         <input
+                          ref={endBatteryRef}
                           type="number"
                           min="0"
                           max="100"
@@ -504,6 +546,9 @@ export function ChargingSessionDialog({
                           onChange={(e) => setEndBatteryVal(e.target.value)}
                           required={Boolean(startBatteryVal.trim())}
                           placeholder={t("placeholderBatteryEnd")}
+                          enterKeyHint="next"
+                          onFocus={scrollToField}
+                          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(durationRef))}
                           className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
                         />
                       </div>
@@ -517,11 +562,15 @@ export function ChargingSessionDialog({
                           <span>{t("fieldDuration")}</span>
                         </label>
                         <input
+                          ref={durationRef}
                           type="number"
                           name="durationMinutes"
                           value={durationMins}
                           onChange={(e) => setDurationMins(e.target.value)}
                           placeholder={t("placeholderDuration")}
+                          enterKeyHint="next"
+                          onFocus={scrollToField}
+                          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), focusNext(notesRef))}
                           className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
                         />
                       </div>
@@ -548,10 +597,13 @@ export function ChargingSessionDialog({
                         {t("fieldNotes")}
                       </label>
                       <input
+                        ref={notesRef}
                         type="text"
                         name="notes"
                         defaultValue={session?.notes || ""}
                         placeholder={t("placeholderNotes")}
+                        enterKeyHint="done"
+                        onFocus={scrollToField}
                         className="glass-input w-full px-3.5 py-2 rounded-xl text-base sm:text-sm font-medium"
                       />
                     </div>
