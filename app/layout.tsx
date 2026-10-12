@@ -9,6 +9,7 @@ import { Footer } from "@/components/layout/footer";
 import { getOrCreateDefaultVehicleAndSettings } from "@/server/services/ev-service";
 import { getCurrentUser } from "@/lib/auth/auth";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 export const revalidate = 0;
 
@@ -54,6 +55,7 @@ export default async function RootLayout({
           </LanguageProvider>
         </ThemeProvider>
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
